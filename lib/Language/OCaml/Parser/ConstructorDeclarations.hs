@@ -8,13 +8,16 @@ import Text.Megaparsec
 import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Parser.BarConstructorDeclaration
 import Language.OCaml.Parser.ConstructorDeclaration
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Combinators
 
 constructor_declarations_P :: Parser [Constructor_declaration]
-constructor_declarations_P = choice
-  [ constructor_declaration_P `sepBy1` bar_T
-  , try (bar_T *> constructor_declaration_P `sepBy1` bar_T)
-  , (: []) <$> (try $ bar_T *> constructor_declaration_P)
+constructor_declarations_P = leftRecursive
+  [ (: []) <$> constructor_declaration_P
+  , (: []) <$> bar_constructor_declaration_P
   , bar_T *> return []
+  ]
+  [ (:) <$> bar_constructor_declaration_P
   ]

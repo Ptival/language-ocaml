@@ -7,7 +7,7 @@ module Language.OCaml.Parser.ConstrLongident.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.ConstrLongident
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 constr_longident_tests :: [String]

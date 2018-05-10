@@ -3,7 +3,6 @@ module Language.OCaml.Parser.Common
   , Let_bindings(..)
   , addlb
   , caseExp
-  , constr_ident_P
   , ident_P
   , mkExp
   , mkexp
@@ -40,15 +39,6 @@ import           Language.OCaml.Parser.Utils.Utils
 
 default_loc :: Location
 default_loc = none
-
-constr_ident_P :: Parser String
-constr_ident_P = lexeme $ choice
-  [ u_ident_T
-  , l_bracket_T *> r_bracket_T *> return "[]"
-  -- TODO: other ones
-  , false_T *> return "false"
-  , true_T *> return "true"
-  ]
 
 ident_P :: Parser String
 ident_P = lexeme $ choice [ u_ident_T, l_ident_T ]

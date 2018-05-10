@@ -6,11 +6,11 @@ module Language.OCaml.Parser.StructureItem.Test
   , unitTests
   ) where
 
+import Data.Text.Prettyprint.Doc
 import Data.String.QQ
 import Test.Tasty
 
-import Language.OCaml.Parser.Structure
-import Language.OCaml.Parser.StructureItem
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 structure_item_tests :: [String]
@@ -48,3 +48,15 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 
 test :: IO ()
 test = defaultMain unitTests
+
+foo = debugParsing (structure_item_P structure_P) "open A"
+
+bar = debugParsing (structure_item_P structure_P) "open !A"
+
+yolo1 = debugParsing (structure_item_P structure_P) "type a = _"
+yolo2 = debugParsing (structure_item_P structure_P) "type a = 'b"
+yolo3 = debugParsing (structure_item_P structure_P) "type a = b"
+yolo4 = debugParsing (structure_item_P structure_P) "type a = | and b = |"
+
+yolo5 = debugParsing (structure_item_P structure_P) "type a_b = {c: float; d: float}"
+yolo6 = debugParsing (structure_item_P structure_P) "type a_b = C of D.e_f"

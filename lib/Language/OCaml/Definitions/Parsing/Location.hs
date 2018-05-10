@@ -1,7 +1,11 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Language.OCaml.Definitions.Parsing.Location
   ( Location(..)
   , none
   ) where
+
+import GHC.Generics
 
 import Language.OCaml.Definitions.StdLib.Lexing
 
@@ -10,7 +14,7 @@ data Location = Location
   , loc_end   :: Position
   , loc_ghost :: Bool
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 in_file :: String -> Location
 in_file name =

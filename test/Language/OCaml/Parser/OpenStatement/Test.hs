@@ -7,8 +7,7 @@ module Language.OCaml.Parser.OpenStatement.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.OpenStatement
-import Language.OCaml.Parser.Structure
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 open_statement_tests :: [String]

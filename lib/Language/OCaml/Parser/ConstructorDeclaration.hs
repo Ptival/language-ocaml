@@ -8,6 +8,7 @@ import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
+import Language.OCaml.Parser.ConstrIdent
 import Language.OCaml.Parser.GeneralizedConstructorArguments
 
 constructor_declaration_P :: Parser Constructor_declaration

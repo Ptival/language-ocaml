@@ -7,7 +7,7 @@ module Language.OCaml.Parser.SimpleExpr.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.SimpleExpr
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 simple_expr_tests :: [String]

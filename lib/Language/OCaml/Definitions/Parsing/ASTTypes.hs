@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Language.OCaml.Definitions.Parsing.ASTTypes
   ( Arg_label(..)
   , Constant(..)
@@ -5,6 +7,8 @@ module Language.OCaml.Definitions.Parsing.ASTTypes
   , Override_flag(..)
   , Rec_flag(..)
   ) where
+
+import GHC.Generics
 
 import Language.OCaml.Definitions.Parsing.Location
 
@@ -21,20 +25,20 @@ data Loc a = Loc
   { txt :: a
   , loc :: Location
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Override_flag
   = Override
   | Fresh
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Rec_flag
   = Nonrecursive
   | Recursive
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Arg_label
   = Nolabel
   | Labelled String
   | Optional String
-  deriving (Show)
+  deriving (Eq, Generic, Show)

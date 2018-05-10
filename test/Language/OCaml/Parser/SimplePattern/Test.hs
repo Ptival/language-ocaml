@@ -7,7 +7,7 @@ module Language.OCaml.Parser.SimplePattern.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.SimplePattern
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 simple_pattern_tests :: [String]

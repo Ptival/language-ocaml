@@ -8,7 +8,7 @@ module Language.OCaml.Parser.Common.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.Common
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 constr_ident_tests :: [String]

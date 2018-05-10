@@ -7,7 +7,7 @@ module Language.OCaml.Parser.SeqExpr.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.SeqExpr
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 seq_expr_tests :: [String]

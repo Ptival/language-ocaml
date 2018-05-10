@@ -22,26 +22,14 @@ Library
   pkgconfig-depends: zlib
   build-depends: base                      >= 4.0   && < 4.10,
                  megaparsec                >= 5.0   && < 5.4,
+                 prettyprinter             >= 1.2   && < 1.3,
                  string-qq                 >= 0.0   && < 0.1,
                  tasty                     >= 0.11  && < 0.12,
                  tasty-hunit               >= 0.9   && < 0.10
   exposed-modules: Language.OCaml.Parser
-                   Language.OCaml.Parser.Common
-                   Language.OCaml.Parser.ConstrLongident
-                   Language.OCaml.Parser.Expr
-                   Language.OCaml.Parser.Implementation
-                   Language.OCaml.Parser.MatchCase
-                   Language.OCaml.Parser.ModLongident
-                   Language.OCaml.Parser.OpenStatement
-                   Language.OCaml.Parser.Pattern
-                   Language.OCaml.Parser.SeqExpr
-                   Language.OCaml.Parser.SimpleExpr
-                   Language.OCaml.Parser.SimplePattern
-                   Language.OCaml.Parser.Structure
-                   Language.OCaml.Parser.StructureItem
-                   Language.OCaml.Parser.Tokens
-                   Language.OCaml.Parser.ValIdent
-                   Language.OCaml.Parser.ValLongident
+                   Language.OCaml.Parser.Internal
+                   Language.OCaml.PrettyPrinter
+                   Language.OCaml.PrettyPrinter.Internal
   other-modules: Language.OCaml.Definitions.Parsing.ASTTypes
                  Language.OCaml.Definitions.Parsing.Docstrings
                  Language.OCaml.Definitions.Parsing.Location
@@ -50,7 +38,11 @@ Library
                  Language.OCaml.Definitions.StdLib.Parsing
                  Language.OCaml.Parser.AndTypeDeclaration
                  Language.OCaml.Parser.AttrId
+                 Language.OCaml.Parser.BarConstructorDeclaration
+                 Language.OCaml.Parser.Common
                  Language.OCaml.Parser.Constant
+                 Language.OCaml.Parser.ConstrIdent
+                 Language.OCaml.Parser.ConstrLongident
                  Language.OCaml.Parser.ConstructorArguments
                  Language.OCaml.Parser.ConstructorDeclaration
                  Language.OCaml.Parser.ConstructorDeclarations
@@ -58,7 +50,9 @@ Library
                  Language.OCaml.Parser.CoreType2
                  Language.OCaml.Parser.CoreTypeList
                  Language.OCaml.Parser.CoreTypeNoAttr
+                 Language.OCaml.Parser.Expr
                  Language.OCaml.Parser.GeneralizedConstructorArguments
+                 Language.OCaml.Parser.Implementation
                  Language.OCaml.Parser.Label
                  Language.OCaml.Parser.LabelDeclaration
                  Language.OCaml.Parser.LabelDeclarationSemi
@@ -68,17 +62,21 @@ Library
                  Language.OCaml.Parser.LetBinding
                  Language.OCaml.Parser.LetBindingBody
                  Language.OCaml.Parser.LetBindings
+                 Language.OCaml.Parser.MatchCase
                  Language.OCaml.Parser.MatchCases
                  Language.OCaml.Parser.ModExtLongident
+                 Language.OCaml.Parser.ModLongident
                  Language.OCaml.Parser.ModuleBinding
                  Language.OCaml.Parser.ModuleBindingBody
                  Language.OCaml.Parser.ModuleExpr
                  Language.OCaml.Parser.MutableFlag
                  Language.OCaml.Parser.NonrecFlag
+                 Language.OCaml.Parser.OpenStatement
                  Language.OCaml.Parser.Operator
                  Language.OCaml.Parser.OptBar
                  Language.OCaml.Parser.Override_flag
                  Language.OCaml.Parser.PatternCommaList
+                 Language.OCaml.Parser.Pattern
                  Language.OCaml.Parser.PatternGen
                  Language.OCaml.Parser.Payload
                  Language.OCaml.Parser.PolyTypeNoAttr
@@ -86,20 +84,42 @@ Library
                  Language.OCaml.Parser.PostItemAttributes
                  Language.OCaml.Parser.PrivateFlag
                  Language.OCaml.Parser.RecFlag
+                 Language.OCaml.Parser.SeqExpr
                  Language.OCaml.Parser.SimpleCoreType
                  Language.OCaml.Parser.SimpleCoreType2
                  Language.OCaml.Parser.SimpleCoreTypeOrTuple
+                 Language.OCaml.Parser.SimpleExpr
+                 Language.OCaml.Parser.SimplePattern
                  Language.OCaml.Parser.SimpleLabeledExprList
                  Language.OCaml.Parser.SimplePatternNotIdent
                  Language.OCaml.Parser.SingleAttrId
                  Language.OCaml.Parser.StrictBinding
+                 Language.OCaml.Parser.Structure
+                 Language.OCaml.Parser.StructureItem
                  Language.OCaml.Parser.TestUtils
+                 Language.OCaml.Parser.Tokens
                  Language.OCaml.Parser.TypeDeclaration
                  Language.OCaml.Parser.TypeDeclarations
                  Language.OCaml.Parser.TypeKind
                  Language.OCaml.Parser.TypeLongident
                  Language.OCaml.Parser.Utils.Combinators
                  Language.OCaml.Parser.Utils.Utils
+                 Language.OCaml.Parser.ValIdent
+                 Language.OCaml.Parser.ValLongident
+                 Language.OCaml.PrettyPrinter.ConstructorArguments
+                 Language.OCaml.PrettyPrinter.ConstructorDeclaration
+                 Language.OCaml.PrettyPrinter.CoreType
+                 Language.OCaml.PrettyPrinter.CoreTypeDesc
+                 Language.OCaml.PrettyPrinter.LabelDeclaration
+                 Language.OCaml.PrettyPrinter.Loc
+                 Language.OCaml.PrettyPrinter.Longident
+                 Language.OCaml.PrettyPrinter.MutableFlag
+                 Language.OCaml.PrettyPrinter.OpenDescription
+                 Language.OCaml.PrettyPrinter.OverrideFlag
+                 Language.OCaml.PrettyPrinter.Structure
+                 Language.OCaml.PrettyPrinter.StructureItem
+                 Language.OCaml.PrettyPrinter.StructureItemDesc
+                 Language.OCaml.PrettyPrinter.TypeDeclaration
 
 Test-suite Test
   default-language: Haskell2010
@@ -109,6 +129,7 @@ Test-suite Test
   build-depends: language-ocaml,
                  base                      >= 4.9   && < 4.10,
                  megaparsec                >= 5.0   && < 5.4,
+                 prettyprinter             >= 1.2   && < 1.3,
                  string-qq                 >= 0.0   && < 0.1,
                  tasty                     >= 0.11  && < 0.12,
                  tasty-hunit               >= 0.9   && < 0.10

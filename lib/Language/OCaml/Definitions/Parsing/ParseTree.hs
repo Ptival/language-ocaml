@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Language.OCaml.Definitions.Parsing.ParseTree
   ( Attribute
   , Attributes
@@ -37,15 +39,17 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , none
   ) where
 
+import           GHC.Generics
+
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
-import Language.OCaml.Definitions.Parsing.Location
+import           Language.OCaml.Definitions.Parsing.Location
 
 data Constant
   = Pconst_integer String (Maybe Char)
   | Pconst_char Char
   | Pconst_string String (Maybe String)
   | Pconst_float String (Maybe Char)
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 type Attribute = (ASTTypes.Loc String, Payload)
 type Extension = (ASTTypes.Loc String, Payload)
@@ -56,14 +60,14 @@ data Payload
   | PSig Signature
   | PTyp Core_type
   | PPat Pattern (Maybe Expression)
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Core_type = Core_type
   { ptyp_desc       :: Core_type_desc
   -- , ptyp_loc        :: Location.t
   -- , ptyp_attributes :: Attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Core_type_desc
   = Ptyp_any
@@ -78,17 +82,17 @@ data Core_type_desc
   -- | Ptyp_poly of string Asttypes.loc list * core_type
   -- | Ptyp_package of package_type
   -- | Ptyp_extension of extension
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Constructor_arguments
   = Pcstr_tuple [Core_type]
   -- | Pcstr_record [Label_declaration]
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Private_flag
   = Private
   | Public
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Type_declaration = Type_declaration
   { ptype_name :: ASTTypes.Loc String
@@ -100,14 +104,14 @@ data Type_declaration = Type_declaration
   --, ptype_attributes :: attributes
   --, ptype_loc :: Location.t
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Type_kind
   = Ptype_abstract
   | Ptype_variant [Constructor_declaration]
   | Ptype_record [Label_declaration]
   | Ptype_open
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Label_declaration = Label_declaration
   { pld_name :: ASTTypes.Loc String
@@ -116,7 +120,7 @@ data Label_declaration = Label_declaration
   -- , pld_loc :: Location.t
   -- , pld_attributes :: attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Constructor_declaration = Constructor_declaration
   { pcd_name :: ASTTypes.Loc String
@@ -125,24 +129,24 @@ data Constructor_declaration = Constructor_declaration
   -- , pcd_loc :: Location
   -- , pcd_attributes :: attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Mutable_flag
   = Immutable
   | Mutable
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Variance
   = Covariant
   | Contravariant
   | Invariant
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Longident
   = Lident String
   | Ldot Longident String
   | Lapply Longident Longident
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 constructor ::
   Constructor_arguments ->
@@ -178,7 +182,7 @@ data Structure_item = Structure_item
   { pstr_desc :: Structure_item_desc
   , pstr_loc  :: Location
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Structure_item_desc
   = Pstr_eval Expression Attributes
@@ -196,14 +200,14 @@ data Structure_item_desc
   -- | Pstr_include include_declaration
   | Pstr_attribute Attribute
   | Pstr_extension Extension Attributes
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Expression = Expression
   { pexp_desc       :: Expression_desc
   , pexp_loc        :: Location
   , pexp_attributes :: Attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Expression_desc
   = Pexp_ident (ASTTypes.Loc Longident)
@@ -242,7 +246,7 @@ data Expression_desc
   -- | Pexp_open Asttypes.override_flag * Longident.t Asttypes.loc * expression
   | Pexp_extension Extension
   -- | Pexp_unreachable
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 type Signature = [Signature_item]
 
@@ -250,7 +254,7 @@ data Signature_item = Signature_item
   { psig_desc :: Signature_item_desc
   , psig_loc  :: Location
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Signature_item_desc
   = Psig_value Value_description
@@ -266,7 +270,7 @@ data Signature_item_desc
   -- | Psig_class_type class_type_declaration list
   -- | Psig_attribute attribute
   -- | Psig_extension extension * attributes
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Value_description = Value_description
   { pval_name       :: ASTTypes.Loc String
@@ -275,14 +279,14 @@ data Value_description = Value_description
   , pval_attributes :: Attributes
   , pval_loc        :: Location
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Pattern = Pattern
   { ppat_desc       :: Pattern_desc
   , ppat_loc        :: Location
   , ppat_attributes :: Attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Pattern_desc
   = Ppat_any
@@ -303,7 +307,7 @@ data Pattern_desc
   -- | Ppat_exception pattern
   -- | Ppat_extension extension
   -- | Ppat_open Longident.t Asttypes.loc * pattern
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Open_description = Open_description
   { popen_lid        :: ASTTypes.Loc Longident
@@ -311,14 +315,14 @@ data Open_description = Open_description
   , popen_loc        :: Location
   , popen_attributes :: Attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Module_expr = Module_expr
   { pmod_desc       :: Module_expr_desc
   , pmod_loc        :: Location
   , pmod_attributes :: Attributes
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Module_expr_desc
   = Pmod_ident (ASTTypes.Loc Longident)
@@ -328,7 +332,7 @@ data Module_expr_desc
   -- | Pmod_constraint of module_expr * module_type
   -- | Pmod_unpack of expression
   -- | Pmod_extension of extension
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Module_binding = Module_binding
   { pmb_name       :: ASTTypes.Loc String
@@ -336,7 +340,7 @@ data Module_binding = Module_binding
   , pmb_attributes :: Attributes
   , pmb_loc        :: Location
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Value_binding = Value_binding
   { pvb_pat        :: Pattern
@@ -344,11 +348,11 @@ data Value_binding = Value_binding
   , pvb_attributes :: Attributes
   , pvb_loc        :: Location
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)
 
 data Case = Case
   { pc_lhs   :: Pattern
   , pc_guard :: Maybe Expression
   , pc_rhs   :: Expression
   }
-  deriving (Show)
+  deriving (Eq, Generic, Show)

@@ -7,8 +7,7 @@ module Language.OCaml.Parser.MatchCase.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.MatchCase
-import Language.OCaml.Parser.SeqExpr
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 match_case_tests :: [String]

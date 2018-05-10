@@ -9,8 +9,7 @@ module Language.OCaml.Parser.Expr.Test
 import Data.String.QQ
 import Test.Tasty
 
-import Language.OCaml.Parser.Expr
-import Language.OCaml.Parser.SeqExpr
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 expr_tests :: [String]

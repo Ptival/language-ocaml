@@ -9,7 +9,7 @@ module Language.OCaml.Parser.Structure.Test
 import Data.String.QQ
 import Test.Tasty
 
-import Language.OCaml.Parser.Structure
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 structure_tests :: [String]

@@ -8,7 +8,7 @@ module Language.OCaml.Parser.Implementation.Test
 import Data.String.QQ
 import Test.Tasty
 
-import Language.OCaml.Parser.Implementation
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 prefix :: FilePath
@@ -35,42 +35,35 @@ test :: IO ()
 test = defaultMain unitTests
 
 foo = debugParsing implementation_P [s|
-(* Comment
- * on
- * multiple
- * lines
- *)
+type name = string
 
-(** Different style *)
+type expr =
+	| Var of name                           (* variable *)
+	| Call of expr * expr list              (* application *)
+	| Fun of name list * expr               (* abstraction *)
+	| Let of name * expr * expr             (* let *)
+	| RecordSelect of expr * name           (* selecting value of label: `r.a` *)
+	| RecordExtend of name * expr * expr    (* extending a record: `{a = 1, b = 2 | r}` *)
+	| RecordRestrict of expr * name         (* deleting a label: `{r - a}` *)
+	| RecordEmpty                           (* empty record: `{}` *)
 
-open! AModule
-module F = Format
+type id = int
+type level = int
 
-type a_b =
-  { foo_bar: float
-  ; bar: float }
+type ty =
+	| TConst of name                    (* type constant: `int` or `bool` *)
+	| TApp of ty * ty list              (* type application: `list[int]` *)
+	| TArrow of ty list * ty            (* function type: `(int, int) -> int` *)
+	| TVar of tvar ref                  (* type variable *)
+	| TRecord of row                    (* record type: `{<...>}` *)
+	| TRowEmpty                         (* empty row: `<>` *)
+	| TRowExtend of name * ty * row     (* row extension: `<a = _ | ...>` *)
 
-type c_d = {a: b; c: d}
+and row = ty    (* the kind of rows - empty row, row variable, or row extension *)
 
-type e_f = G of A.b * C.d_f | H | I
+and tvar =
+	| Unbound of id * level
+	| Link of ty
+	| Generic of id
 
-let a = b
-
-let some_function = function
-  | Constructor _ ->
-      Module.some_other_function
-  | OtherConstructor _ ->
-      OtherModule.other_function
-
-let string_of_something = function
-  | Constructor _ ->
-      "some_string"
-
-let multi_patterns = function
-  | Constructor1 foo_bar
-  | Constructor2 foo_bar
-  | Constructor3 foo_bar ->
-      Some foo_bar
-  | _ ->
-     None
 |]

@@ -7,7 +7,7 @@ module Language.OCaml.Parser.ValIdent.Test
 
 import Test.Tasty
 
-import Language.OCaml.Parser.ValIdent
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 val_ident_tests :: [String]

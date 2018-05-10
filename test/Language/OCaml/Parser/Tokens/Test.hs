@@ -7,20 +7,20 @@ module Language.OCaml.Parser.Tokens.Test
   ) where
 
 import Data.String.QQ
-import Text.Megaparsec
+-- import Text.Megaparsec
 import Test.Tasty
 
-import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-l_ident_tests :: [String]
-l_ident_tests = [ "a", "a " ]
+-- l_ident_tests :: [String]
+-- l_ident_tests = [ "a", "a " ]
 
-u_ident_tests :: [String]
-u_ident_tests = [ "A", "A " ]
+-- u_ident_tests :: [String]
+-- u_ident_tests = [ "A", "A " ]
 
-star_tests :: [String]
-star_tests = [ "*", "* ", " *", " * " ]
+-- star_tests :: [String]
+-- star_tests = [ "*", "* ", " *", " * " ]
 
 string_tests :: [String]
 string_tests =
@@ -34,4 +34,4 @@ unitTests = testGroup "Language.OCaml.Parser.Tokens" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugParsing (string_T *> string_T) [s|"foo" "bar"|]
+-- foo = debugParsing (string_T *> string_T) [s|"foo" "bar"|]
