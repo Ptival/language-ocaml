@@ -1,0 +1,131 @@
+Name:                language-ocaml
+Version:             0.1
+Synopsis:            Language tools for OCaml, in Haskell
+Description:         Language tools for OCaml, in Haskell
+License:             MIT
+License-file:        LICENSE
+Author:              Valentin Robert
+Maintainer:          valentin.robert.42@gmail.com
+Stability:           Experimental
+Category:            Language, OCaml
+Build-type:          Simple
+Cabal-version:       >=1.22
+
+Source-repository head
+  type:     git
+  location: https://github.com/Ptival/language-ocaml
+
+Library
+  default-language: Haskell2010
+  ghc-options:      -Wall -Wno-orphans
+  hs-source-dirs:   lib, test
+  pkgconfig-depends: zlib
+  build-depends: base                      >= 4.0   && < 4.10,
+                 megaparsec                >= 5.0   && < 5.4,
+                 string-qq                 >= 0.0   && < 0.1,
+                 tasty                     >= 0.11  && < 0.12,
+                 tasty-hunit               >= 0.9   && < 0.10
+  exposed-modules: Language.OCaml.Parser
+                   Language.OCaml.Parser.Common
+                   Language.OCaml.Parser.ConstrLongident
+                   Language.OCaml.Parser.Expr
+                   Language.OCaml.Parser.Implementation
+                   Language.OCaml.Parser.MatchCase
+                   Language.OCaml.Parser.ModLongident
+                   Language.OCaml.Parser.OpenStatement
+                   Language.OCaml.Parser.Pattern
+                   Language.OCaml.Parser.SeqExpr
+                   Language.OCaml.Parser.SimpleExpr
+                   Language.OCaml.Parser.SimplePattern
+                   Language.OCaml.Parser.Structure
+                   Language.OCaml.Parser.StructureItem
+                   Language.OCaml.Parser.Tokens
+                   Language.OCaml.Parser.ValIdent
+                   Language.OCaml.Parser.ValLongident
+  other-modules: Language.OCaml.Definitions.Parsing.ASTTypes
+                 Language.OCaml.Definitions.Parsing.Docstrings
+                 Language.OCaml.Definitions.Parsing.Location
+                 Language.OCaml.Definitions.Parsing.ParseTree
+                 Language.OCaml.Definitions.StdLib.Lexing
+                 Language.OCaml.Definitions.StdLib.Parsing
+                 Language.OCaml.Parser.AndTypeDeclaration
+                 Language.OCaml.Parser.AttrId
+                 Language.OCaml.Parser.Constant
+                 Language.OCaml.Parser.ConstructorArguments
+                 Language.OCaml.Parser.ConstructorDeclaration
+                 Language.OCaml.Parser.ConstructorDeclarations
+                 Language.OCaml.Parser.CoreType
+                 Language.OCaml.Parser.CoreType2
+                 Language.OCaml.Parser.CoreTypeList
+                 Language.OCaml.Parser.CoreTypeNoAttr
+                 Language.OCaml.Parser.GeneralizedConstructorArguments
+                 Language.OCaml.Parser.Label
+                 Language.OCaml.Parser.LabelDeclaration
+                 Language.OCaml.Parser.LabelDeclarationSemi
+                 Language.OCaml.Parser.LabelDeclarations
+                 Language.OCaml.Parser.LabelLongident
+                 Language.OCaml.Parser.LabeledSimpleExpr
+                 Language.OCaml.Parser.LetBinding
+                 Language.OCaml.Parser.LetBindingBody
+                 Language.OCaml.Parser.LetBindings
+                 Language.OCaml.Parser.MatchCases
+                 Language.OCaml.Parser.ModExtLongident
+                 Language.OCaml.Parser.ModuleBinding
+                 Language.OCaml.Parser.ModuleBindingBody
+                 Language.OCaml.Parser.ModuleExpr
+                 Language.OCaml.Parser.MutableFlag
+                 Language.OCaml.Parser.NonrecFlag
+                 Language.OCaml.Parser.Operator
+                 Language.OCaml.Parser.OptBar
+                 Language.OCaml.Parser.Override_flag
+                 Language.OCaml.Parser.PatternCommaList
+                 Language.OCaml.Parser.PatternGen
+                 Language.OCaml.Parser.Payload
+                 Language.OCaml.Parser.PolyTypeNoAttr
+                 Language.OCaml.Parser.PostItemAttribute
+                 Language.OCaml.Parser.PostItemAttributes
+                 Language.OCaml.Parser.PrivateFlag
+                 Language.OCaml.Parser.RecFlag
+                 Language.OCaml.Parser.SimpleCoreType
+                 Language.OCaml.Parser.SimpleCoreType2
+                 Language.OCaml.Parser.SimpleCoreTypeOrTuple
+                 Language.OCaml.Parser.SimpleLabeledExprList
+                 Language.OCaml.Parser.SimplePatternNotIdent
+                 Language.OCaml.Parser.SingleAttrId
+                 Language.OCaml.Parser.StrictBinding
+                 Language.OCaml.Parser.TestUtils
+                 Language.OCaml.Parser.TypeDeclaration
+                 Language.OCaml.Parser.TypeDeclarations
+                 Language.OCaml.Parser.TypeKind
+                 Language.OCaml.Parser.TypeLongident
+                 Language.OCaml.Parser.Utils.Combinators
+                 Language.OCaml.Parser.Utils.Utils
+
+Test-suite Test
+  default-language: Haskell2010
+  type:             exitcode-stdio-1.0
+  hs-source-dirs:   test
+  main-is:          Main.hs
+  build-depends: language-ocaml,
+                 base                      >= 4.9   && < 4.10,
+                 megaparsec                >= 5.0   && < 5.4,
+                 string-qq                 >= 0.0   && < 0.1,
+                 tasty                     >= 0.11  && < 0.12,
+                 tasty-hunit               >= 0.9   && < 0.10
+  other-modules: Language.OCaml.Parser.Common.Test
+                 Language.OCaml.Parser.ConstrLongident.Test
+                 Language.OCaml.Parser.Expr.Test
+                 Language.OCaml.Parser.Implementation.Test
+                 Language.OCaml.Parser.MatchCase.Test
+                 Language.OCaml.Parser.ModLongident.Test
+                 Language.OCaml.Parser.OpenStatement.Test
+                 Language.OCaml.Parser.Pattern.Test
+                 Language.OCaml.Parser.SeqExpr.Test
+                 Language.OCaml.Parser.SimpleExpr.Test
+                 Language.OCaml.Parser.SimplePattern.Test
+                 Language.OCaml.Parser.Structure.Test
+                 Language.OCaml.Parser.StructureItem.Test
+                 Language.OCaml.Parser.TestUtils
+                 Language.OCaml.Parser.Tokens.Test
+                 Language.OCaml.Parser.ValIdent.Test
+                 Language.OCaml.Parser.ValLongident.Test
