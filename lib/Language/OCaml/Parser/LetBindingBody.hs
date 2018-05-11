@@ -11,6 +11,8 @@ import Text.Megaparsec.String
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.CoreType
+import Language.OCaml.Parser.FunBinding
+import Language.OCaml.Parser.PatternNoExn
 import Language.OCaml.Parser.SeqExpr
 import Language.OCaml.Parser.SimplePatternNotIdent
 import Language.OCaml.Parser.StrictBinding
@@ -22,7 +24,7 @@ let_binding_body_P :: Parser (Pattern, Expression)
 let_binding_body_P = choice
   [ try $ do
     i <- val_ident_P
-    b <- strict_binding_P
+    b <- strict_binding_P fun_binding_P
     return (mkpatvar i 1, b)
   , do
     (i, c) <- try $ do
@@ -41,7 +43,13 @@ let_binding_body_P = choice
            )
   -- TODO: typevar_list
   -- TODO: lident_list
-  -- TODO: pattern_no_exn
+  , do
+    p <- try $ do
+      p <- pattern_no_exn_P
+      equal_T
+      return p
+    e <- seq_expr_P
+    return (p, e)
   , do
     p <- try $ do
       p <- simple_pattern_not_ident_P

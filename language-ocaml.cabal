@@ -53,6 +53,7 @@ Library
                  Language.OCaml.Parser.CoreTypeList
                  Language.OCaml.Parser.CoreTypeNoAttr
                  Language.OCaml.Parser.Expr
+                 Language.OCaml.Parser.FunBinding
                  Language.OCaml.Parser.GeneralizedConstructorArguments
                  Language.OCaml.Parser.Implementation
                  Language.OCaml.Parser.Label
@@ -61,6 +62,7 @@ Library
                  Language.OCaml.Parser.LabelDeclarations
                  Language.OCaml.Parser.LabelLongident
                  Language.OCaml.Parser.LabeledSimpleExpr
+                 Language.OCaml.Parser.LabeledSimplePattern
                  Language.OCaml.Parser.LetBinding
                  Language.OCaml.Parser.LetBindingBody
                  Language.OCaml.Parser.LetBindings
@@ -80,6 +82,7 @@ Library
                  Language.OCaml.Parser.PatternCommaList
                  Language.OCaml.Parser.Pattern
                  Language.OCaml.Parser.PatternGen
+                 Language.OCaml.Parser.PatternNoExn
                  Language.OCaml.Parser.Payload
                  Language.OCaml.Parser.PolyTypeNoAttr
                  Language.OCaml.Parser.PostItemAttribute

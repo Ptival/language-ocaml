@@ -1,6 +1,7 @@
 module Language.OCaml.Parser.Common
   ( addlb
   , caseExp
+  , ghexp
   , ghpat
   , ghtyp
   , ident_P

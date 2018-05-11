@@ -6,20 +6,23 @@ module Language.OCaml.Parser.LetBinding.Test
   , unitTests
   ) where
 
-import Data.String.QQ
+-- import Data.String.QQ
 import Test.Tasty
-import Text.Megaparsec
+-- import Text.Megaparsec
 
-import Language.OCaml.Definitions.Parsing.Parser.LetBindings
+-- import Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
 let_binding_tests :: [String]
 let_binding_tests =
   [ "let a = b"
-  -- , "let f a = b"
-  -- , "let f a = g b"
-  -- , "let f a : t = b"
+  , "let a : b :> c = d"
+  , "let _ : a = b"
+  , "let a : b = c"
+  , "let f a = b"
+  , "let f a = g b"
+  , "let f a : t = b"
   , "let f : t = b"
   ]
 
@@ -30,5 +33,5 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-debug :: Int -> Either (ParseError Char Dec) Let_bindings
-debug n = debugParsing (let_binding_P structure_P) (let_binding_tests !! n)
+-- debug :: Int -> Either (ParseError Char Dec) Let_bindings
+-- debug n = debugParsing (let_binding_P structure_P) (let_binding_tests !! n)

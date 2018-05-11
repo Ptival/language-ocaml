@@ -214,7 +214,7 @@ data Expression_desc
   | Pexp_constant Constant
   | Pexp_let ASTTypes.Rec_flag [Value_binding] Expression
   | Pexp_function [Case]
-  -- | Pexp_fun Asttypes.arg_label * expression option * pattern * expression
+  | Pexp_fun ASTTypes.Arg_label (Maybe Expression) Pattern Expression
   | Pexp_apply Expression [(ASTTypes.Arg_label, Expression)]
   | Pexp_match Expression [Case]
   -- | Pexp_try expression * case list
