@@ -5,9 +5,11 @@ module Language.OCaml.Parser.LetBinding
   ( let_binding_P
   ) where
 
+import Text.Megaparsec
 import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.LetBindingBody
 import Language.OCaml.Parser.PostItemAttributes
@@ -16,7 +18,7 @@ import Language.OCaml.Parser.Tokens
 
 let_binding_P :: Parser Structure -> Parser Let_bindings
 let_binding_P structure_P = do
-  let_T
+  try let_T
   -- TODO: ext_attributes
   r <- rec_flag_P
   b <- let_binding_body_P

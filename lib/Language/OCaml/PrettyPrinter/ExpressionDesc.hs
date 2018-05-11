@@ -25,7 +25,7 @@ expression_desc_PP = \case
     []  -> error "TODO"
     [x] -> fillSep [ "function", pretty x ]
     _   -> fillSep [ "function", nest 2 $ line <> (vcat $ map pretty l) ]
-  Pexp_apply e l -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l
+  Pexp_apply e l -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l -- FIXME: lbl
   Pexp_match e l -> error "TODO"
   Pexp_tuple l -> error "TODO"
   Pexp_construct i e -> fillSep [ pretty i, pretty e ]

@@ -4,6 +4,7 @@ module Language.OCaml.Parser.Internal
   , expr_P
   , ident_P
   , implementation_P
+  , let_binding_P
   , match_case_P
   , mod_longident_P
   , open_statement_P
@@ -23,6 +24,7 @@ import Language.OCaml.Parser.ConstrIdent
 import Language.OCaml.Parser.ConstrLongident
 import Language.OCaml.Parser.Expr
 import Language.OCaml.Parser.Implementation
+import Language.OCaml.Parser.LetBinding
 import Language.OCaml.Parser.MatchCase
 import Language.OCaml.Parser.ModLongident
 import Language.OCaml.Parser.OpenStatement

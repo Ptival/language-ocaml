@@ -10,13 +10,47 @@ import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
+import Language.OCaml.Parser.CoreType
+import Language.OCaml.Parser.SeqExpr
+import Language.OCaml.Parser.SimplePatternNotIdent
 import Language.OCaml.Parser.StrictBinding
+import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.TypeConstraint
 import Language.OCaml.Parser.ValIdent
 
 let_binding_body_P :: Parser (Pattern, Expression)
 let_binding_body_P = choice
-  [ do
+  [ try $ do
     i <- val_ident_P
     b <- strict_binding_P
-    return $ (mkpatvar i 1, b)
+    return (mkpatvar i 1, b)
+  , do
+    (i, c) <- try $ do
+      i <- val_ident_P
+      c <- type_constraint_P
+      return (i, c)
+    equal_T
+    e <- seq_expr_P
+    let v = mkpatvar i 1
+    let t = case c of
+          (Just t', Nothing) -> t'
+          (_,       Just t') -> t'
+          _ -> error "This should not happen"
+    return ( ghpat $ Ppat_constraint v (ghtyp $ Ptyp_poly [] t)
+           , mkexp_constraint e c
+           )
+  -- TODO: typevar_list
+  -- TODO: lident_list
+  -- TODO: pattern_no_exn
+  , do
+    p <- try $ do
+      p <- simple_pattern_not_ident_P
+      colon_T
+      return p
+    t <- core_type_P
+    equal_T
+    e <- seq_expr_P
+    return ( ghpat $ Ppat_constraint p t
+           , e
+           )
   ]

@@ -33,6 +33,8 @@ Library
   other-modules: Language.OCaml.Definitions.Parsing.ASTTypes
                  Language.OCaml.Definitions.Parsing.Docstrings
                  Language.OCaml.Definitions.Parsing.Location
+                 Language.OCaml.Definitions.Parsing.Parser.LetBinding
+                 Language.OCaml.Definitions.Parsing.Parser.LetBindings
                  Language.OCaml.Definitions.Parsing.ParseTree
                  Language.OCaml.Definitions.StdLib.Lexing
                  Language.OCaml.Definitions.StdLib.Parsing
@@ -98,6 +100,7 @@ Library
                  Language.OCaml.Parser.StructureItem
                  Language.OCaml.Parser.TestUtils
                  Language.OCaml.Parser.Tokens
+                 Language.OCaml.Parser.TypeConstraint
                  Language.OCaml.Parser.TypeDeclaration
                  Language.OCaml.Parser.TypeDeclarations
                  Language.OCaml.Parser.TypeKind

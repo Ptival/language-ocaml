@@ -1,12 +1,13 @@
 module Language.OCaml.Parser.Common
-  ( Let_binding(..)
-  , Let_bindings(..)
-  , addlb
+  ( addlb
   , caseExp
+  , ghpat
+  , ghtyp
   , ident_P
   , mkExp
   , mkexp
   , mkexp_attrs
+  , mkexp_constraint
   , mkLoc
   , mklb
   , mklbs
@@ -34,6 +35,8 @@ import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.Docstrings
 import           Language.OCaml.Definitions.Parsing.Location
 import           Language.OCaml.Definitions.Parsing.ParseTree
+import           Language.OCaml.Definitions.Parsing.Parser.LetBinding
+import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.Utils.Utils
 
@@ -179,22 +182,6 @@ mkpat d = mkPat Nothing Nothing d -- FIXME
 mkpatvar :: String -> t -> Pattern
 mkpatvar name pos = mkPat (Just (rhsLoc pos)) Nothing (Ppat_var (mkRHS name pos))
 
-data Let_binding = Let_binding
-  { lb_pattern    :: Pattern
-  , lb_expression :: Expression
-  , lb_attributes :: Attributes
-  , lb_docs       :: Docs
-  , lb_text       :: Text
-  , lb_loc        :: Location
-  }
-
-data Let_bindings = Let_bindings
-  { lbs_bindings  :: [Let_binding]
-  , lbs_rec       :: ASTTypes.Rec_flag
-  , lbs_extension :: Maybe (ASTTypes.Loc String)
-  , lbs_loc       :: Location
-  }
-
 mklb :: t -> (Pattern, Expression) -> Attributes -> Let_binding
 mklb _first (p, e) attrs = Let_binding
   { lb_pattern    = p
@@ -263,3 +250,15 @@ mkexp d = mkExp Nothing Nothing d -- FIXME
 
 ghexp :: Expression_desc -> Expression
 ghexp d = mkExp Nothing Nothing d -- FIXME
+
+ghpat :: Pattern_desc -> Pattern
+ghpat d = mkPat Nothing Nothing d -- FIXME
+
+ghtyp :: Core_type_desc -> Core_type
+ghtyp d = mkTyp d -- FIXME
+
+mkexp_constraint :: Expression -> (Maybe Core_type, Maybe Core_type) -> Expression
+mkexp_constraint e (t1, t2) = case (t1, t2) of
+  (Just t,  Nothing) -> ghexp $ Pexp_constraint e t
+  (_,       Just t)  -> ghexp $ Pexp_coerce e t1 t
+  (Nothing, Nothing) -> error "This should not happen"

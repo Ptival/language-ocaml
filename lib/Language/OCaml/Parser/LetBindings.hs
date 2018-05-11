@@ -6,6 +6,7 @@ import Text.Megaparsec
 import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import Language.OCaml.Parser.Common
 -- import Language.OCaml.Parser.Attributes
 import Language.OCaml.Parser.LetBinding

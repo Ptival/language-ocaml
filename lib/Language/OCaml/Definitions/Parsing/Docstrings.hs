@@ -1,3 +1,5 @@
+{-# LANGUAGE DeriveGeneric #-}
+
 module Language.OCaml.Definitions.Parsing.Docstrings
   ( Docs
   , Docstring(..)
@@ -10,6 +12,8 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , text_attr
   ) where
 
+import GHC.Generics
+
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.Definitions.Parsing.Location
 import Language.OCaml.Definitions.Parsing.ParseTree
@@ -19,6 +23,7 @@ data Ds_attached
    = Unattached   {- Not yet attached anything. -}
    | Info         {- Attached to a field or constructor. -}
    | Docs         {- Attached to an item or as floating text. -}
+  deriving (Eq, Generic, Show)
 
 {- A docstring is "associated" with an item if there are no blank lines between
    them. This is used for generating docstring ambiguity warnings. -}
@@ -26,6 +31,7 @@ data Ds_associated
   = Zero             {- Not associated with an item -}
   | One              {- Associated with one item -}
   | Many
+  deriving (Eq, Generic, Show)
 
 data Docstring = Docstring
   { ds_body       :: String
@@ -33,6 +39,7 @@ data Docstring = Docstring
   , ds_attached   :: Ds_attached
   , ds_associated :: Ds_associated
   }
+  deriving (Eq, Generic, Show)
 
 type Text = [Docstring]
 
@@ -72,6 +79,7 @@ data Docs = Docs'
   { docs_pre  :: Maybe Docstring
   , docs_post :: Maybe Docstring
   }
+  deriving (Eq, Generic, Show)
 
 add_docs_attrs :: Docs -> [(Loc String, Payload)] -> [(Loc String, Payload)]
 add_docs_attrs docs attrs =

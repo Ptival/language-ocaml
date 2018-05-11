@@ -40,6 +40,8 @@ type a =
   , "open A"
   , "open !A"
   , "open !A (* A *)"
+  -- , "let f a : t = b"
+  , "let f : t = b"
   ]
 
 unitTests :: TestTree
@@ -49,14 +51,4 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugParsing (structure_item_P structure_P) "open A"
-
-bar = debugParsing (structure_item_P structure_P) "open !A"
-
-yolo1 = debugParsing (structure_item_P structure_P) "type a = _"
-yolo2 = debugParsing (structure_item_P structure_P) "type a = 'b"
-yolo3 = debugParsing (structure_item_P structure_P) "type a = b"
-yolo4 = debugParsing (structure_item_P structure_P) "type a = | and b = |"
-
-yolo5 = debugParsing (structure_item_P structure_P) "type a_b = {c: float; d: float}"
-yolo6 = debugParsing (structure_item_P structure_P) "type a_b = C of D.e_f"
+debug n = debugParsing (structure_item_P structure_P) (structure_item_tests !! n)

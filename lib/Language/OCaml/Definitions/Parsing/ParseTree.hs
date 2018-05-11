@@ -79,7 +79,7 @@ data Core_type_desc
   -- | Ptyp_class of Longident.t Asttypes.loc * core_type list
   -- | Ptyp_alias of core_type * string
   -- | Ptyp_variant of row_field list * Asttypes.closed_flag * Asttypes.label list option
-  -- | Ptyp_poly of string Asttypes.loc list * core_type
+  | Ptyp_poly [ASTTypes.Loc String] Core_type
   -- | Ptyp_package of package_type
   -- | Ptyp_extension of extension
   deriving (Eq, Generic, Show)
@@ -229,8 +229,8 @@ data Expression_desc
   | Pexp_sequence Expression Expression
   -- | Pexp_while expression * expression
   -- | Pexp_for pattern * expression * expression * Asttypes.direction_flag * expression
-  -- | Pexp_constraint expression * core_type
-  -- | Pexp_coerce expression * core_type option * core_type
+  | Pexp_constraint Expression Core_type
+  | Pexp_coerce Expression (Maybe Core_type) Core_type
   -- | Pexp_send expression * Asttypes.label Asttypes.loc
   -- | Pexp_new Longident.t Asttypes.loc
   -- | Pexp_setinstvar Asttypes.label Asttypes.loc * expression
@@ -300,7 +300,7 @@ data Pattern_desc
   -- | Ppat_record (Longident.t Asttypes.loc * pattern) list * Asttypes.closed_flag
   -- | Ppat_array pattern list
   | Ppat_or Pattern Pattern
-  -- | Ppat_constraint pattern * core_type
+  | Ppat_constraint Pattern Core_type
   -- | Ppat_type Longident.t Asttypes.loc
   -- | Ppat_lazy pattern
   -- | Ppat_unpack string Asttypes.loc
