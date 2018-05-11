@@ -10,6 +10,14 @@ import Text.Megaparsec.String
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleCoreType
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Combinators
 
 core_type_list_P :: Parser [Core_type]
-core_type_list_P = simple_core_type_P `sepBy` star_T
+core_type_list_P = leftRecursive
+  [ (: []) <$> simple_core_type_P
+  ]
+  [ do
+    try $ star_T
+    t <- simple_core_type_P
+    return $ (:) t
+  ]

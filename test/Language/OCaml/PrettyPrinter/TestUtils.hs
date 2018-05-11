@@ -2,6 +2,7 @@ module Language.OCaml.PrettyPrinter.TestUtils
   ( DebugPrettyPrinter(..)
   , debugPrettyPrinter
   , mkPrettyPrinterTest
+  , parseAndPrettyPrint
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -39,3 +40,6 @@ debugPrettyPrinter parser printer input =
     case parseMaybe parser (show $ printer r) of
     Nothing -> NoParse2 r (printer r)
     Just r' -> Parse r r'
+
+parseAndPrettyPrint :: Parser a -> (a -> Doc a) -> String -> Maybe (Doc a)
+parseAndPrettyPrint parser printer input = printer <$> parseMaybe parser input

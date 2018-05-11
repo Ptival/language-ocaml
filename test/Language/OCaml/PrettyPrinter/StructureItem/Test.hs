@@ -40,6 +40,36 @@ type a =
   , "open A"
   , "open !A"
   , "open !A (* A *)"
+  , "module F = Format"
+  , [s|
+type a_b =
+  { foo_bar: float
+  ; bar: float }
+  |]
+  , "type c_d = {a: b; c: d}"
+  , "type e_f = G of A.b * C.d_f | H | I"
+  , "let a = b"
+  , [s|
+let some_function = function
+  | Constructor _ ->
+      Module.some_other_function
+  | OtherConstructor _ ->
+      OtherModule.other_function
+  |]
+  , [s|
+let string_of_something = function
+  | Constructor _ ->
+      "some_string"
+  |]
+  , [s|
+let multi_patterns = function
+  | Constructor1 foo_bar
+  | Constructor2 foo_bar
+  | Constructor3 foo_bar ->
+      Some foo_bar
+  | _ ->
+     None
+  |]
   ]
 
 unitTests :: TestTree
@@ -53,5 +83,6 @@ unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugPrettyPrinter (structure_item_P structure_P) structure_item_PP
-      "type a = A | B"
+foo n =
+  parseAndPrettyPrint (structure_item_P structure_P) structure_item_PP
+  (structure_item_tests !! n)

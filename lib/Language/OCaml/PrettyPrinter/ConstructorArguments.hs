@@ -15,7 +15,7 @@ constructor_arguments_PP = \case
   Pcstr_tuple l -> case l of
     []  -> ""
     [x] -> fillSep [ "of", pretty x ]
-    _   -> fillSep [ "of", encloseSep lparen rparen "YO" (map pretty l) ]
+    _   -> fillSep [ "of", encloseSep "" "" " * " (map pretty l) ]
 
 instance Pretty Constructor_arguments where
   pretty = constructor_arguments_PP

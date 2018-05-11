@@ -106,20 +106,31 @@ Library
                  Language.OCaml.Parser.Utils.Utils
                  Language.OCaml.Parser.ValIdent
                  Language.OCaml.Parser.ValLongident
+                 Language.OCaml.PrettyPrinter.ArgLabel
+                 Language.OCaml.PrettyPrinter.Case
+                 Language.OCaml.PrettyPrinter.Constant
                  Language.OCaml.PrettyPrinter.ConstructorArguments
                  Language.OCaml.PrettyPrinter.ConstructorDeclaration
                  Language.OCaml.PrettyPrinter.CoreType
                  Language.OCaml.PrettyPrinter.CoreTypeDesc
+                 Language.OCaml.PrettyPrinter.Expression
+                 Language.OCaml.PrettyPrinter.ExpressionDesc
                  Language.OCaml.PrettyPrinter.LabelDeclaration
                  Language.OCaml.PrettyPrinter.Loc
                  Language.OCaml.PrettyPrinter.Longident
+                 Language.OCaml.PrettyPrinter.ModuleBinding
+                 Language.OCaml.PrettyPrinter.ModuleExpr
+                 Language.OCaml.PrettyPrinter.ModuleExprDesc
                  Language.OCaml.PrettyPrinter.MutableFlag
                  Language.OCaml.PrettyPrinter.OpenDescription
                  Language.OCaml.PrettyPrinter.OverrideFlag
+                 Language.OCaml.PrettyPrinter.Pattern
+                 Language.OCaml.PrettyPrinter.PatternDesc
                  Language.OCaml.PrettyPrinter.Structure
                  Language.OCaml.PrettyPrinter.StructureItem
                  Language.OCaml.PrettyPrinter.StructureItemDesc
                  Language.OCaml.PrettyPrinter.TypeDeclaration
+                 Language.OCaml.PrettyPrinter.ValueBinding
 
 Test-suite Test
   default-language: Haskell2010
@@ -150,3 +161,5 @@ Test-suite Test
                  Language.OCaml.Parser.Tokens.Test
                  Language.OCaml.Parser.ValIdent.Test
                  Language.OCaml.Parser.ValLongident.Test
+                 Language.OCaml.PrettyPrinter.StructureItem.Test
+                 Language.OCaml.PrettyPrinter.TestUtils
