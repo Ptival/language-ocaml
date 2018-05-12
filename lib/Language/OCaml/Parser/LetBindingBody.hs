@@ -13,18 +13,17 @@ import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.CoreType
 import Language.OCaml.Parser.FunBinding
 import Language.OCaml.Parser.PatternNoExn
-import Language.OCaml.Parser.SeqExpr
 import Language.OCaml.Parser.SimplePatternNotIdent
 import Language.OCaml.Parser.StrictBinding
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.TypeConstraint
 import Language.OCaml.Parser.ValIdent
 
-let_binding_body_P :: Parser (Pattern, Expression)
-let_binding_body_P = choice
+let_binding_body_P :: Parser Expression -> Parser (Pattern, Expression)
+let_binding_body_P seq_expr_P = choice
   [ try $ do
     i <- val_ident_P
-    b <- strict_binding_P fun_binding_P
+    b <- strict_binding_P seq_expr_P (fun_binding_P seq_expr_P)
     return (mkpatvar i 1, b)
   , do
     (i, c) <- try $ do

@@ -42,6 +42,7 @@ type a =
   , "open !A (* A *)"
   -- , "let f a : t = b"
   , "let f : t = b"
+  , "let a = let b = c in d"
   ]
 
 unitTests :: TestTree

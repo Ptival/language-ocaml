@@ -19,21 +19,32 @@ module Language.OCaml.Parser.Internal
   , val_longident_P
   ) where
 
-import Language.OCaml.Parser.Common
-import Language.OCaml.Parser.ConstrIdent
-import Language.OCaml.Parser.ConstrLongident
-import Language.OCaml.Parser.Expr
-import Language.OCaml.Parser.Implementation
-import Language.OCaml.Parser.LetBinding
-import Language.OCaml.Parser.MatchCase
-import Language.OCaml.Parser.ModLongident
-import Language.OCaml.Parser.OpenStatement
-import Language.OCaml.Parser.Pattern
-import Language.OCaml.Parser.SeqExpr
-import Language.OCaml.Parser.SimpleExpr
-import Language.OCaml.Parser.SimplePattern
-import Language.OCaml.Parser.Structure
-import Language.OCaml.Parser.StructureItem
-import Language.OCaml.Parser.Tokens
-import Language.OCaml.Parser.ValIdent
-import Language.OCaml.Parser.ValLongident
+import           Text.Megaparsec.String
+
+import           Language.OCaml.Definitions.Parsing.ParseTree
+import           Language.OCaml.Parser.Common
+import           Language.OCaml.Parser.ConstrIdent
+import           Language.OCaml.Parser.ConstrLongident
+import qualified Language.OCaml.Parser.Expr
+import           Language.OCaml.Parser.Implementation
+import           Language.OCaml.Parser.LetBinding
+import           Language.OCaml.Parser.MatchCase
+import           Language.OCaml.Parser.ModLongident
+import           Language.OCaml.Parser.OpenStatement
+import           Language.OCaml.Parser.Pattern
+import qualified Language.OCaml.Parser.SeqExpr
+import           Language.OCaml.Parser.SimpleExpr
+import           Language.OCaml.Parser.SimplePattern
+import           Language.OCaml.Parser.Structure
+import           Language.OCaml.Parser.StructureItem
+import           Language.OCaml.Parser.Tokens
+import           Language.OCaml.Parser.ValIdent
+import           Language.OCaml.Parser.ValLongident
+
+-- Wrapping the mutual recursion plumbing!
+
+expr_P :: Parser Expression
+expr_P = Language.OCaml.Parser.Expr.expr_P structure_P seq_expr_P
+
+seq_expr_P :: Parser Expression
+seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P

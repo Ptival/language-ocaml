@@ -19,11 +19,12 @@ expr_tests =
   , "function a -> Foo.bar_baz"
   , "function Foo _ -> b"
   , [s|function Foo _ -> "some_stuff"|]
+  , "let a = b in c"
   ]
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
-  ++ map (mkParsingTest "expr_P" (expr_P seq_expr_P)) expr_tests
+  ++ map (mkParsingTest "expr_P" expr_P) expr_tests
 
 test :: IO ()
 test = defaultMain unitTests

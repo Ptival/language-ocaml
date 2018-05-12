@@ -11,6 +11,7 @@ module Language.OCaml.Parser.Tokens
   , equal_T
   , false_T
   , function_T
+  , in_T
   , int_T
   , l_brace_T
   , l_bracket_T
@@ -123,6 +124,9 @@ int_literal_P = choice
   , oct_literal_P
   , bin_literal_P
   ]
+
+in_T :: Parser ()
+in_T = rword "in"
 
 int_T :: Parser (String, Maybe Char)
 int_T = do

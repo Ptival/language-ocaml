@@ -15,14 +15,14 @@ import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 
-let_bindings_P :: Parser Structure -> Parser Let_bindings
-let_bindings_P structure_P = leftRecursive
-  [ let_binding_P structure_P
+let_bindings_P :: Parser Structure -> Parser Expression -> Parser Let_bindings
+let_bindings_P structure_P seq_expr_P = leftRecursive
+  [ let_binding_P structure_P seq_expr_P
   ]
   [ do
     try $ and_T
     -- a <- attributes_P
-    b <- let_binding_body_P
+    b <- let_binding_body_P seq_expr_P
     p <- post_item_attributes_P structure_P
     return $ \ x -> addlb x (mklb False b []) -- FIXME
   ]

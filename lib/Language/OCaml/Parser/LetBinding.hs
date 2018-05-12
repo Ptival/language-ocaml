@@ -16,11 +16,11 @@ import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.RecFlag
 import Language.OCaml.Parser.Tokens
 
-let_binding_P :: Parser Structure -> Parser Let_bindings
-let_binding_P structure_P = do
+let_binding_P :: Parser Structure -> Parser Expression -> Parser Let_bindings
+let_binding_P structure_P seq_expr_P = do
   try let_T
   -- TODO: ext_attributes
   r <- rec_flag_P
-  b <- let_binding_body_P
+  b <- let_binding_body_P seq_expr_P
   a <- post_item_attributes_P structure_P
   return $ mklbs Nothing r (mklb True b []) -- FIXME

@@ -10,11 +10,12 @@ import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.LetBindings
 import Language.OCaml.Parser.ModuleBinding
 import Language.OCaml.Parser.OpenStatement
+import Language.OCaml.Parser.SeqExpr
 import Language.OCaml.Parser.TypeDeclarations
 
 structure_item_P :: Parser Structure -> Parser Structure_item
 structure_item_P structure_P = choice
-  [ val_of_let_bindings <$> let_bindings_P structure_P
+  [ val_of_let_bindings <$> let_bindings_P structure_P (seq_expr_P structure_P)
   , do
     (nr, l) <- type_declarations_P structure_P
     return $ mkstr_ext (Pstr_type nr (reverse l)) Nothing -- FIXME: not Nothing

@@ -18,7 +18,7 @@ import Language.OCaml.Parser.Utils.Utils
 structure_P :: Parser Structure
 structure_P = ocamlSpace *> choice
   [ do
-    e <- seq_expr_P
+    e <- seq_expr_P structure_P
     a <- post_item_attributes_P structure_P
     s <- structure_tail_P
     return $ text_str 1 ++ mkstrexp e a : s

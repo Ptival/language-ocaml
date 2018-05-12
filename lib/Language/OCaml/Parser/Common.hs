@@ -1,6 +1,7 @@
 module Language.OCaml.Parser.Common
   ( addlb
   , caseExp
+  , expr_of_let_bindings
   , ghexp
   , ghpat
   , ghtyp
@@ -235,6 +236,22 @@ val_of_let_bindings lbs =
   case lbs_extension lbs of
     Nothing -> str
     Just i  -> ghstr $ Pstr_extension (i, PStr [str]) []
+
+expr_of_let_bindings :: Let_bindings -> Expression -> Expression
+expr_of_let_bindings lbs body =
+  let bindings =
+        map
+        (\ lb -> mkVb
+                    (Just $ lb_loc lb)
+                    (Just $ lb_attributes lb)
+                    Nothing
+                    Nothing
+                    (lb_pattern lb)
+                    (lb_expression lb)
+        )
+        (lbs_bindings lbs)
+  in
+  mkexp_attrs (Pexp_let (lbs_rec lbs) (reverse bindings) body) (lbs_extension lbs, [])
 
 wrap_exp_attrs :: Expression -> (Maybe (ASTTypes.Loc String), [Attribute]) -> Expression
 wrap_exp_attrs body (ext, attrs) =

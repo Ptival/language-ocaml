@@ -12,17 +12,20 @@ import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Expr
 import Language.OCaml.Parser.Tokens
 
-seq_expr_P :: Parser Expression
-seq_expr_P = choice
+seq_expr_P :: Parser Structure -> Parser Expression
+seq_expr_P structure_P = choice
   [ try $ do
-    e <- expr_P seq_expr_P
+    e <- expr_P'
     semi_T
-    s <- seq_expr_P
+    s <- seq_expr_P'
     return $ mkExp Nothing Nothing (Pexp_sequence e s)
   , try $ do
-    e <- expr_P seq_expr_P
+    e <- expr_P'
     semi_T
     return e
-  , expr_P seq_expr_P
+  , expr_P'
   -- TODO: percent
   ]
+  where
+    expr_P' = expr_P structure_P seq_expr_P'
+    seq_expr_P' = seq_expr_P structure_P
