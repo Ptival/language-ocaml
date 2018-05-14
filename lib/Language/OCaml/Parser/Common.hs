@@ -21,6 +21,8 @@ module Language.OCaml.Parser.Common
   , mkpat
   , mkpatvar
   , mkRHS
+  , mkStr
+  , mkstr
   , mkstr_ext
   , mkstrexp
   , mkTyp
