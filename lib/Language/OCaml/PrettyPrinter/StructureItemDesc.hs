@@ -8,6 +8,7 @@ module Language.OCaml.PrettyPrinter.StructureItemDesc
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.PrettyPrinter.Expression ()
 import Language.OCaml.PrettyPrinter.ModuleBinding ()
 import Language.OCaml.PrettyPrinter.OpenDescription ()
 import Language.OCaml.PrettyPrinter.TypeDeclaration ()
@@ -18,7 +19,7 @@ structure_item_desc_PP = \case
   Pstr_eval _e _a -> error "TODO"
   Pstr_value r l -> case l of
     []  -> error "?"
-    h:t -> vcat $ fillSep [ "let", pretty h ]
+    h:t -> vcat $ fillCat [ "let ", pretty r, pretty h ]
                     : map ((\ d -> fillSep [ "\nand", d ]) . pretty) t
   Pstr_type _r l -> case l of
     []  -> error "?"

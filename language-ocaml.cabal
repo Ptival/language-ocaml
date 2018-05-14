@@ -1,5 +1,5 @@
 Name:                language-ocaml
-Version:             0.1.4
+Version:             0.1.6
 Synopsis:            Language tools for OCaml, in Haskell
 Description:         Language tools for OCaml, in Haskell
 License:             MIT
@@ -132,6 +132,7 @@ Library
                    Language.OCaml.PrettyPrinter.OverrideFlag
                    Language.OCaml.PrettyPrinter.Pattern
                    Language.OCaml.PrettyPrinter.PatternDesc
+                   Language.OCaml.PrettyPrinter.RecFlag
                    Language.OCaml.PrettyPrinter.Structure
                    Language.OCaml.PrettyPrinter.StructureItem
                    Language.OCaml.PrettyPrinter.StructureItemDesc

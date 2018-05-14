@@ -70,6 +70,10 @@ let multi_patterns = function
   | _ ->
      None
   |]
+  , [s|
+let rec f =
+  let a = b in c
+  |]
   ]
 
 unitTests :: TestTree
@@ -83,6 +87,7 @@ unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo n =
+foo =
   parseAndPrettyPrint (structure_item_P structure_P) structure_item_PP
-  (structure_item_tests !! n)
+  "let rec f = let a = b in c"
+  --(structure_item_tests !! n)

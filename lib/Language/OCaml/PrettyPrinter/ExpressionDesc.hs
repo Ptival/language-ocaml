@@ -15,12 +15,17 @@ import Language.OCaml.PrettyPrinter.Case ()
 import Language.OCaml.PrettyPrinter.Constant ()
 import Language.OCaml.PrettyPrinter.Loc ()
 import Language.OCaml.PrettyPrinter.Longident ()
+import Language.OCaml.PrettyPrinter.RecFlag ()
+import Language.OCaml.PrettyPrinter.ValueBinding ()
 
 expression_desc_PP :: (Pretty Expression) => Expression_desc -> Doc a
 expression_desc_PP = \case
   Pexp_ident i -> pretty i
   Pexp_constant c -> pretty c
-  Pexp_let r l e -> error "TODO"
+  Pexp_let r l e -> case l of
+    []  -> error "TODO"
+    [x] -> fillCat [ "let ", pretty r, pretty x, " in ", pretty e ]
+    _   -> error "TODO"
   Pexp_function l -> case l of
     []  -> error "TODO"
     [x] -> fillSep [ "function", pretty x ]
