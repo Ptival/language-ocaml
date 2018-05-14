@@ -1,5 +1,5 @@
 Name:                language-ocaml
-Version:             0.1.1
+Version:             0.1.2
 Synopsis:            Language tools for OCaml, in Haskell
 Description:         Language tools for OCaml, in Haskell
 License:             MIT
@@ -26,7 +26,8 @@ Library
                  string-qq                 >= 0.0   && < 0.1,
                  tasty                     >= 0.11  && < 0.12,
                  tasty-hunit               >= 0.9   && < 0.10
-  exposed-modules: Language.OCaml.Definitions.Parsing.ASTTypes
+  exposed-modules: Language.OCaml.Parser.Common
+                   Language.OCaml.Definitions.Parsing.ASTTypes
                    Language.OCaml.Definitions.Parsing.ParseTree
                    Language.OCaml.Parser
                    Language.OCaml.Parser.Internal
@@ -41,7 +42,6 @@ Library
                    Language.OCaml.Parser.AndTypeDeclaration
                    Language.OCaml.Parser.AttrId
                    Language.OCaml.Parser.BarConstructorDeclaration
-                   Language.OCaml.Parser.Common
                    Language.OCaml.Parser.Constant
                    Language.OCaml.Parser.ConstrIdent
                    Language.OCaml.Parser.ConstrLongident
