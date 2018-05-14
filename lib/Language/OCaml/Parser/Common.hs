@@ -27,6 +27,7 @@ module Language.OCaml.Parser.Common
   , mkstrexp
   , mkTyp
   , mkType
+  , mkVb
   , text_str
   , val_of_let_bindings
   ) where

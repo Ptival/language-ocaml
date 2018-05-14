@@ -1,5 +1,5 @@
 Name:                language-ocaml
-Version:             0.1.3
+Version:             0.1.4
 Synopsis:            Language tools for OCaml, in Haskell
 Description:         Language tools for OCaml, in Haskell
 License:             MIT
