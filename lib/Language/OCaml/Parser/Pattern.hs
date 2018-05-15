@@ -10,28 +10,29 @@ import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
-import Language.OCaml.Parser.PatternCommaList
 import Language.OCaml.Parser.PatternGen
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.ValIdent
 import Language.OCaml.Parser.Utils.Combinators
 
 pattern_P :: Parser Pattern
-pattern_P = leftRecursive
-  [ pattern_gen_P pattern_P
-  -- , do
-  --   l <- pattern_comma_list_P pattern_P
-  --   return $ mkpat $ Ppat_tuple (reverse l)
+pattern_P = choice
+  [ try $ p <* notFollowedBy comma_T
+  , mkpat. Ppat_tuple . reverse <$>
+    chainl1' p (comma_T *> (return $ flip (:))) (: [])
   ]
-  [
-    do
-    try $ as_T
-    i <- val_ident_P
-    return $ \ x -> mkpat $ Ppat_alias x (mkRHS i 3)
-  -- TODO: pattern COLONCOLON pattern
-  , do
-    try $ bar_T
-    p <- pattern_P
-    return $ \ x -> mkpat $ Ppat_or x p
-  -- TODO: bunch of other patterns
-  ]
+  where
+    p = leftRecursive
+      [ pattern_gen_P pattern_P
+      ]
+      [ do
+        try $ as_T
+        i <- val_ident_P
+        return $ \ x -> mkpat $ Ppat_alias x (mkRHS i 3)
+      -- TODO: pattern COLONCOLON pattern
+      , do
+        try $ bar_T
+        p <- pattern_P
+        return $ \ x -> mkpat $ Ppat_or x p
+      -- TODO: bunch of other patterns
+      ]

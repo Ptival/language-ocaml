@@ -1,5 +1,5 @@
 Name:                language-ocaml
-Version:             0.1.9
+Version:             0.1.10
 Synopsis:            Language tools for OCaml, in Haskell
 Description:         Language tools for OCaml, in Haskell
 License:             MIT
@@ -80,7 +80,6 @@ Library
                    Language.OCaml.Parser.Operator
                    Language.OCaml.Parser.OptBar
                    Language.OCaml.Parser.Override_flag
-                   Language.OCaml.Parser.PatternCommaList
                    Language.OCaml.Parser.Pattern
                    Language.OCaml.Parser.PatternGen
                    Language.OCaml.Parser.PatternNoExn

@@ -19,6 +19,8 @@ pattern_tests =
   , "A B"
   , "A _"
   , "A _ | B _"
+  , "_, _"
+  , "A _, B _"
   ]
 
 unitTests :: TestTree
