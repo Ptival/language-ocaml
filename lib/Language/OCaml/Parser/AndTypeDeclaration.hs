@@ -1,9 +1,12 @@
 {-# OPTIONS_GHC -fno-warn-type-defaults #-}
 
+{-# LANGUAGE NamedFieldPuns #-}
+
 module Language.OCaml.Parser.AndTypeDeclaration
   ( and_type_declaration_P
   ) where
 
+import Data.Default
 import Text.Megaparsec
 import Text.Megaparsec.String
 
@@ -22,4 +25,4 @@ and_type_declaration_P structure_P = do
   (kind, priv, manifest) <- type_kind_P
   -- TODO: constraints
   _a <- post_item_attributes_P structure_P -- FIXME: use me
-  return $ mkType [] [] kind priv manifest (mkRHS i 4) -- FIXME: [] and []
+  return $ mkType (def { kind, priv }) manifest (mkRHS i 4) -- FIXME: [] and []

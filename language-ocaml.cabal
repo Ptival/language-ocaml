@@ -1,5 +1,5 @@
 Name:                language-ocaml
-Version:             0.1.7
+Version:             0.1.8
 Synopsis:            Language tools for OCaml, in Haskell
 Description:         Language tools for OCaml, in Haskell
 License:             MIT
@@ -21,6 +21,7 @@ Library
   hs-source-dirs:   lib, test
   pkgconfig-depends: zlib
   build-depends: base                      >= 4.0   && < 4.10,
+                 data-default              >= 0.7   && < 0.8,
                  megaparsec                >= 5.0   && < 5.4,
                  prettyprinter             >= 1.2   && < 1.3,
                  string-qq                 >= 0.0   && < 0.1,
@@ -53,6 +54,7 @@ Library
                    Language.OCaml.Parser.CoreTypeList
                    Language.OCaml.Parser.CoreTypeNoAttr
                    Language.OCaml.Parser.Expr
+                   Language.OCaml.Parser.ExprCommaList
                    Language.OCaml.Parser.FunBinding
                    Language.OCaml.Parser.GeneralizedConstructorArguments
                    Language.OCaml.Parser.Implementation

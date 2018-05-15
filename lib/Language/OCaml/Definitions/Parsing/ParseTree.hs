@@ -101,8 +101,8 @@ data Type_declaration = Type_declaration
   , ptype_kind :: Type_kind
   , ptype_private :: Private_flag
   , ptype_manifest :: Maybe Core_type
-  --, ptype_attributes :: attributes
-  --, ptype_loc :: Location.t
+  , ptype_attributes :: Attributes
+  , ptype_loc :: Location
   }
   deriving (Eq, Generic, Show)
 

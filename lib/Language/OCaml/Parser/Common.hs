@@ -1,5 +1,8 @@
+{-# LANGUAGE RecordWildCards #-}
+
 module Language.OCaml.Parser.Common
-  ( addlb
+  ( MkTypeOpts(..)
+  , addlb
   , caseExp
   , expr_of_let_bindings
   , ghexp
@@ -32,6 +35,7 @@ module Language.OCaml.Parser.Common
   , val_of_let_bindings
   ) where
 
+import           Data.Default
 import           Data.Maybe
 import           Text.Megaparsec
 import           Text.Megaparsec.String
@@ -90,24 +94,40 @@ caseExp lhs guard rhs = Case
   , pc_rhs   = rhs
   }
 
-mkType ::
-  [(Core_type, Variance)] ->
-  [(Core_type, Core_type, Location)] ->
-  Type_kind ->
-  Private_flag ->
-  Maybe Core_type ->
-  ASTTypes.Loc String ->
+data MkTypeOpts = MkTypeOpts
+  { attrs  :: [Attribute]
+  , docs   :: ()
+  , cstrs  :: [(Core_type, Core_type, Location)]
+  , kind   :: Type_kind
+  , loc    :: Location
+  , params :: [(Core_type, Variance)]
+  , priv   :: Private_flag
+  , text   :: ()
+  }
+
+instance Default MkTypeOpts where
+  def = MkTypeOpts
+    { attrs  = []
+    , cstrs  = []
+    , docs   = () -- FIXME
+    , kind   = Ptype_abstract
+    , loc    = default_loc
+    , params = []
+    , priv   = Public
+    , text   = () -- FIXME
+    }
+
+mkType :: MkTypeOpts -> Maybe Core_type -> ASTTypes.Loc String -> Type_declaration
+mkType (MkTypeOpts {..}) manifest name =
   Type_declaration
-mkType {- loc attrs docs text -} params cstrs kind priv manifest name =
-  Type_declaration
-  { ptype_name     = name
-  , ptype_params   = params
-  , ptype_cstrs    = cstrs
-  , ptype_kind     = kind
-  , ptype_private  = priv
-  , ptype_manifest = manifest
-  --, ptype_attributes :: attributes
-  --, ptype_loc :: Location.t
+  { ptype_name       = name
+  , ptype_params     = params
+  , ptype_cstrs      = cstrs
+  , ptype_kind       = kind
+  , ptype_private    = priv
+  , ptype_manifest   = manifest
+  , ptype_attributes = attrs
+  , ptype_loc        = loc
   }
 
 mkOpn ::

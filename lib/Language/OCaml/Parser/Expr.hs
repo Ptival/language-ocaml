@@ -9,6 +9,7 @@ import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
+import Language.OCaml.Parser.ExprCommaList
 import Language.OCaml.Parser.LetBindings
 import Language.OCaml.Parser.MatchCases
 import Language.OCaml.Parser.OptBar
@@ -36,4 +37,9 @@ expr_P structure_P seq_expr_P = choice
     opt_bar_P
     l <- match_cases_P seq_expr_P
     return $ mkexp_attrs (Pexp_function (reverse l)) (Nothing, []) -- FIXME
+  -- , do
+  --   l <- expr_comma_list_P expr_P'
+  --   return $ mkexp $ Pexp_tuple (reverse l)
   ]
+  where
+    expr_P' = expr_P structure_P seq_expr_P

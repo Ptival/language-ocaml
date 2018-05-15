@@ -13,7 +13,7 @@ import           Language.OCaml.Parser.Utils.Combinators
 type_declarations_P :: Parser Structure -> Parser (ASTTypes.Rec_flag, [Type_declaration])
 type_declarations_P structure_P = leftRecursive
   [ do
-    (nonrec_flag, ty) <- type_declaration_P
+    (nonrec_flag, ty) <- type_declaration_P structure_P
     return $ (nonrec_flag, [ty])
   ]
   [ do

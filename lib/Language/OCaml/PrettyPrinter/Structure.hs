@@ -8,8 +8,6 @@ module Language.OCaml.PrettyPrinter.Structure
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.Parser.Structure
--- import Language.OCaml.Parser.Utils.Utils
 import Language.OCaml.PrettyPrinter.StructureItem ()
 
 structure_PP :: Structure -> Doc a
