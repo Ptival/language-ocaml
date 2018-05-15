@@ -20,7 +20,9 @@ expr_tests =
   , "function Foo _ -> b"
   , [s|function Foo _ -> "some_stuff"|]
   , "let a = b in c"
-  -- , "a, b"
+  , "a"
+  , "a, b"
+  , "a, b, c"
   ]
 
 unitTests :: TestTree
@@ -30,4 +32,4 @@ unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugParsing expr_P "a, b"
+bar = debugParsing expr_P "a, b, c"
