@@ -46,28 +46,26 @@ type a = | A | B | C
 -- 				in
 -- 				if is_simple then "(" ^ fun_str ^ ")" else fun_str
 --   |]
---   , [s|
--- open Lexing
--- open Ast
--- open Env
---
--- type tconstantc_module = TCModule of tfdec list
--- [@@deriving show, eq]
---
--- and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
--- [@@deriving show, eq]
--- and tfdec = tfdec' pos_ast [@@deriving show, eq]
---
--- and tstm' =
---   | TVarDec of string * labeled_type * texpr
---   | TAssign of string * texpr
---   | TArrAssign of string * texpr * texpr
---   | TIf of texpr * tblock * tblock
---   | TFor of string * ctype * texpr * texpr * tblock
---   | TReturn of texpr
--- [@@deriving show, eq]
--- and tstm = tstm' pos_ast [@@deriving show, eq]
---   |]
+  , [s|
+open Lexing
+open Ast
+open Env
+
+type tconstantc_module = TCModule of tfdec list
+[@@deriving show, eq]
+and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
+[@@deriving show, eq]
+and tfdec = tfdec' pos_ast [@@deriving show, eq]
+and tstm' =
+  | TVarDec of string * labeled_type * texpr
+  | TAssign of string * texpr
+  | TArrAssign of string * texpr * texpr
+  | TIf of texpr * tblock * tblock
+  | TFor of string * ctype * texpr * texpr * tblock
+  | TReturn of texpr
+[@@deriving show, eq]
+and tstm = tstm' pos_ast [@@deriving show, eq]
+  |]
   ]
 
 unitTests :: TestTree
