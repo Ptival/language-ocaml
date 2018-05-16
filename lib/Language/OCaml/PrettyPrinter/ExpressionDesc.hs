@@ -30,9 +30,15 @@ expression_desc_PP = \case
     []  -> error "TODO"
     [x] -> fillSep [ "function", pretty x ]
     _   -> fillSep [ "function", nest 2 $ line <> (vcat $ map pretty l) ]
-  Pexp_apply e l -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l -- FIXME: lbl
+  Pexp_apply e l ->
+    case (pexp_desc e, l) of
+    {- Pairs that appear naked (without parentheses) give rise to Pexp_tuple
+       whereas pairs that appear parenthesized show up as Pexp_apply of
+       Pexp_tuple to [].  We display them back accordingly. -}
+    (e'@(Pexp_tuple _), []) -> fillCat [ lparen, expression_desc_PP e', rparen ]
+    (_, _)                  -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l -- FIXME: lbl
   Pexp_match e l -> error "TODO"
-  Pexp_tuple l -> encloseSep lparen rparen comma (map pretty l)
+  Pexp_tuple l -> encloseSep "" "" comma (map pretty l)
   Pexp_construct i e -> fillSep [ pretty i, pretty e ]
   Pexp_field e i -> error "TODO"
   Pexp_ifthenelse e1 e2 e3 -> error "TODO"

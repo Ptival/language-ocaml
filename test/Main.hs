@@ -21,6 +21,7 @@ import qualified Language.OCaml.Parser.Tokens.Test
 import qualified Language.OCaml.Parser.ValIdent.Test
 import qualified Language.OCaml.Parser.ValLongident.Test
 import qualified Language.OCaml.PrettyPrinter.StructureItem.Test
+import qualified Language.OCaml.PrettyPrinter.Structure.Test
 
 main :: IO ()
 main = defaultMain tests
@@ -47,6 +48,7 @@ tests = testGroup "Tests" $ []
        ]
      ]
   ++ [ testGroup "PrettyPrinter" $
-       [ Language.OCaml.PrettyPrinter.StructureItem.Test.unitTests
+       [ Language.OCaml.PrettyPrinter.Structure.Test.unitTests
+       , Language.OCaml.PrettyPrinter.StructureItem.Test.unitTests
        ]
      ]

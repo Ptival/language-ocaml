@@ -1,5 +1,5 @@
 Name:          language-ocaml
-Version:       0.1.11
+Version:       0.1.12
 Synopsis:      Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 Description:   Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 License:       MIT
@@ -169,5 +169,6 @@ Test-suite Test
                    Language.OCaml.Parser.Tokens.Test
                    Language.OCaml.Parser.ValIdent.Test
                    Language.OCaml.Parser.ValLongident.Test
+                   Language.OCaml.PrettyPrinter.Structure.Test
                    Language.OCaml.PrettyPrinter.StructureItem.Test
                    Language.OCaml.PrettyPrinter.TestUtils

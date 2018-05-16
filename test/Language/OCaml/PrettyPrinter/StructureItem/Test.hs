@@ -81,33 +81,6 @@ let rec f =
   let a = b in c
   |]
 
---   , [s|
--- type tconstantc_module =
---   | TCModule of tfdec list
--- [@@ deriving (eq,show) ]
---   |]
-
---   , [s|
--- open Lexing
--- open Ast
--- open Env
-
--- type tconstantc_module = TCModule of tfdec list
--- [@@deriving show, eq]
--- and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
--- [@@deriving show, eq]
--- and tfdec = tfdec' pos_ast [@@deriving show, eq]
--- and tstm' =
---   | TVarDec of string * labeled_type * texpr
---   | TAssign of string * texpr
---   | TArrAssign of string * texpr * texpr
---   | TIf of texpr * tblock * tblock
---   | TFor of string * ctype * texpr * texpr * tblock
---   | TReturn of texpr
--- [@@deriving show, eq]
--- and tstm = tstm' pos_ast [@@deriving show, eq]
---   |]
-
   ]
 
 unitTests :: TestTree
@@ -120,26 +93,3 @@ unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
 
 test :: IO ()
 test = defaultMain unitTests
-
-foo =
-  debugPrettyPrinter structure_P (vcat . map structure_item_PP) --(_ structure_item_PP)
-  [s|
-open Lexing
-open Ast
-open Env
-
-type tconstantc_module = TCModule of tfdec list
-[@@deriving show, eq]
-and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
-[@@deriving show, eq]
-and tfdec = tfdec' pos_ast [@@deriving show, eq]
-and tstm' =
-  | TVarDec of string * labeled_type * texpr
-  | TAssign of string * texpr
-  | TArrAssign of string * texpr * texpr
-  | TIf of texpr * tblock * tblock
-  | TFor of string * ctype * texpr * texpr * tblock
-  | TReturn of texpr
-[@@deriving show, eq]
-and tstm = tstm' pos_ast [@@deriving show, eq]
-  |]

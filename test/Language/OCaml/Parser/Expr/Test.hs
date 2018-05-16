@@ -23,6 +23,7 @@ expr_tests =
   , "a"
   , "a, b"
   , "a, b, c"
+  , "(a, b, c)"
   ]
 
 unitTests :: TestTree
@@ -32,4 +33,5 @@ unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-bar = debugParsing expr_P "a, b, c"
+foo = debugParsing expr_P "a, b, c"
+bar = debugParsing expr_P "(a, b, c)"

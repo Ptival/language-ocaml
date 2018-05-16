@@ -22,7 +22,7 @@ import Language.OCaml.PrettyPrinter ()
 expr_P :: Parser Structure -> Parser Expression -> Parser Expression
 expr_P structure_P seq_expr_P = choice
   [ try $ p <* notFollowedBy comma_T
-  , mkexp . Pexp_tuple <$>
+  , mkexp . Pexp_tuple . reverse <$>
     chainl1' p (comma_T *> (return $ flip (:))) (: [])
   ]
   where

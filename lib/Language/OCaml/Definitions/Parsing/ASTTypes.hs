@@ -25,7 +25,10 @@ data Loc a = Loc
   { txt :: a
   , loc :: Location
   }
-  deriving (Eq, Generic, Show)
+  deriving (Generic, Show)
+
+instance Eq a => Eq (Loc a) where
+  a == b = txt a == txt b
 
 data Override_flag
   = Override

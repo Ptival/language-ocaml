@@ -3,6 +3,8 @@ module Language.OCaml.PrettyPrinter.TestUtils
   , debugPrettyPrinter
   , mkPrettyPrinterTest
   , parseAndPrettyPrint
+  , parseMaybe
+  , roundtrip
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -28,8 +30,22 @@ mkPrettyPrinterTest name parser printer input =
 data DebugPrettyPrinter a b
   = NoParse1
   | NoParse2 a (Doc b)
-  | Parse a a
-  deriving (Show)
+  | ParseDiff a a
+  | ParseEq a
+
+instance (Show a) => Show (DebugPrettyPrinter a b) where
+  show NoParse1 = "The input did not parse correctly"
+  show (NoParse2 a d) =
+    "The input parsed correctly, but its pretty-printed version did not parse\n"
+    ++ show a ++ "\n"
+    ++ show d ++ "\n"
+  show (ParseDiff a b) =
+    "The input parsed correctly, but its re-parse differs from it\n"
+    ++ show a ++ "\n"
+    ++ show b ++ "\n"
+  show (ParseEq a) =
+    "The input parsed correctly, and its re-parse matches\n"
+    ++ show a ++ "\n"
 
 debugPrettyPrinter ::
   (Eq a) => Parser a -> (a -> Doc b) -> String -> DebugPrettyPrinter a b
@@ -39,7 +55,10 @@ debugPrettyPrinter parser printer input =
   Just r ->
     case parseMaybe parser (show $ printer r) of
     Nothing -> NoParse2 r (printer r)
-    Just r' -> Parse r r'
+    Just r' -> if r == r' then ParseEq r' else ParseDiff r r'
 
 parseAndPrettyPrint :: Parser a -> (a -> Doc b) -> String -> Maybe (Doc b)
 parseAndPrettyPrint parser printer input = printer <$> parseMaybe parser input
+
+roundtrip :: Parser a -> (a -> Doc b) -> String -> Maybe String
+roundtrip p pp s = (show . pp) <$> parseMaybe p s

@@ -18,6 +18,7 @@ simple_expr_tests =
   , "Foo.Bar"
   , "Foo.bar"
   , "(foo)"
+  , "(foo, bar)"
   ]
 
 unitTests :: TestTree
