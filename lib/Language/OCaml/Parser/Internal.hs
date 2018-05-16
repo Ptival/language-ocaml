@@ -33,7 +33,7 @@ import           Language.OCaml.Parser.ModLongident
 import           Language.OCaml.Parser.OpenStatement
 import           Language.OCaml.Parser.Pattern
 import qualified Language.OCaml.Parser.SeqExpr
-import           Language.OCaml.Parser.SimpleExpr
+import qualified Language.OCaml.Parser.SimpleExpr
 import           Language.OCaml.Parser.SimplePattern
 import           Language.OCaml.Parser.Structure
 import           Language.OCaml.Parser.StructureItem
@@ -41,10 +41,13 @@ import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.ValIdent
 import           Language.OCaml.Parser.ValLongident
 
--- Wrapping the mutual recursion plumbing!
+-- Tying the knots for our clients!
 
 expr_P :: Parser Expression
 expr_P = Language.OCaml.Parser.Expr.expr_P structure_P seq_expr_P
 
 seq_expr_P :: Parser Expression
 seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P
+
+simple_expr_P :: Parser Expression
+simple_expr_P = Language.OCaml.Parser.SimpleExpr.simple_expr_P seq_expr_P

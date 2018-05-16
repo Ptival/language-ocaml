@@ -16,8 +16,8 @@ import Language.OCaml.Parser.ValLongident
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 
-simple_expr_P :: Parser Expression
-simple_expr_P = leftRecursive
+simple_expr_P :: Parser Expression -> Parser Expression
+simple_expr_P seq_expr_P = leftRecursive
   [ do
     i <- val_longident_P
     return . mkexp $ Pexp_ident (mkRHS i 1)
@@ -25,6 +25,11 @@ simple_expr_P = leftRecursive
   , do
     i <- constr_longident_P
     return $ mkexp $ Pexp_construct (mkRHS i 1) Nothing
+  , do
+    l_paren_T
+    e <- seq_expr_P
+    r_paren_T
+    return $ reloc_exp e
   ]
   [ do
     dot_T

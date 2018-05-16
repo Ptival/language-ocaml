@@ -31,6 +31,7 @@ module Language.OCaml.Parser.Common
   , mkTyp
   , mkType
   , mkVb
+  , reloc_exp
   , text_str
   , val_of_let_bindings
   ) where
@@ -303,3 +304,6 @@ mkexp_constraint e (t1, t2) = case (t1, t2) of
   (Just t,  Nothing) -> ghexp $ Pexp_constraint e t
   (_,       Just t)  -> ghexp $ Pexp_coerce e t1 t
   (Nothing, Nothing) -> error "This should not happen"
+
+reloc_exp :: Expression -> Expression
+reloc_exp e = e { pexp_loc = none } -- FIXME

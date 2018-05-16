@@ -17,6 +17,7 @@ simple_expr_tests =
   , "Foo"
   , "Foo.Bar"
   , "Foo.bar"
+  , "(foo)"
   ]
 
 unitTests :: TestTree
@@ -25,3 +26,5 @@ unitTests = testGroup "Language.OCaml.Parser.SimpleExpr" $ []
 
 test :: IO ()
 test = defaultMain unitTests
+
+debug = debugParsing simple_expr_P "(foo)"

@@ -39,9 +39,9 @@ type_declaration_PP d =
       Ptype_open -> "TODO: Ptype_open"
     attrs = case ptype_attributes d of
       [] -> ""
-      as -> vcat . map displayAttr $ as
+      as -> line <> (vcat . map displayAttr $ as)
         where
-          displayAttr (s, p) = fillSep [ "[@@", pretty s, pretty p , "]" ]
+          displayAttr (s, p) = fillSep [ "[@@", pretty s, pretty p, "]" ]
 
 instance (Pretty Payload) => Pretty Type_declaration where
   pretty = type_declaration_PP

@@ -11,5 +11,7 @@ operator_P :: Parser String
 operator_P = choice
   [
     -- TODO
-    bang_T *> return "!"
+    bang_T  *> return "!"
+  , plus_T  *> return "+"
+  , minus_T *> return "-"
   ]

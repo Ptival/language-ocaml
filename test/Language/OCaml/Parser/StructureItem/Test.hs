@@ -6,7 +6,6 @@ module Language.OCaml.Parser.StructureItem.Test
   , unitTests
   ) where
 
-import Data.Text.Prettyprint.Doc
 import Data.String.QQ
 import Test.Tasty
 
@@ -45,6 +44,13 @@ type a =
   -- , "let f a : t = b"
   , "let f : t = b"
   , "let a = let b = c in d"
+
+  , [s|
+type tconstantc_module =
+  | TCModule of tfdec list
+[@@ deriving (eq,show) ]
+  |]
+
   ]
 
 unitTests :: TestTree
@@ -56,4 +62,8 @@ test = defaultMain unitTests
 
 debug = debugParsing (structure_item_P structure_P)
   --(structure_item_tests !! n)
-  "type a = C of b d"
+  [s|
+type tconstantc_module =
+  | TCModule of tfdec list
+[@@ deriving eq,show]
+  |]

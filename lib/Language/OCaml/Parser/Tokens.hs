@@ -19,12 +19,14 @@ module Language.OCaml.Parser.Tokens
   , l_ident_T
   , l_paren_T
   , let_T
+  , minus_T
   , minus_greater_T
   , module_T
   , mutable_T
   , nonrec_T
   , of_T
   , open_T
+  , plus_T
   , private_T
   , quote_T
   , r_brace_T
@@ -181,6 +183,9 @@ let_T = rword "let"
 nonrec_T :: Parser ()
 nonrec_T = rword "nonrec"
 
+minus_T :: Parser ()
+minus_T = symbol "-"
+
 minus_greater_T :: Parser ()
 minus_greater_T = symbol "->"
 
@@ -195,6 +200,9 @@ of_T = rword "of"
 
 open_T :: Parser ()
 open_T = rword "open"
+
+plus_T :: Parser ()
+plus_T = symbol "+"
 
 private_T :: Parser ()
 private_T = rword "private"

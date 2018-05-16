@@ -22,15 +22,15 @@ import Language.OCaml.PrettyPrinter ()
 expr_P :: Parser Structure -> Parser Expression -> Parser Expression
 expr_P structure_P seq_expr_P = choice
   [ try $ p <* notFollowedBy comma_T
-  , mkexp . Pexp_tuple . freakOutIfNotEmpty "A" <$>
+  , mkexp . Pexp_tuple <$>
     chainl1' p (comma_T *> (return $ flip (:))) (: [])
   ]
   where
     p = choice
       [ try $ do
-        e <- simple_expr_P
-        l <- simple_labeled_expr_list_P
-        return $ mkexp $ Pexp_apply e (freakOutIfNotEmpty "B" l)
+        e <- simple_expr_P'
+        l <- simple_labeled_expr_list_P seq_expr_P
+        return $ mkexp $ Pexp_apply e (checkReverse "B" l)
       , do
         b <- try $ do
           b <- let_bindings_P structure_P seq_expr_P
@@ -44,9 +44,12 @@ expr_P structure_P seq_expr_P = choice
         opt_bar_P
         l <- match_cases_P seq_expr_P
         return $ mkexp_attrs (Pexp_function $ reverse l) (Nothing, []) -- FIXME
-      , simple_expr_P
+      , simple_expr_P'
       ]
-    freakOutIfNotEmpty _ [] = []
-    freakOutIfNotEmpty _ [e] = [e] -- if there's just one element, it's not going to help...
-    freakOutIfNotEmpty s l =
+
+    simple_expr_P' = simple_expr_P seq_expr_P
+
+    checkReverse _ [] = []
+    checkReverse _ [e] = [e] -- if there's just one element, it's not going to help...
+    checkReverse s l =
       error $ s ++ ": figure out whether to reverse this list:\n" ++ (show $ pretty l)

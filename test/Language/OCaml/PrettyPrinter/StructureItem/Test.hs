@@ -42,6 +42,7 @@ type a =
   , "open !A"
   , "open !A (* A *)"
   , "module F = Format"
+
   , [s|
 type a_b =
   { foo_bar: float
@@ -50,6 +51,7 @@ type a_b =
   , "type c_d = {a: b; c: d}"
   , "type e_f = G of A.b * C.d_f | H | I"
   , "let a = b"
+
   , [s|
 let some_function = function
   | Constructor _ ->
@@ -57,11 +59,13 @@ let some_function = function
   | OtherConstructor _ ->
       OtherModule.other_function
   |]
+
   , [s|
 let string_of_something = function
   | Constructor _ ->
       "some_string"
   |]
+
   , [s|
 let multi_patterns = function
   | Constructor1 foo_bar
@@ -71,10 +75,39 @@ let multi_patterns = function
   | _ ->
      None
   |]
+
   , [s|
 let rec f =
   let a = b in c
   |]
+
+--   , [s|
+-- type tconstantc_module =
+--   | TCModule of tfdec list
+-- [@@ deriving (eq,show) ]
+--   |]
+
+--   , [s|
+-- open Lexing
+-- open Ast
+-- open Env
+
+-- type tconstantc_module = TCModule of tfdec list
+-- [@@deriving show, eq]
+-- and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
+-- [@@deriving show, eq]
+-- and tfdec = tfdec' pos_ast [@@deriving show, eq]
+-- and tstm' =
+--   | TVarDec of string * labeled_type * texpr
+--   | TAssign of string * texpr
+--   | TArrAssign of string * texpr * texpr
+--   | TIf of texpr * tblock * tblock
+--   | TFor of string * ctype * texpr * texpr * tblock
+--   | TReturn of texpr
+-- [@@deriving show, eq]
+-- and tstm = tstm' pos_ast [@@deriving show, eq]
+--   |]
+
   ]
 
 unitTests :: TestTree
@@ -89,7 +122,7 @@ test :: IO ()
 test = defaultMain unitTests
 
 foo =
-  parseAndPrettyPrint structure_P (vcat . map structure_item_PP) --(_ structure_item_PP)
+  debugPrettyPrinter structure_P (vcat . map structure_item_PP) --(_ structure_item_PP)
   [s|
 open Lexing
 open Ast

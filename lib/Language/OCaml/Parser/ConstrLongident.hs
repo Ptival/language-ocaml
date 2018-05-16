@@ -20,9 +20,9 @@ constr_longident_P = choice
     parens colon_colon_T
     return $ Ldot i "::"
   , mod_longident_P
-  , l_bracket_T *> r_bracket_T *> (return $ Lident "[]")
-  , l_paren_T *> r_paren_T *> (return $ Lident "()")
-  , l_paren_T *> colon_colon_T *> r_paren_T *> (return $ Lident "::")
+  , try $ l_bracket_T *> r_bracket_T *> (return $ Lident "[]")
+  , try $ l_paren_T *> r_paren_T *> (return $ Lident "()")
+  , try (l_paren_T *> colon_colon_T) *> r_paren_T *> (return $ Lident "::")
   , false_T *> (return $ Lident "false")
   , true_T *> (return $ Lident "true")
   ]

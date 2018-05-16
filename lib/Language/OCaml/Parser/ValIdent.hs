@@ -15,8 +15,9 @@ val_ident_P :: Parser String
 val_ident_P = choice
   [ l_ident_T
   , do
-    try $ l_paren_T
-    o <- operator_P
+    o <- try $ do
+      l_paren_T
+      operator_P
     r_paren_T
     return o
   ]

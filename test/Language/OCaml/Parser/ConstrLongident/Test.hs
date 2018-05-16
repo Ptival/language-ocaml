@@ -15,6 +15,11 @@ constr_longident_tests =
   [ "Foo"
   , "Foo.Bar"
   , "Foo_foo.Bar_bar"
+  , "[]"
+  , "()"
+  , "(::)"
+  , "true"
+  , "false"
   ]
 
 unitTests :: TestTree
