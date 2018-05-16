@@ -18,7 +18,7 @@ import Language.OCaml.Parser.Utils.Combinators
 pattern_P :: Parser Pattern
 pattern_P = choice
   [ try $ p <* notFollowedBy comma_T
-  , mkpat. Ppat_tuple . reverse <$>
+  , mkpat . Ppat_tuple <$>
     chainl1' p (comma_T *> (return $ flip (:))) (: [])
   ]
   where

@@ -132,6 +132,7 @@ Library
                    Language.OCaml.PrettyPrinter.OverrideFlag
                    Language.OCaml.PrettyPrinter.Pattern
                    Language.OCaml.PrettyPrinter.PatternDesc
+                   Language.OCaml.PrettyPrinter.Payload
                    Language.OCaml.PrettyPrinter.RecFlag
                    Language.OCaml.PrettyPrinter.Structure
                    Language.OCaml.PrettyPrinter.StructureItem

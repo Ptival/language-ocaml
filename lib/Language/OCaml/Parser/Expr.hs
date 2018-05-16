@@ -4,6 +4,7 @@ module Language.OCaml.Parser.Expr
   ( expr_P
   ) where
 
+import Data.Text.Prettyprint.Doc
 import Text.Megaparsec
 import Text.Megaparsec.String
 
@@ -16,11 +17,12 @@ import Language.OCaml.Parser.SimpleLabeledExprList
 import Language.OCaml.Parser.SimpleExpr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.PrettyPrinter ()
 
 expr_P :: Parser Structure -> Parser Expression -> Parser Expression
 expr_P structure_P seq_expr_P = choice
   [ try $ p <* notFollowedBy comma_T
-  , mkexp . Pexp_tuple . reverse <$>
+  , mkexp . Pexp_tuple . freakOutIfNotEmpty "A" <$>
     chainl1' p (comma_T *> (return $ flip (:))) (: [])
   ]
   where
@@ -28,7 +30,7 @@ expr_P structure_P seq_expr_P = choice
       [ try $ do
         e <- simple_expr_P
         l <- simple_labeled_expr_list_P
-        return $ mkexp $ Pexp_apply e (reverse l)
+        return $ mkexp $ Pexp_apply e (freakOutIfNotEmpty "B" l)
       , do
         b <- try $ do
           b <- let_bindings_P structure_P seq_expr_P
@@ -41,6 +43,10 @@ expr_P structure_P seq_expr_P = choice
         -- TODO: ext_attributes
         opt_bar_P
         l <- match_cases_P seq_expr_P
-        return $ mkexp_attrs (Pexp_function (reverse l)) (Nothing, []) -- FIXME
+        return $ mkexp_attrs (Pexp_function $ reverse l) (Nothing, []) -- FIXME
       , simple_expr_P
       ]
+    freakOutIfNotEmpty _ [] = []
+    freakOutIfNotEmpty _ [e] = [e] -- if there's just one element, it's not going to help...
+    freakOutIfNotEmpty s l =
+      error $ s ++ ": figure out whether to reverse this list:\n" ++ (show $ pretty l)

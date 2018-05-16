@@ -7,6 +7,7 @@ module Language.OCaml.PrettyPrinter.StructureItem.Test
   ) where
 
 import Data.String.QQ
+import Data.Text.Prettyprint.Doc
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal
@@ -88,6 +89,24 @@ test :: IO ()
 test = defaultMain unitTests
 
 foo =
-  parseAndPrettyPrint (structure_item_P structure_P) structure_item_PP
-  "let rec f = let a = b in c"
-  --(structure_item_tests !! n)
+  parseAndPrettyPrint structure_P (vcat . map structure_item_PP) --(_ structure_item_PP)
+  [s|
+open Lexing
+open Ast
+open Env
+
+type tconstantc_module = TCModule of tfdec list
+[@@deriving show, eq]
+and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
+[@@deriving show, eq]
+and tfdec = tfdec' pos_ast [@@deriving show, eq]
+and tstm' =
+  | TVarDec of string * labeled_type * texpr
+  | TAssign of string * texpr
+  | TArrAssign of string * texpr * texpr
+  | TIf of texpr * tblock * tblock
+  | TFor of string * ctype * texpr * texpr * tblock
+  | TReturn of texpr
+[@@deriving show, eq]
+and tstm = tstm' pos_ast [@@deriving show, eq]
+  |]

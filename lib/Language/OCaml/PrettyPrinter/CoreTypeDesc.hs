@@ -18,7 +18,10 @@ core_type_desc_PP = \case
   Ptyp_any -> "_"
   Ptyp_var s -> fillCat [ squote, pretty s ]
   Ptyp_tuple l -> fillSep $ map pretty l
-  Ptyp_constr i l -> fillSep $ pretty i : map pretty l
+  Ptyp_constr i [] -> pretty i
+  Ptyp_constr i [x] -> fillSep $ [ pretty x, pretty i ]
+  Ptyp_constr _ _ -> error "TODO"
+  Ptyp_poly _ _ -> error "TODO"
 
 instance Pretty Core_type => Pretty Core_type_desc where
   pretty = core_type_desc_PP

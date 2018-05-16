@@ -4,4 +4,5 @@ module Language.OCaml.PrettyPrinter
 
 import Data.Text.Prettyprint.Doc (pretty)
 
+import Language.OCaml.PrettyPrinter.Payload ()
 import Language.OCaml.PrettyPrinter.StructureItem ()

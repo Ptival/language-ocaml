@@ -1,5 +1,7 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.StructureItemDesc
   ( structure_item_desc_PP
@@ -14,9 +16,10 @@ import Language.OCaml.PrettyPrinter.OpenDescription ()
 import Language.OCaml.PrettyPrinter.TypeDeclaration ()
 import Language.OCaml.PrettyPrinter.ValueBinding ()
 
-structure_item_desc_PP :: Structure_item_desc -> Doc a
+structure_item_desc_PP ::
+  (Pretty Payload) => Structure_item_desc -> Doc a
 structure_item_desc_PP = \case
-  Pstr_eval _e _a -> error "TODO"
+  Pstr_eval e _a -> pretty e
   Pstr_value r l -> case l of
     []  -> error "?"
     h:t -> vcat $ fillCat [ "let ", pretty r, pretty h ]
@@ -30,5 +33,5 @@ structure_item_desc_PP = \case
   Pstr_attribute _a -> error "TODO"
   Pstr_extension _e _a -> error "TODO"
 
-instance Pretty Structure_item_desc where
+instance (Pretty Payload) => Pretty Structure_item_desc where
   pretty = structure_item_desc_PP

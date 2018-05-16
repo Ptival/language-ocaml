@@ -27,6 +27,6 @@ type_declaration_P structure_P = do
   n <- l_ident_T
   (kind, priv, manifest) <- type_kind_P
   -- TODO: constraints
-  a <- post_item_attributes_P structure_P
-  let ty = mkType (def { kind, priv }) manifest (mkRHS n 5)
+  attrs <- post_item_attributes_P structure_P
+  let ty = mkType (def { attrs, kind, priv }) manifest (mkRHS n 5)
   return (nonrec_flag, ty)

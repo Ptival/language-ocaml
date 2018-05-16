@@ -54,4 +54,6 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-debug n = debugParsing (structure_item_P structure_P) (structure_item_tests !! n)
+debug = debugParsing (structure_item_P structure_P)
+  --(structure_item_tests !! n)
+  "type a = C of b d"

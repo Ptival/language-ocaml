@@ -11,7 +11,7 @@ import Text.Megaparsec.String
 import Test.Tasty
 import Test.Tasty.HUnit
 
-mkPrettyPrinterTest :: (Eq a) => TestName -> Parser a -> (a -> Doc a) -> String -> TestTree
+mkPrettyPrinterTest :: (Eq a) => TestName -> Parser a -> (a -> Doc b) -> String -> TestTree
 mkPrettyPrinterTest name parser printer input =
   testCase name $ condition @? message
   where
@@ -25,14 +25,14 @@ mkPrettyPrinterTest name parser printer input =
     message = "Failed to roundtrip:\n" ++ prefix ++ if length input > 20 then "..." else ""
     prefix = take 20 input
 
-data DebugPrettyPrinter a
+data DebugPrettyPrinter a b
   = NoParse1
-  | NoParse2 a (Doc a)
+  | NoParse2 a (Doc b)
   | Parse a a
   deriving (Show)
 
 debugPrettyPrinter ::
-  (Eq a) => Parser a -> (a -> Doc a) -> String -> DebugPrettyPrinter a
+  (Eq a) => Parser a -> (a -> Doc b) -> String -> DebugPrettyPrinter a b
 debugPrettyPrinter parser printer input =
   case parseMaybe parser input of
   Nothing -> NoParse1
@@ -41,5 +41,5 @@ debugPrettyPrinter parser printer input =
     Nothing -> NoParse2 r (printer r)
     Just r' -> Parse r r'
 
-parseAndPrettyPrint :: Parser a -> (a -> Doc a) -> String -> Maybe (Doc a)
+parseAndPrettyPrint :: Parser a -> (a -> Doc b) -> String -> Maybe (Doc b)
 parseAndPrettyPrint parser printer input = printer <$> parseMaybe parser input
