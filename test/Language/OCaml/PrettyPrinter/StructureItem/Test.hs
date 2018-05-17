@@ -7,7 +7,6 @@ module Language.OCaml.PrettyPrinter.StructureItem.Test
   ) where
 
 import Data.String.QQ
-import Data.Text.Prettyprint.Doc
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal

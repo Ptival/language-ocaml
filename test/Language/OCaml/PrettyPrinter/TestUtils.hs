@@ -4,6 +4,7 @@ module Language.OCaml.PrettyPrinter.TestUtils
   , mkPrettyPrinterTest
   , parseAndPrettyPrint
   , parseMaybe
+  , pretty
   , roundtrip
   ) where
 
