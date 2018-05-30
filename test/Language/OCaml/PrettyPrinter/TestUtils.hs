@@ -10,9 +10,10 @@ module Language.OCaml.PrettyPrinter.TestUtils
 
 import Data.Text.Prettyprint.Doc
 import Text.Megaparsec
-import Text.Megaparsec.String
 import Test.Tasty
 import Test.Tasty.HUnit
+
+import Language.OCaml.Parser.Internal
 
 mkPrettyPrinterTest :: (Eq a) => TestName -> Parser a -> (a -> Doc b) -> String -> TestTree
 mkPrettyPrinterTest name parser printer input =

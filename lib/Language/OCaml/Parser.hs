@@ -3,11 +3,12 @@ module Language.OCaml.Parser
   , parseImplementation
   ) where
 
+import Data.Void
 import Text.Megaparsec (parse)
 import Text.Megaparsec.Error
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Implementation
 
-parseImplementation :: String -> Either (ParseError Char Dec) Structure
+parseImplementation :: String -> Either (ParseError Char Void) Structure
 parseImplementation = parse implementation_P "Language.OCaml.Parser"

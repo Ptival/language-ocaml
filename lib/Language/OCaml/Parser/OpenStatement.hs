@@ -6,7 +6,6 @@ module Language.OCaml.Parser.OpenStatement
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -14,6 +13,7 @@ import Language.OCaml.Parser.ModLongident
 import Language.OCaml.Parser.Override_flag
 import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 open_statement_P :: Parser Structure -> Parser (Open_description, ())
 open_statement_P structure_P = do

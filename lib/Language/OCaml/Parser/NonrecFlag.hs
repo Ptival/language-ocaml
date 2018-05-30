@@ -3,10 +3,10 @@ module Language.OCaml.Parser.NonrecFlag
   ) where
 
 import           Text.Megaparsec
-import           Text.Megaparsec.String
 
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Parser.Tokens
+import           Language.OCaml.Parser.Utils.Types
 
 nonrec_flag_P :: Parser ASTTypes.Rec_flag
 nonrec_flag_P = choice

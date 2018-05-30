@@ -5,11 +5,11 @@ module Language.OCaml.Parser.LabeledSimpleExpr
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleExpr
+import Language.OCaml.Parser.Utils.Types
 
 labeled_simple_expr_P :: Parser Expression -> Parser (Arg_label, Expression)
 labeled_simple_expr_P seq_expr_P = choice

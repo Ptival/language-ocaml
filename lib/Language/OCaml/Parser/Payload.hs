@@ -3,9 +3,9 @@ module Language.OCaml.Parser.Payload
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Parser.Utils.Types
 
 payload_P :: Parser Structure -> Parser Payload
 payload_P structure_P = choice

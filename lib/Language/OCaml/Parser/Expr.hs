@@ -6,7 +6,6 @@ module Language.OCaml.Parser.Expr
 
 import Data.Text.Prettyprint.Doc
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -17,6 +16,7 @@ import Language.OCaml.Parser.SimpleLabeledExprList
 import Language.OCaml.Parser.SimpleExpr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.PrettyPrinter ()
 
 expr_P :: Parser Structure -> Parser Expression -> Parser Expression

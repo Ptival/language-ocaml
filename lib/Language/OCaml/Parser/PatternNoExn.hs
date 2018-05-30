@@ -6,7 +6,6 @@ module Language.OCaml.Parser.PatternNoExn
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -15,6 +14,7 @@ import Language.OCaml.Parser.PatternGen
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.ValIdent
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 pattern_no_exn_P :: Parser Pattern
 pattern_no_exn_P = leftRecursive

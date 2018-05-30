@@ -3,10 +3,10 @@ module Language.OCaml.Parser.Constant
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 constant_P :: Parser Constant
 constant_P = choice

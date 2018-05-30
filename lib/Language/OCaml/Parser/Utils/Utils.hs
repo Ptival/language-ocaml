@@ -10,9 +10,11 @@ module Language.OCaml.Parser.Utils.Utils
 
 import           Data.Functor
 import           Text.Megaparsec
-import qualified Text.Megaparsec.Lexer as L
-import           Text.Megaparsec.String
+import           Text.Megaparsec.Char
+import qualified Text.Megaparsec.Char.Lexer as L
 import           Text.Printf
+
+import Language.OCaml.Parser.Utils.Types
 
 checkIdentifier :: String -> Parser String
 checkIdentifier c =

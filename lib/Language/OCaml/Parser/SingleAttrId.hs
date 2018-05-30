@@ -3,9 +3,9 @@ module Language.OCaml.Parser.SingleAttrId
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 single_attr_id_P :: Parser String
 single_attr_id_P = choice

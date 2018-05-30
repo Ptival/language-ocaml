@@ -3,10 +3,10 @@ module Language.OCaml.Parser.Override_flag
   ) where
 
 import           Text.Megaparsec
-import           Text.Megaparsec.String
 
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Parser.Tokens
+import           Language.OCaml.Parser.Utils.Types
 
 override_flag_P :: Parser ASTTypes.Override_flag
 override_flag_P = choice

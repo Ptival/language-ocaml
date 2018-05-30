@@ -3,13 +3,13 @@ module Language.OCaml.Parser.PostItemAttribute
   ) where
 
 import           Text.Megaparsec
-import           Text.Megaparsec.String
 
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.AttrId
 import           Language.OCaml.Parser.Payload
 import           Language.OCaml.Parser.Tokens
+import           Language.OCaml.Parser.Utils.Types
 
 post_item_attribute_P :: Parser Structure -> Parser (ASTTypes.Loc String, Payload)
 post_item_attribute_P structure_P = do

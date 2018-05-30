@@ -6,12 +6,12 @@ module Language.OCaml.Parser.StrictBinding
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.LabeledSimplePattern
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 strict_binding_P :: Parser Expression -> Parser Expression -> Parser Expression
 strict_binding_P seq_expr_P fun_binding_P = choice

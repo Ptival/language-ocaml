@@ -3,13 +3,13 @@ module Language.OCaml.Parser.FunBinding
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.TypeConstraint
 import Language.OCaml.Parser.StrictBinding
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 fun_binding_P :: Parser Expression -> Parser Expression
 fun_binding_P seq_expr_P = choice

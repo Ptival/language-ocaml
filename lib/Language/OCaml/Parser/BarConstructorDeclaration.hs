@@ -6,7 +6,6 @@ module Language.OCaml.Parser.BarConstructorDeclaration
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 -- import Language.OCaml.Parser.Attributes
@@ -14,6 +13,7 @@ import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ConstrIdent
 import Language.OCaml.Parser.GeneralizedConstructorArguments
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 bar_constructor_declaration_P :: Parser Constructor_declaration
 bar_constructor_declaration_P = try $ do

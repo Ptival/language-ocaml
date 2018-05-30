@@ -6,12 +6,12 @@ module Language.OCaml.Parser.SimplePattern
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.SimplePatternNotIdent
 import Language.OCaml.Parser.ValIdent
+import Language.OCaml.Parser.Utils.Types
 
 simple_pattern_P :: Parser Pattern
 simple_pattern_P = choice

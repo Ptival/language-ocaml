@@ -45,10 +45,10 @@ module Language.OCaml.Parser.Tokens
 
 import Data.Char
 import Text.Megaparsec
-import Text.Megaparsec.String
+import Text.Megaparsec.Char
 
 import Language.OCaml.Parser.Utils.Utils
-
+import Language.OCaml.Parser.Utils.Types
 
 and_T :: Parser ()
 and_T = rword "and"

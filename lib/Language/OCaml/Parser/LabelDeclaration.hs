@@ -6,7 +6,6 @@ module Language.OCaml.Parser.LabelDeclaration
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -14,6 +13,7 @@ import Language.OCaml.Parser.Label
 import Language.OCaml.Parser.MutableFlag
 import Language.OCaml.Parser.PolyTypeNoAttr
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 label_declaration_P :: Parser Label_declaration
 label_declaration_P = try $ do

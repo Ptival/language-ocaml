@@ -3,9 +3,9 @@ module Language.OCaml.Parser.Operator
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 operator_P :: Parser String
 operator_P = choice

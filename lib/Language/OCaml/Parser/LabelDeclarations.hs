@@ -5,11 +5,11 @@ module Language.OCaml.Parser.LabelDeclarations
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.LabelDeclaration
 import Language.OCaml.Parser.LabelDeclarationSemi
+import Language.OCaml.Parser.Utils.Types
 
 label_declarations_P :: Parser [Label_declaration]
 label_declarations_P = choice

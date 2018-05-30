@@ -8,7 +8,8 @@ module Language.OCaml.Parser.Utils.Combinators
 
 import Control.Applicative
 import Text.Megaparsec
-import Text.Megaparsec.String
+
+import Language.OCaml.Parser.Utils.Types
 
 {-
 

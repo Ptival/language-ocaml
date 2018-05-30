@@ -3,13 +3,13 @@ module Language.OCaml.Parser.AttrId
   ) where
 
 import           Text.Megaparsec
-import           Text.Megaparsec.String
 
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.Common
 import           Language.OCaml.Parser.SingleAttrId
 import           Language.OCaml.Parser.Tokens
+import           Language.OCaml.Parser.Utils.Types
 
 attr_id_P :: Parser (ASTTypes.Loc String)
 attr_id_P = choice

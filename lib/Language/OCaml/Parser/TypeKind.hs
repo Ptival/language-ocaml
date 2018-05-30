@@ -5,7 +5,6 @@ module Language.OCaml.Parser.TypeKind
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.ConstructorDeclarations
@@ -13,6 +12,7 @@ import Language.OCaml.Parser.CoreType
 import Language.OCaml.Parser.LabelDeclarations
 import Language.OCaml.Parser.PrivateFlag
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 type_kind_P :: Parser (Type_kind, Private_flag, Maybe Core_type)
 type_kind_P = choice

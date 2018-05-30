@@ -4,12 +4,11 @@ module Language.OCaml.Parser.ConstructorDeclaration
   ( constructor_declaration_P
   ) where
 
-import Text.Megaparsec.String
-
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ConstrIdent
 import Language.OCaml.Parser.GeneralizedConstructorArguments
+import Language.OCaml.Parser.Utils.Types
 
 constructor_declaration_P :: Parser Constructor_declaration
 constructor_declaration_P = do

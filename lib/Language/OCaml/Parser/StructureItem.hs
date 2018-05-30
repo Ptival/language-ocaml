@@ -3,7 +3,6 @@ module Language.OCaml.Parser.StructureItem
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -12,6 +11,7 @@ import Language.OCaml.Parser.ModuleBinding
 import Language.OCaml.Parser.OpenStatement
 import Language.OCaml.Parser.SeqExpr
 import Language.OCaml.Parser.TypeDeclarations
+import Language.OCaml.Parser.Utils.Types
 
 structure_item_P :: Parser Structure -> Parser Structure_item
 structure_item_P structure_P = choice

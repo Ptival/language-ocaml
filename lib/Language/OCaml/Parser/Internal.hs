@@ -1,5 +1,6 @@
 module Language.OCaml.Parser.Internal
-  ( constr_ident_P
+  ( Parser
+  , constr_ident_P
   , constr_longident_P
   , expr_P
   , ident_P
@@ -18,8 +19,6 @@ module Language.OCaml.Parser.Internal
   , val_ident_P
   , val_longident_P
   ) where
-
-import           Text.Megaparsec.String
 
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.Common
@@ -40,6 +39,7 @@ import           Language.OCaml.Parser.StructureItem
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.ValIdent
 import           Language.OCaml.Parser.ValLongident
+import           Language.OCaml.Parser.Utils.Types
 
 -- Tying the knots for our clients!
 

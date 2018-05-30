@@ -3,11 +3,11 @@ module Language.OCaml.Parser.ModExtLongident
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 mod_ext_longident_P :: Parser Longident
 mod_ext_longident_P = leftRecursive

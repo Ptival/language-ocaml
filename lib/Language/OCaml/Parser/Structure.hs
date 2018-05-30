@@ -5,7 +5,6 @@ module Language.OCaml.Parser.Structure
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -14,6 +13,7 @@ import Language.OCaml.Parser.SeqExpr
 import Language.OCaml.Parser.StructureItem
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Utils
+import Language.OCaml.Parser.Utils.Types
 
 structure_P :: Parser Structure
 structure_P = ocamlSpace *> choice

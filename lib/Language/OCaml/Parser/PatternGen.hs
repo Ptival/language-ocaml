@@ -6,12 +6,12 @@ module Language.OCaml.Parser.PatternGen
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ConstrLongident
 import Language.OCaml.Parser.SimplePattern
+import Language.OCaml.Parser.Utils.Types
 
 pattern_gen_P :: Parser Pattern -> Parser Pattern
 pattern_gen_P pattern_P = choice

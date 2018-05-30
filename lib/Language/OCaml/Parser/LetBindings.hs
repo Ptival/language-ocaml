@@ -3,7 +3,6 @@ module Language.OCaml.Parser.LetBindings
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Definitions.Parsing.Parser.LetBindings
@@ -14,6 +13,7 @@ import Language.OCaml.Parser.LetBindingBody
 import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 let_bindings_P :: Parser Structure -> Parser Expression -> Parser Let_bindings
 let_bindings_P structure_P seq_expr_P = leftRecursive

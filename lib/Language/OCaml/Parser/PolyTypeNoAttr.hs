@@ -5,10 +5,10 @@ module Language.OCaml.Parser.PolyTypeNoAttr
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.CoreTypeNoAttr
+import Language.OCaml.Parser.Utils.Types
 
 poly_type_no_attr_P :: Parser Core_type
 poly_type_no_attr_P = choice

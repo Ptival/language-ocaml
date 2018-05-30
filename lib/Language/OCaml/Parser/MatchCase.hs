@@ -3,12 +3,12 @@ module Language.OCaml.Parser.MatchCase
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 match_case_P :: Parser Expression -> Parser Case
 match_case_P seq_expr_P = choice

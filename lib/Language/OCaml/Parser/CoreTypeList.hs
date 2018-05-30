@@ -5,12 +5,12 @@ module Language.OCaml.Parser.CoreTypeList
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleCoreType
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 core_type_list_P :: Parser [Core_type]
 core_type_list_P = leftRecursive

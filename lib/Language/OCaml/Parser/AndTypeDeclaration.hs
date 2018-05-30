@@ -8,13 +8,13 @@ module Language.OCaml.Parser.AndTypeDeclaration
 
 import Data.Default
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.TypeKind
 import Language.OCaml.Parser.PostItemAttributes
+import Language.OCaml.Parser.Utils.Types
 
 and_type_declaration_P :: Parser Structure -> Parser Type_declaration
 and_type_declaration_P structure_P = do

@@ -5,11 +5,11 @@ module Language.OCaml.Parser.ModuleBindingBody
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.ModuleExpr
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 module_binding_body_P :: Parser Module_expr
 module_binding_body_P = choice

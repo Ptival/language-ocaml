@@ -5,13 +5,13 @@ module Language.OCaml.Parser.SimpleCoreType2
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.TypeLongident
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 simple_core_type2_P :: Parser Core_type
 simple_core_type2_P = leftRecursive

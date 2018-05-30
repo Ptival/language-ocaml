@@ -1,5 +1,5 @@
 Name:          language-ocaml
-Version:       0.1.13
+Version:       0.1.14
 Synopsis:      Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 Description:   Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 License:       MIT
@@ -20,13 +20,13 @@ Library
   ghc-options:      -Wall -Wno-orphans
   hs-source-dirs:   lib, test
   pkgconfig-depends: zlib
-  build-depends: base                      >= 4.0   && < 4.10,
+  build-depends: base                      >= 4.9   && < 4.11,
                  data-default              >= 0.7   && < 0.8,
-                 megaparsec                >= 5.0   && < 5.4,
+                 megaparsec                >= 6.0   && < 6.5,
                  prettyprinter             >= 1.2   && < 1.3,
                  string-qq                 >= 0.0   && < 0.1,
-                 tasty                     >= 0.11  && < 0.12,
-                 tasty-hunit               >= 0.9   && < 0.10
+                 tasty                     >= 1.0   && < 1.1,
+                 tasty-hunit               >= 0.9   && < 0.11
   exposed-modules: Language.OCaml.Parser.Common
                    Language.OCaml.Definitions.Parsing.ASTTypes
                    Language.OCaml.Definitions.Parsing.ParseTree
@@ -109,6 +109,7 @@ Library
                    Language.OCaml.Parser.TypeKind
                    Language.OCaml.Parser.TypeLongident
                    Language.OCaml.Parser.Utils.Combinators
+                   Language.OCaml.Parser.Utils.Types
                    Language.OCaml.Parser.Utils.Utils
                    Language.OCaml.Parser.ValIdent
                    Language.OCaml.Parser.ValLongident
@@ -146,12 +147,12 @@ Test-suite Test
   hs-source-dirs:   test
   main-is:          Main.hs
   build-depends: language-ocaml,
-                 base                      >= 4.9   && < 4.10,
-                 megaparsec                >= 5.0   && < 5.4,
-                 prettyprinter             >= 1.2   && < 1.3,
-                 string-qq                 >= 0.0   && < 0.1,
-                 tasty                     >= 0.11  && < 0.12,
-                 tasty-hunit               >= 0.9   && < 0.10
+                 base,
+                 megaparsec,
+                 prettyprinter,
+                 string-qq,
+                 tasty,
+                 tasty-hunit
   other-modules:   Language.OCaml.Parser.Common.Test
                    Language.OCaml.Parser.ConstrLongident.Test
                    Language.OCaml.Parser.Expr.Test

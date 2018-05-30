@@ -3,10 +3,10 @@ module Language.OCaml.Parser.PrivateFlag
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 private_flag_P :: Parser Private_flag
 private_flag_P = choice

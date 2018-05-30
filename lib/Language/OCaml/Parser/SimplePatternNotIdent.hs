@@ -5,12 +5,12 @@ module Language.OCaml.Parser.SimplePatternNotIdent
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ConstrLongident
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 simple_pattern_not_ident_P :: Parser Pattern
 simple_pattern_not_ident_P = choice

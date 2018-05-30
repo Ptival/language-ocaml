@@ -5,8 +5,6 @@ module Language.OCaml.Parser.SimpleExpr
   ( simple_expr_P
   ) where
 
-import Text.Megaparsec.String
-
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Constant
@@ -15,6 +13,7 @@ import Language.OCaml.Parser.LabelLongident
 import Language.OCaml.Parser.ValLongident
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 simple_expr_P :: Parser Expression -> Parser Expression
 simple_expr_P seq_expr_P = leftRecursive

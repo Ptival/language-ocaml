@@ -6,10 +6,10 @@ module Language.OCaml.Parser.ValIdent
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Parser.Operator
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 val_ident_P :: Parser String
 val_ident_P = choice

@@ -4,14 +4,12 @@ module Language.OCaml.Parser.ConstructorDeclarations
   ( constructor_declarations_P
   ) where
 
-import Text.Megaparsec
-import Text.Megaparsec.String
-
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.BarConstructorDeclaration
 import Language.OCaml.Parser.ConstructorDeclaration
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
+import Language.OCaml.Parser.Utils.Types
 
 constructor_declarations_P :: Parser [Constructor_declaration]
 constructor_declarations_P = leftRecursive

@@ -5,10 +5,10 @@ module Language.OCaml.Parser.CoreType2
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleCoreTypeOrTuple
+import Language.OCaml.Parser.Utils.Types
 
 core_type2_P :: Parser Core_type
 core_type2_P = choice

@@ -3,10 +3,10 @@ module Language.OCaml.Parser.SimpleCoreTypeOrTuple
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleCoreType
+import Language.OCaml.Parser.Utils.Types
 
 simple_core_type_or_tuple_P :: Parser Core_type
 simple_core_type_or_tuple_P = choice

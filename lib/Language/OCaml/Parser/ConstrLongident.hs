@@ -3,11 +3,11 @@ module Language.OCaml.Parser.ConstrLongident
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.ModLongident
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.Parser.Utils.Utils
 
 constr_longident_P :: Parser Longident

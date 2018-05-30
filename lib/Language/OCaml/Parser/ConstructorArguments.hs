@@ -3,10 +3,10 @@ module Language.OCaml.Parser.ConstructorArguments
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.CoreTypeList
+import Language.OCaml.Parser.Utils.Types
 
 constructor_arguments_P :: Parser Constructor_arguments
 constructor_arguments_P = choice

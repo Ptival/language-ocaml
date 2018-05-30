@@ -8,7 +8,6 @@ module Language.OCaml.Parser.TypeDeclaration
 
 import           Data.Default
 import           Text.Megaparsec
-import           Text.Megaparsec.String
 
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
@@ -17,6 +16,7 @@ import           Language.OCaml.Parser.NonrecFlag
 import           Language.OCaml.Parser.PostItemAttributes
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.TypeKind
+import           Language.OCaml.Parser.Utils.Types
 
 type_declaration_P :: Parser Structure -> Parser (ASTTypes.Rec_flag, Type_declaration)
 type_declaration_P structure_P = do

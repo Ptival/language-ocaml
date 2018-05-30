@@ -5,12 +5,12 @@ module Language.OCaml.Parser.SeqExpr
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Expr
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 seq_expr_P :: Parser Structure -> Parser Expression
 seq_expr_P structure_P = choice

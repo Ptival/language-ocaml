@@ -5,11 +5,11 @@ module Language.OCaml.Parser.LabeledSimplePattern
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimplePattern
+import Language.OCaml.Parser.Utils.Types
 
 labeled_simple_pattern_P :: Parser (Arg_label, Maybe a, Pattern)
 labeled_simple_pattern_P = choice

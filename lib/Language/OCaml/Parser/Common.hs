@@ -39,7 +39,6 @@ module Language.OCaml.Parser.Common
 import           Data.Default
 import           Data.Maybe
 import           Text.Megaparsec
-import           Text.Megaparsec.String
 
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.Docstrings
@@ -49,6 +48,7 @@ import           Language.OCaml.Definitions.Parsing.Parser.LetBinding
 import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.Utils.Utils
+import           Language.OCaml.Parser.Utils.Types
 
 default_loc :: Location
 default_loc = none

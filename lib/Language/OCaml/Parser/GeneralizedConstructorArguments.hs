@@ -3,11 +3,11 @@ module Language.OCaml.Parser.GeneralizedConstructorArguments
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.ConstructorArguments
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 generalized_constructor_arguments_P :: Parser (Constructor_arguments, Maybe a)
 generalized_constructor_arguments_P = choice

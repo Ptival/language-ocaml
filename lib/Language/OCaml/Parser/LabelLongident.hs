@@ -3,11 +3,11 @@ module Language.OCaml.Parser.LabelLongident
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.ModLongident
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 label_longident_P :: Parser Longident
 label_longident_P = choice

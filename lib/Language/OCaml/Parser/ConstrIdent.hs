@@ -3,9 +3,9 @@ module Language.OCaml.Parser.ConstrIdent
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 constr_ident_P :: Parser String
 constr_ident_P = choice

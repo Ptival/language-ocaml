@@ -3,11 +3,11 @@ module Language.OCaml.Parser.TypeConstraint
   ) where
 
 import Text.Megaparsec
-import Text.Megaparsec.String
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.CoreType
 import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Types
 
 type_constraint_P :: Parser (Maybe Core_type, Maybe Core_type)
 type_constraint_P = choice
