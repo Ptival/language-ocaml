@@ -1,0 +1,9 @@
+flags: {}
+
+extra-deps:
+  - prettyprinter-1.2.0.1
+
+resolver: lts-11.11
+
+packages:
+  - '.'
