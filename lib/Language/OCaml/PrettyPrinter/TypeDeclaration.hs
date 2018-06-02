@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
@@ -11,12 +13,14 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
 import Language.OCaml.PrettyPrinter.LabelDeclaration ()
+import Language.OCaml.PrettyPrinter.Variance ()
 
 type_declaration_PP :: (Pretty Payload) => Type_declaration -> Doc a
 type_declaration_PP d =
   fillCat [ params, name, space, "=", body, attrs ]
   where
-    params = ""
+    params = hcat $ map prettyParam $ ptype_params d
+    prettyParam (t, v) = fillCat [ pretty v, pretty t, space ]
     name = pretty $ ptype_name d
     manifest = case ptype_manifest d of
       Nothing -> error "TODO"

@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.ConstructorDeclaration
@@ -17,7 +19,7 @@ constructor_declaration_PP d =
     args = pretty $ pcd_args d
     res = case pcd_res d of
       Nothing -> ""
-      Just r -> "TODO: res Just"
+      Just _r -> "TODO: res Just"
 
 instance Pretty Constructor_declaration where
   pretty = constructor_declaration_PP

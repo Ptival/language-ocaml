@@ -16,11 +16,11 @@ import Language.OCaml.Parser.Utils.Types
 simple_core_type2_P :: Parser Core_type
 simple_core_type2_P = leftRecursive
   [ choice
-    [ mkTyp . Ptyp_var <$> try (quote_T *> ident_P)
-    , mkTyp . const Ptyp_any <$> underscore_T
+    [ mktyp . Ptyp_var <$> try (quote_T *> ident_P)
+    , mktyp . const Ptyp_any <$> underscore_T
     , try $ do
       t <- type_longident_P
-      return $ mkTyp $ Ptyp_constr (mkRHS t 1) []
+      return $ mktyp $ Ptyp_constr (mkRHS t 1) []
     -- , do
     --   a <- chainl1' simple_core_type2_P _ _ -- (return $ \ a b -> Ptyp_constr (mkRHS b 2) [a])
     --   t <- type_longident_P
@@ -29,5 +29,5 @@ simple_core_type2_P = leftRecursive
   ]
   [ do
     t <- type_longident_P
-    return $ \ x -> mkTyp $ Ptyp_constr (mkRHS t 2) [x]
+    return $ \ x -> mktyp $ Ptyp_constr (mkRHS t 2) [x]
   ]

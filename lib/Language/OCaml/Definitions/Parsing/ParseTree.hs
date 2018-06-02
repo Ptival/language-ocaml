@@ -64,8 +64,8 @@ data Payload
 
 data Core_type = Core_type
   { ptyp_desc       :: Core_type_desc
-  -- , ptyp_loc        :: Location.t
-  -- , ptyp_attributes :: Attributes
+  , ptyp_loc        :: Location
+  , ptyp_attributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 

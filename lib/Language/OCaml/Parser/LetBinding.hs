@@ -22,5 +22,5 @@ let_binding_P structure_P seq_expr_P = do
   -- TODO: ext_attributes
   r <- rec_flag_P
   b <- let_binding_body_P seq_expr_P
-  a <- post_item_attributes_P structure_P
+  _a <- post_item_attributes_P structure_P
   return $ mklbs Nothing r (mklb True b []) -- FIXME

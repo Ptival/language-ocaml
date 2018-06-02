@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -18,9 +20,10 @@ pattern_desc_PP :: Pretty Pattern => Pattern_desc -> Doc a
 pattern_desc_PP = \case
   Ppat_any -> "_"
   Ppat_var v -> pretty v
-  Ppat_alias p v -> error "TODO"
-  Ppat_constant c -> error "TODO"
-  Ppat_tuple l -> error "TODO"
+  Ppat_alias _p _v -> error "TODO"
+  Ppat_constant _c -> error "TODO"
+  Ppat_constraint _ _ -> error "TODO"
+  Ppat_tuple _l -> error "TODO"
   Ppat_construct i p -> case p of
     Nothing -> pretty i
     Just p' -> fillSep [ pretty i, pretty p' ]

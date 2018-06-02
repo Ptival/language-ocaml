@@ -21,7 +21,7 @@ open_statement_P structure_P = do
   o <- override_flag_P
   -- TODO: ext_attributes
   i <- mod_longident_P
-  a <- post_item_attributes_P structure_P
+  _a <- post_item_attributes_P structure_P
   return $ (
     mkOpn
     Nothing -- FIXME

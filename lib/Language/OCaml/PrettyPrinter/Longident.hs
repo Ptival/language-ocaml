@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 
@@ -13,7 +15,7 @@ longident_PP :: Longident -> Doc b
 longident_PP = \case
   Lident s -> pretty s
   Ldot p s -> group $ pretty p <> "." <> pretty s
-  Lapply p s -> error "TODO"
+  Lapply _p _s -> error "TODO"
 
 instance Pretty Longident where
   pretty = longident_PP

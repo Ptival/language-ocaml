@@ -75,4 +75,4 @@ unitTests = testGroup "Language.OCaml.Parser.Structure" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-debug = debugParsing structure_P (structure_tests !! 9)
+-- debug = debugParsing structure_P (structure_tests !! 9)

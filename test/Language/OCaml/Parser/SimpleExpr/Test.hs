@@ -28,4 +28,4 @@ unitTests = testGroup "Language.OCaml.Parser.SimpleExpr" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-debug = debugParsing simple_expr_P "(foo)"
+-- debug = debugParsing simple_expr_P "(foo)"

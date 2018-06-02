@@ -55,15 +55,15 @@ type tconstantc_module =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
-  ++ map (mkParsingTest "structure_item_P" (structure_item_P structure_P)) structure_item_tests
+  ++ map (mkParsingTest "structure_item_P" structure_item_P) structure_item_tests
 
 test :: IO ()
 test = defaultMain unitTests
 
-debug = debugParsing (structure_item_P structure_P)
-  --(structure_item_tests !! n)
-  [s|
-type tconstantc_module =
-  | TCModule of tfdec list
-[@@ deriving eq,show]
-  |]
+-- _debug = debugParsing (structure_item_P structure_P)
+--   --(structure_item_tests !! n)
+--   [s|
+-- type tconstantc_module =
+--   | TCModule of tfdec list
+-- [@@ deriving eq,show]
+--   |]

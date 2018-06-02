@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.Pattern

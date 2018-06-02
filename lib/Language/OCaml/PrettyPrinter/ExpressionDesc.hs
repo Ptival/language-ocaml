@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
@@ -21,7 +23,10 @@ import Language.OCaml.PrettyPrinter.ValueBinding ()
 expression_desc_PP :: (Pretty Expression) => Expression_desc -> Doc a
 expression_desc_PP = \case
   Pexp_ident i -> pretty i
+  Pexp_coerce _ _ _ -> error "TODO"
   Pexp_constant c -> pretty c
+  Pexp_constraint _ _ -> error "TODO"
+  Pexp_fun _ _ _ _ -> error "TODO"
   Pexp_let r l e -> case l of
     []  -> error "TODO"
     [x] -> fillCat [ "let ", pretty r, pretty x, " in ", pretty e ]
@@ -37,13 +42,13 @@ expression_desc_PP = \case
        Pexp_tuple to [].  We display them back accordingly. -}
     (e'@(Pexp_tuple _), []) -> fillCat [ lparen, expression_desc_PP e', rparen ]
     (_, _)                  -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l -- FIXME: lbl
-  Pexp_match e l -> error "TODO"
+  Pexp_match _e _l -> error "TODO"
   Pexp_tuple l -> encloseSep "" "" comma (map pretty l)
   Pexp_construct i e -> fillSep [ pretty i, pretty e ]
-  Pexp_field e i -> error "TODO"
-  Pexp_ifthenelse e1 e2 e3 -> error "TODO"
-  Pexp_sequence e1 e2 -> error "TODO"
-  Pexp_extension e -> error "TODO"
+  Pexp_field _e _i -> error "TODO"
+  Pexp_ifthenelse _e1 _e2 _e3 -> error "TODO"
+  Pexp_sequence _e1 _e2 -> error "TODO"
+  Pexp_extension _e -> error "TODO"
 
 instance Pretty Expression => Pretty Expression_desc where
   pretty = expression_desc_PP

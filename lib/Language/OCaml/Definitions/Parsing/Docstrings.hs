@@ -13,6 +13,7 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   ) where
 
 import GHC.Generics
+import Prelude hiding (exp)
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.Definitions.Parsing.Location

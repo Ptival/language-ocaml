@@ -20,7 +20,7 @@ module_binding_P structure_P = do
   -- TODO: ext_attributes
   i <- u_ident_T
   b <- module_binding_body_P
-  a <- post_item_attributes_P structure_P
+  _a <- post_item_attributes_P structure_P
   return $ (mkMb Nothing Nothing Nothing Nothing (mkRHS i 3) b -- FIXME
            , () -- FIXME
            )

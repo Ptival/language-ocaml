@@ -5,7 +5,7 @@ module Language.OCaml.Parser.Implementation.Test
   , unitTests
   ) where
 
-import Data.String.QQ
+-- import Data.String.QQ
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal
@@ -34,36 +34,8 @@ unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugParsing implementation_P [s|
-type name = string
-
-type expr =
-	| Var of name                           (* variable *)
-	| Call of expr * expr list              (* application *)
-	| Fun of name list * expr               (* abstraction *)
-	| Let of name * expr * expr             (* let *)
-	| RecordSelect of expr * name           (* selecting value of label: `r.a` *)
-	| RecordExtend of name * expr * expr    (* extending a record: `{a = 1, b = 2 | r}` *)
-	| RecordRestrict of expr * name         (* deleting a label: `{r - a}` *)
-	| RecordEmpty                           (* empty record: `{}` *)
-
-type id = int
-type level = int
-
-type ty =
-	| TConst of name                    (* type constant: `int` or `bool` *)
-	| TApp of ty * ty list              (* type application: `list[int]` *)
-	| TArrow of ty list * ty            (* function type: `(int, int) -> int` *)
-	| TVar of tvar ref                  (* type variable *)
-	| TRecord of row                    (* record type: `{<...>}` *)
-	| TRowEmpty                         (* empty row: `<>` *)
-	| TRowExtend of name * ty * row     (* row extension: `<a = _ | ...>` *)
-
-and row = ty    (* the kind of rows - empty row, row variable, or row extension *)
-
-and tvar =
-	| Unbound of id * level
-	| Link of ty
-	| Generic of id
-
-|]
+-- foo = debugParsing type_declaration_P [s|
+-- type 'a binary_tree =
+--     | Leaf of 'a
+--     | Tree of 'a binary_tree * 'a binary_tree
+-- |]

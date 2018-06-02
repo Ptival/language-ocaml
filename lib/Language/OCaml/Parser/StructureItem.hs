@@ -20,9 +20,9 @@ structure_item_P structure_P = choice
     (nr, l) <- type_declarations_P structure_P
     return $ mkstr_ext (Pstr_type nr (reverse l)) Nothing -- FIXME: not Nothing
   , do
-    (body, ext) <- open_statement_P structure_P
+    (body, _ext) <- open_statement_P structure_P
     return $ mkstr_ext (Pstr_open body) Nothing -- FIXME
   , do
-    (body, ext) <- module_binding_P structure_P
+    (body, _ext) <- module_binding_P structure_P
     return $ mkstr_ext (Pstr_module body) Nothing -- FIXME
   ]

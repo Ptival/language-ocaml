@@ -6,6 +6,7 @@ module Language.OCaml.Definitions.Parsing.ASTTypes
   , Loc(..)
   , Override_flag(..)
   , Rec_flag(..)
+  , Variance(..)
   ) where
 
 import GHC.Generics
@@ -45,3 +46,8 @@ data Arg_label
   | Labelled String
   | Optional String
   deriving (Eq, Generic, Show)
+
+data Variance
+  = Covariant
+  | Contravariant
+  | Invariant

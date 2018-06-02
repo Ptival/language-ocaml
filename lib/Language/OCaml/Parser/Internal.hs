@@ -16,10 +16,12 @@ module Language.OCaml.Parser.Internal
   , string_T
   , structure_P
   , structure_item_P
+  , type_declaration_P
   , val_ident_P
   , val_longident_P
   ) where
 
+import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.Common
 import           Language.OCaml.Parser.ConstrIdent
@@ -35,8 +37,9 @@ import qualified Language.OCaml.Parser.SeqExpr
 import qualified Language.OCaml.Parser.SimpleExpr
 import           Language.OCaml.Parser.SimplePattern
 import           Language.OCaml.Parser.Structure
-import           Language.OCaml.Parser.StructureItem
+import qualified Language.OCaml.Parser.StructureItem
 import           Language.OCaml.Parser.Tokens
+import qualified Language.OCaml.Parser.TypeDeclaration
 import           Language.OCaml.Parser.ValIdent
 import           Language.OCaml.Parser.ValLongident
 import           Language.OCaml.Parser.Utils.Types
@@ -51,3 +54,9 @@ seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P
 
 simple_expr_P :: Parser Expression
 simple_expr_P = Language.OCaml.Parser.SimpleExpr.simple_expr_P seq_expr_P
+
+structure_item_P :: Parser Structure_item
+structure_item_P = Language.OCaml.Parser.StructureItem.structure_item_P structure_P
+
+type_declaration_P :: Parser (ASTTypes.Rec_flag, Type_declaration)
+type_declaration_P = Language.OCaml.Parser.TypeDeclaration.type_declaration_P structure_P

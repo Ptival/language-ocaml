@@ -33,5 +33,5 @@ unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugParsing expr_P "a, b, c"
-bar = debugParsing expr_P "(a, b, c)"
+-- foo = debugParsing expr_P "a, b, c"
+-- bar = debugParsing expr_P "(a, b, c)"

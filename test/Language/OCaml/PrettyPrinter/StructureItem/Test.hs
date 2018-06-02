@@ -7,6 +7,7 @@ module Language.OCaml.PrettyPrinter.StructureItem.Test
   ) where
 
 import Data.String.QQ
+-- import Data.Text.Prettyprint.Doc
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal
@@ -80,15 +81,23 @@ let rec f =
   let a = b in c
   |]
 
+  , [s|
+type 'a binary_tree =
+    | Leaf of 'a
+    | Tree of 'a binary_tree * 'a binary_tree
+  |]
+
   ]
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
   ++ map (mkPrettyPrinterTest
           "structure_item_PP"
-          (structure_item_P structure_P)
+          structure_item_P
           structure_item_PP
          ) structure_item_tests
 
 test :: IO ()
 test = defaultMain unitTests
+
+-- _foo = debugPrettyPrinter structure_item_P structure_item_PP (structure_item_tests !! (length structure_item_tests - 1))

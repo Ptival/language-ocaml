@@ -1,5 +1,8 @@
+{-# OPTIONS_GHC -fno-warn-orphans #-}
+
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MonoLocalBinds #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -20,9 +23,9 @@ payload_PP ::
   ) => Payload -> Doc a
 payload_PP = \case
   PStr s -> structure_PP s
-  PSig s -> error "TODO" -- pretty s
+  PSig _s -> error "TODO" -- pretty s
   PTyp t -> pretty t
-  PPat p e -> error "TODO"
+  PPat _p _e -> error "TODO"
 
 instance --( Pretty Signature_item
          ( Pretty Structure_item

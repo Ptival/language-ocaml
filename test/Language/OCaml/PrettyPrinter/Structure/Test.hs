@@ -35,6 +35,10 @@ and tstm' =
   | TReturn of texpr
 [@@deriving show, eq]
 and tstm = tstm' pos_ast [@@deriving show, eq]
+
+type 'a binary_tree =
+    | Leaf of 'a
+    | Tree of 'a binary_tree * 'a binary_tree
   |]
 
   ]
@@ -49,3 +53,5 @@ unitTests = testGroup "Language.OCaml.PrettyPrinter.Structure" $ []
 
 test :: IO ()
 test = defaultMain unitTests
+
+-- _foo = debugPrettyPrinter structure_P (vcat . map structure_item_PP) (structure_tests !! 0)

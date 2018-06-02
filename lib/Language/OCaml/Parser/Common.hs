@@ -1,3 +1,4 @@
+{-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Language.OCaml.Parser.Common
@@ -30,6 +31,7 @@ module Language.OCaml.Parser.Common
   , mkstrexp
   , mkTyp
   , mkType
+  , mktyp
   , mkVb
   , reloc_exp
   , text_str
@@ -77,8 +79,24 @@ wrap_str_ext body ext = case ext of
 mkstr_ext :: Structure_item_desc -> Maybe (ASTTypes.Loc String) -> Structure_item
 mkstr_ext d ext = wrap_str_ext (mkstr d) ext
 
-mkTyp :: Core_type_desc -> Core_type
-mkTyp p = Core_type { ptyp_desc = p }
+mkTyp :: MkTypOpts -> Core_type_desc -> Core_type
+mkTyp (MkTypOpts {..}) desc =
+  Core_type
+  { ptyp_desc       = desc
+  , ptyp_loc        = loc
+  , ptyp_attributes = attrs
+  }
+
+data MkTypOpts = MkTypOpts
+  { loc   :: Location
+  , attrs :: [Attribute]
+  }
+
+instance Default MkTypOpts where
+  def = MkTypOpts
+    { loc   = default_loc
+    , attrs = []
+    }
 
 mkExp :: Maybe Location -> Maybe Attributes -> Expression_desc -> Expression
 mkExp loc attrs desc =
@@ -290,6 +308,9 @@ mkexp_attrs d attrs = wrap_exp_attrs (mkexp d) attrs
 mkexp :: Expression_desc -> Expression
 mkexp d = mkExp Nothing Nothing d -- FIXME
 
+mktyp :: Core_type_desc -> Core_type
+mktyp d = mkTyp def d -- FIXME
+
 ghexp :: Expression_desc -> Expression
 ghexp d = mkExp Nothing Nothing d -- FIXME
 
@@ -297,7 +318,7 @@ ghpat :: Pattern_desc -> Pattern
 ghpat d = mkPat Nothing Nothing d -- FIXME
 
 ghtyp :: Core_type_desc -> Core_type
-ghtyp d = mkTyp d -- FIXME
+ghtyp d = mkTyp def d -- FIXME
 
 mkexp_constraint :: Expression -> (Maybe Core_type, Maybe Core_type) -> Expression
 mkexp_constraint e (t1, t2) = case (t1, t2) of
