@@ -33,9 +33,3 @@ unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
 
 test :: IO ()
 test = defaultMain unitTests
-
--- foo = debugParsing type_declaration_P [s|
--- type 'a binary_tree =
---     | Leaf of 'a
---     | Tree of 'a binary_tree * 'a binary_tree
--- |]

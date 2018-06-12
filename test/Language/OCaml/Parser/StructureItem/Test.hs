@@ -51,6 +51,12 @@ type tconstantc_module =
 [@@ deriving (eq,show) ]
   |]
 
+  , [s|
+type 'a binary_tree =
+    | Leaf of 'a
+    | Tree of 'a binary_tree * 'a binary_tree
+  |]
+
   ]
 
 unitTests :: TestTree
@@ -60,10 +66,9 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
--- _debug = debugParsing (structure_item_P structure_P)
---   --(structure_item_tests !! n)
+-- _debug = debugParsing structure_item_P
 --   [s|
--- type tconstantc_module =
---   | TCModule of tfdec list
--- [@@ deriving eq,show]
+-- type 'a foo =
+--   | Beep of 'a
+--   | Boop of 'a foo
 --   |]
