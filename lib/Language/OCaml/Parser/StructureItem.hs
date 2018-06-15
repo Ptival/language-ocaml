@@ -10,6 +10,7 @@ import Language.OCaml.Parser.LetBindings
 import Language.OCaml.Parser.ModuleBinding
 import Language.OCaml.Parser.OpenStatement
 import Language.OCaml.Parser.SeqExpr
+import Language.OCaml.Parser.StrExceptionDeclaration
 import Language.OCaml.Parser.TypeDeclarations
 import Language.OCaml.Parser.Utils.Types
 
@@ -19,6 +20,9 @@ structure_item_P structure_P = choice
   , do
     (nr, l) <- type_declarations_P structure_P
     return $ mkstr_ext (Pstr_type nr (reverse l)) Nothing -- FIXME: not Nothing
+  , do
+    (l, _ext) <- str_exception_declaration_P structure_P
+    return $ mkstr_ext (Pstr_exception l) Nothing -- FIXME
   , do
     (body, _ext) <- open_statement_P structure_P
     return $ mkstr_ext (Pstr_open body) Nothing -- FIXME

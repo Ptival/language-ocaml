@@ -12,12 +12,12 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-core_type_list_P :: Parser [Core_type]
-core_type_list_P = leftRecursive
-  [ (: []) <$> simple_core_type_P
+core_type_list_P :: Parser Core_type -> Parser [Core_type]
+core_type_list_P core_type_P = leftRecursive
+  [ (: []) <$> simple_core_type_P core_type_P
   ]
   [ do
     try $ star_T
-    t <- simple_core_type_P
+    t <- simple_core_type_P core_type_P
     return $ (:) t
   ]

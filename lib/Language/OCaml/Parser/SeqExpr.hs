@@ -4,6 +4,7 @@ module Language.OCaml.Parser.SeqExpr
   ( seq_expr_P
   ) where
 
+import Data.Default
 import Text.Megaparsec
 
 import Language.OCaml.Definitions.Parsing.ParseTree
@@ -18,12 +19,12 @@ seq_expr_P structure_P = choice
     e <- expr_P'
     semi_T
     s <- seq_expr_P'
-    return $ mkExp Nothing Nothing (Pexp_sequence e s)
+    return $ mkExp def (Pexp_sequence e s)
   , try $ do
     e <- expr_P'
     semi_T
     return e
-  , expr_P'
+  , try $ expr_P'
   -- TODO: percent
   ]
   where

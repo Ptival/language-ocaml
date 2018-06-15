@@ -12,8 +12,8 @@ import Language.OCaml.Parser.ConstrLongident
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-simple_pattern_not_ident_P :: Parser Pattern
-simple_pattern_not_ident_P = choice
+simple_pattern_not_ident_P :: Parser Pattern -> Parser Pattern
+simple_pattern_not_ident_P pattern_P = choice
   [ do
     underscore_T
     return $ mkpat $ Ppat_any
@@ -21,4 +21,9 @@ simple_pattern_not_ident_P = choice
   , do
     i <- constr_longident_P
     return $ mkpat $ Ppat_construct (mkRHS i 1) Nothing
+  , do
+    l_paren_T
+    p <- pattern_P
+    r_paren_T
+    return $ reloc_pat p
   ]

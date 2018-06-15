@@ -19,5 +19,5 @@ pattern_gen_P pattern_P = choice
     i <- constr_longident_P
     p <- pattern_P
     return $ mkpat $ Ppat_construct (mkRHS i 1) (Just p)
-  , try $ simple_pattern_P
+  , try $ simple_pattern_P pattern_P
   ]

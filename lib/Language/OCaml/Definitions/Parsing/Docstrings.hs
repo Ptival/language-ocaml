@@ -3,11 +3,14 @@
 module Language.OCaml.Definitions.Parsing.Docstrings
   ( Docs
   , Docstring(..)
+  , Info
   , Text
   , add_docs_attrs
+  , add_info_attrs
   , add_text_attrs
   , docs_attr
   , empty_docs
+  , empty_info
   , rhs_text
   , text_attr
   ) where
@@ -94,6 +97,9 @@ add_docs_attrs docs attrs =
   in
   attrs2
 
+add_info_attrs :: a -> b -> b
+add_info_attrs _info attrs = attrs -- FIXME
+
 empty_docs :: Docs
 empty_docs =
   Docs'
@@ -122,3 +128,8 @@ docs_attr ds =
         }
   in
   (doc_loc, PStr [item])
+
+type Info = Maybe Docstring
+
+empty_info :: Info
+empty_info = Nothing

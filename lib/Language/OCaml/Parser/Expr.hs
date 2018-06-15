@@ -4,14 +4,16 @@ module Language.OCaml.Parser.Expr
   ( expr_P
   ) where
 
-import Data.Text.Prettyprint.Doc
 import Text.Megaparsec
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
+import Language.OCaml.Parser.FunDef
+import Language.OCaml.Parser.LabeledSimplePattern
 import Language.OCaml.Parser.LetBindings
 import Language.OCaml.Parser.MatchCases
 import Language.OCaml.Parser.OptBar
+import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.SimpleLabeledExprList
 import Language.OCaml.Parser.SimpleExpr
 import Language.OCaml.Parser.Tokens
@@ -26,11 +28,11 @@ expr_P structure_P seq_expr_P = choice
     chainl1' p (comma_T *> (return $ flip (:))) (: [])
   ]
   where
-    p = choice
+    p = leftRecursive
       [ try $ do
         e <- simple_expr_P'
         l <- simple_labeled_expr_list_P seq_expr_P
-        return $ mkexp $ Pexp_apply e (checkReverse "B" l)
+        return $ mkexp $ Pexp_apply e (reverse l)
       , do
         b <- try $ do
           b <- let_bindings_P structure_P seq_expr_P
@@ -38,18 +40,43 @@ expr_P structure_P seq_expr_P = choice
           return b
         e <- seq_expr_P
         return $ expr_of_let_bindings b e
+      -- FUNCTION
       , do
         try $ function_T
         -- TODO: ext_attributes
         opt_bar_P
-        l <- match_cases_P seq_expr_P
+        l <- match_cases_P'
         return $ mkexp_attrs (Pexp_function $ reverse l) (Nothing, []) -- FIXME
+      -- FUN
+      , do
+        try $ fun_T
+        -- TODO: ext_attributes
+        (l, o, p) <- labeled_simple_pattern_P pattern_P
+        d <- fun_def_P seq_expr_P
+        return $ mkexp_attrs (Pexp_fun l o p d) (Nothing, []) -- FIXME
+      -- MATCH
+      , do
+        try $ match_T
+        -- TODO: ext_attributes
+        e <- seq_expr_P
+        with_T
+        opt_bar_P
+        l <- match_cases_P'
+        return $ mkexp_attrs (Pexp_match e $ reverse l) (Nothing, []) -- FIXME
       , simple_expr_P'
       ]
+      [ infixP equal_T "="
+      , infixP plus_T  "+"
+      , infixP minus_T "-"
+      , infixP caret_T "^"
+      ]
 
+    infixP :: Parser () -> String -> Parser (Expression -> Expression)
+    infixP token symbol = try $ do
+      token
+      e2 <- expr_P'
+      return $ \ e1 -> mkinfix e1 symbol e2
+
+    expr_P'        = expr_P        structure_P seq_expr_P
     simple_expr_P' = simple_expr_P seq_expr_P
-
-    checkReverse _ [] = []
-    checkReverse _ [e] = [e] -- if there's just one element, it's not going to help...
-    checkReverse s l =
-      error $ s ++ ": figure out whether to reverse this list:\n" ++ (show $ pretty l)
+    match_cases_P' = match_cases_P seq_expr_P

@@ -21,6 +21,7 @@ data Constant
    -- | Const_int32 Int32
    -- | Const_int64 Int64
    -- | Const_nativeint Nativeint
+  deriving (Eq, Generic, Show)
 
 data Loc a = Loc
   { txt :: a
@@ -51,3 +52,4 @@ data Variance
   = Covariant
   | Contravariant
   | Invariant
+  deriving (Eq, Generic, Show)

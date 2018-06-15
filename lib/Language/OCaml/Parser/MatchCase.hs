@@ -19,5 +19,14 @@ match_case_P seq_expr_P = choice
       return p
     e <- seq_expr_P
     return $ caseExp p Nothing e
+  , do
+    p <- try $ do
+      p <- pattern_P
+      when_T
+      return p
+    w <- seq_expr_P
+    minus_greater_T
+    e <- seq_expr_P
+    return $ caseExp p (Just w) e
   -- TODO: others
   ]

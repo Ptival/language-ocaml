@@ -2,12 +2,13 @@ module Language.OCaml.Parser.OptionalTypeParameters
   ( optional_type_parameters_P
   ) where
 
-import           Text.Megaparsec
+import Text.Megaparsec
 
-import           Language.OCaml.Definitions.Parsing.ParseTree
-import           Language.OCaml.Parser.OptionalTypeParameter
-import           Language.OCaml.Parser.Utils.Types
-import           Language.OCaml.Parser.Utils.Utils
+import Language.OCaml.Definitions.Parsing.ASTTypes
+import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Parser.OptionalTypeParameter
+import Language.OCaml.Parser.Utils.Types
+import Language.OCaml.Parser.Utils.Utils
 
 optional_type_parameters_P :: Parser [(Core_type, Variance)]
 optional_type_parameters_P = choice

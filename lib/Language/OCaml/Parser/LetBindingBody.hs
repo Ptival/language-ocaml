@@ -11,6 +11,7 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.CoreType
 import Language.OCaml.Parser.FunBinding
+import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.PatternNoExn
 import Language.OCaml.Parser.SimplePatternNotIdent
 import Language.OCaml.Parser.StrictBinding
@@ -51,7 +52,7 @@ let_binding_body_P seq_expr_P = choice
     return (p, e)
   , do
     p <- try $ do
-      p <- simple_pattern_not_ident_P
+      p <- simple_pattern_not_ident_P pattern_P
       colon_T
       return p
     t <- core_type_P

@@ -11,7 +11,7 @@ module Language.OCaml.PrettyPrinter.Variance
 
 import Data.Text.Prettyprint.Doc
 
-import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
 import Language.OCaml.PrettyPrinter.LabelDeclaration ()
 

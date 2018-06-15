@@ -34,6 +34,7 @@ structure_item_desc_PP = \case
   Pstr_open o -> pretty o
   Pstr_attribute _a -> error "TODO"
   Pstr_extension _e _a -> error "TODO"
+  Pstr_exception _e -> error "TODO"
 
 instance (Pretty Payload) => Pretty Structure_item_desc where
   pretty = structure_item_desc_PP

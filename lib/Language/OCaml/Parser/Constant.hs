@@ -13,7 +13,7 @@ constant_P = choice
   [ do
     (n, m) <- int_T
     return $ Pconst_integer n m
-  -- , Pconst_char <$> char_T
+  , Pconst_char <$> char_T
   , do
     (s, d) <- string_T
     return $ Pconst_string s d

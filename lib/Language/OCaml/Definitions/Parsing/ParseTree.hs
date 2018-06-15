@@ -12,6 +12,8 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , Expression(..)
   , Expression_desc(..)
   , Extension
+  , ExtensionConstructor(..)
+  , ExtensionConstructorKind(..)
   , Label_declaration(..)
   , Longident(..)
   , Module_binding(..)
@@ -30,19 +32,20 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , Structure_item(..)
   , Structure_item_desc(..)
   , Type_declaration(..)
+  , TypeException(..)
+  , TypeExtension(..)
   , Type_kind(..)
   , Value_binding(..)
   , Value_description(..)
-  , Variance(..)
   , constructor
   , field
   , none
   ) where
 
-import           GHC.Generics
+import GHC.Generics
 
-import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
-import           Language.OCaml.Definitions.Parsing.Location
+import Language.OCaml.Definitions.Parsing.ASTTypes hiding (Constant)
+import Language.OCaml.Definitions.Parsing.Location
 
 data Constant
   = Pconst_integer String (Maybe Char)
@@ -51,8 +54,8 @@ data Constant
   | Pconst_float String (Maybe Char)
   deriving (Eq, Generic, Show)
 
-type Attribute = (ASTTypes.Loc String, Payload)
-type Extension = (ASTTypes.Loc String, Payload)
+type Attribute = (Loc String, Payload)
+type Extension = (Loc String, Payload)
 type Attributes = [Attribute]
 
 data Payload
@@ -72,14 +75,14 @@ data Core_type = Core_type
 data Core_type_desc
   = Ptyp_any
   | Ptyp_var String
-  -- | Ptyp_arrow of Asttypes.arg_label * core_type * core_type
+  | Ptyp_arrow Arg_label Core_type Core_type
   | Ptyp_tuple [Core_type]
-  | Ptyp_constr (ASTTypes.Loc Longident) [Core_type]
+  | Ptyp_constr (Loc Longident) [Core_type]
   -- | Ptyp_object of object_field list * Asttypes.closed_flag
-  -- | Ptyp_class of Longident.t Asttypes.loc * core_type list
-  -- | Ptyp_alias of core_type * string
+  | Ptyp_class (Loc Longident) [Core_type]
+  | Ptyp_alias Core_type String
   -- | Ptyp_variant of row_field list * Asttypes.closed_flag * Asttypes.label list option
-  | Ptyp_poly [ASTTypes.Loc String] Core_type
+  | Ptyp_poly [Loc String] Core_type
   -- | Ptyp_package of package_type
   -- | Ptyp_extension of extension
   deriving (Eq, Generic, Show)
@@ -95,7 +98,7 @@ data Private_flag
   deriving (Eq, Generic, Show)
 
 data Type_declaration = Type_declaration
-  { ptype_name :: ASTTypes.Loc String
+  { ptype_name :: Loc String
   , ptype_params :: [(Core_type, Variance)]
   , ptype_cstrs :: [(Core_type, Core_type, Location)]
   , ptype_kind :: Type_kind
@@ -114,7 +117,7 @@ data Type_kind
   deriving (Eq, Generic, Show)
 
 data Label_declaration = Label_declaration
-  { pld_name :: ASTTypes.Loc String
+  { pld_name :: Loc String
   , pld_mutable :: Mutable_flag
   , pld_type :: Core_type
   -- , pld_loc :: Location.t
@@ -123,7 +126,7 @@ data Label_declaration = Label_declaration
   deriving (Eq, Generic, Show)
 
 data Constructor_declaration = Constructor_declaration
-  { pcd_name :: ASTTypes.Loc String
+  { pcd_name :: Loc String
   , pcd_args :: Constructor_arguments
   , pcd_res :: Maybe Core_type
   -- , pcd_loc :: Location
@@ -136,12 +139,6 @@ data Mutable_flag
   | Mutable
   deriving (Eq, Generic, Show)
 
-data Variance
-  = Covariant
-  | Contravariant
-  | Invariant
-  deriving (Eq, Generic, Show)
-
 data Longident
   = Lident String
   | Ldot Longident String
@@ -151,7 +148,7 @@ data Longident
 constructor ::
   Constructor_arguments ->
   Maybe Core_type ->
-  ASTTypes.Loc String ->
+  Loc String ->
   Constructor_declaration
 constructor {- loc attrs info -} args res name =
   Constructor_declaration
@@ -164,7 +161,7 @@ constructor {- loc attrs info -} args res name =
 
 field ::
   Mutable_flag ->
-  ASTTypes.Loc String ->
+  Loc String ->
   Core_type ->
   Label_declaration
 field {- loc attrs info -} mut name typ =
@@ -186,11 +183,11 @@ data Structure_item = Structure_item
 
 data Structure_item_desc
   = Pstr_eval Expression Attributes
-  | Pstr_value ASTTypes.Rec_flag [Value_binding]
+  | Pstr_value Rec_flag [Value_binding]
   -- | Pstr_primitive value_description
-  | Pstr_type ASTTypes.Rec_flag [Type_declaration]
+  | Pstr_type Rec_flag [Type_declaration]
   -- | Pstr_typext type_extension
-  -- | Pstr_exception extension_constructor
+  | Pstr_exception TypeException
   | Pstr_module Module_binding
   -- | Pstr_recmodule module_binding list
   -- | Pstr_modtype module_type_declaration
@@ -210,19 +207,19 @@ data Expression = Expression
   deriving (Eq, Generic, Show)
 
 data Expression_desc
-  = Pexp_ident (ASTTypes.Loc Longident)
+  = Pexp_ident (Loc Longident)
   | Pexp_constant Constant
-  | Pexp_let ASTTypes.Rec_flag [Value_binding] Expression
+  | Pexp_let Rec_flag [Value_binding] Expression
   | Pexp_function [Case]
-  | Pexp_fun ASTTypes.Arg_label (Maybe Expression) Pattern Expression
-  | Pexp_apply Expression [(ASTTypes.Arg_label, Expression)]
+  | Pexp_fun Arg_label (Maybe Expression) Pattern Expression
+  | Pexp_apply Expression [(Arg_label, Expression)]
   | Pexp_match Expression [Case]
   -- | Pexp_try expression * case list
   | Pexp_tuple [Expression]
-  | Pexp_construct (ASTTypes.Loc Longident) (Maybe Expression)
+  | Pexp_construct (Loc Longident) (Maybe Expression)
   -- | Pexp_variant Asttypes.label * expression option
   -- | Pexp_record (Longident.t Asttypes.loc * expression) list * expression option
-  | Pexp_field Expression (ASTTypes.Loc Longident)
+  | Pexp_field Expression (Loc Longident)
   -- | Pexp_setfield expression * Longident.t Asttypes.loc * expression
   -- | Pexp_array expression list
   | Pexp_ifthenelse Expression Expression (Maybe Expression)
@@ -273,7 +270,7 @@ data Signature_item_desc
   deriving (Eq, Generic, Show)
 
 data Value_description = Value_description
-  { pval_name       :: ASTTypes.Loc String
+  { pval_name       :: Loc String
   , pval_type       :: Core_type
   , pval_prim       :: [String]
   , pval_attributes :: Attributes
@@ -290,12 +287,12 @@ data Pattern = Pattern
 
 data Pattern_desc
   = Ppat_any
-  | Ppat_var (ASTTypes.Loc String)
-  | Ppat_alias Pattern (ASTTypes.Loc String)
+  | Ppat_var (Loc String)
+  | Ppat_alias Pattern (Loc String)
   | Ppat_constant Constant
   -- | Ppat_interval constant * constant
   | Ppat_tuple [Pattern]
-  | Ppat_construct (ASTTypes.Loc Longident) (Maybe Pattern)
+  | Ppat_construct (Loc Longident) (Maybe Pattern)
   -- | Ppat_variant Asttypes.label * pattern option
   -- | Ppat_record (Longident.t Asttypes.loc * pattern) list * Asttypes.closed_flag
   -- | Ppat_array pattern list
@@ -310,8 +307,8 @@ data Pattern_desc
   deriving (Eq, Generic, Show)
 
 data Open_description = Open_description
-  { popen_lid        :: ASTTypes.Loc Longident
-  , popen_override   :: ASTTypes.Override_flag
+  { popen_lid        :: Loc Longident
+  , popen_override   :: Override_flag
   , popen_loc        :: Location
   , popen_attributes :: Attributes
   }
@@ -325,7 +322,7 @@ data Module_expr = Module_expr
   deriving (Eq, Generic, Show)
 
 data Module_expr_desc
-  = Pmod_ident (ASTTypes.Loc Longident)
+  = Pmod_ident (Loc Longident)
   -- | Pmod_structure of structure
   -- | Pmod_functor of string Asttypes.loc * module_type option * module_expr
   -- | Pmod_apply of module_expr * module_expr
@@ -335,7 +332,7 @@ data Module_expr_desc
   deriving (Eq, Generic, Show)
 
 data Module_binding = Module_binding
-  { pmb_name       :: ASTTypes.Loc String
+  { pmb_name       :: Loc String
   , pmb_expr       :: Module_expr
   , pmb_attributes :: Attributes
   , pmb_loc        :: Location
@@ -354,5 +351,33 @@ data Case = Case
   { pc_lhs   :: Pattern
   , pc_guard :: Maybe Expression
   , pc_rhs   :: Expression
+  }
+  deriving (Eq, Generic, Show)
+
+data ExtensionConstructor = ExtensionConstructor
+  { pext_name        :: Loc String
+  , pext_kind        :: ExtensionConstructorKind
+  , pext_loc         :: Location
+  , pext_attributes  :: Attributes -- C of ... [@id1] [@id2]
+  }
+  deriving (Eq, Generic, Show)
+
+data ExtensionConstructorKind
+  = Pext_decl Constructor_arguments (Maybe Core_type)
+  | Pext_rebind (Loc Longident)
+  deriving (Eq, Generic, Show)
+
+data TypeExtension = TypeExtension
+  { ptyext_path         :: Loc Longident
+  , ptyext_params       :: [(Core_type, Variance)]
+  , ptyext_constructors :: [ExtensionConstructor]
+  , ptyext_private      :: Private_flag
+  , ptyext_attributes   :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+data TypeException = TypeException
+  { ptyexn_constructor :: ExtensionConstructor
+  , ptyexn_attributes  :: Attributes
   }
   deriving (Eq, Generic, Show)

@@ -8,6 +8,7 @@ module Language.OCaml.Parser.Expr.Test
 
 import Data.String.QQ
 import Test.Tasty
+-- import Text.Megaparsec
 
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
@@ -24,6 +25,9 @@ expr_tests =
   , "a, b"
   , "a, b, c"
   , "(a, b, c)"
+  , "f 0 a 1 b 2 c"
+  , "fun x -> x y"
+  , "fun x y -> z"
   ]
 
 unitTests :: TestTree
@@ -33,5 +37,5 @@ unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
 test :: IO ()
 test = defaultMain unitTests
 
--- foo = debugParsing expr_P "a, b, c"
+-- foo = debugParsing simple_labeled_expr_list_P "0 b c"
 -- bar = debugParsing expr_P "(a, b, c)"

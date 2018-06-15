@@ -25,11 +25,16 @@ pattern_P = choice
     p = leftRecursive
       [ pattern_gen_P pattern_P
       ]
+      -- pattern AS val_ident
       [ do
         try $ as_T
         i <- val_ident_P
         return $ \ x -> mkpat $ Ppat_alias x (mkRHS i 3)
-      -- TODO: pattern COLONCOLON pattern
+      -- pattern COLONCOLON pattern
+      , do
+        try $ colon_colon_T
+        p2 <- pattern_P
+        return $ \ p1 -> mkpat_cons (rhsLoc 2) (ghpat $ Ppat_tuple [p1, p2]) (symbol_rloc ())
       , do
         try $ bar_T
         p <- pattern_P

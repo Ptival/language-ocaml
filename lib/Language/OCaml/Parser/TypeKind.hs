@@ -24,7 +24,7 @@ type_kind_P = choice
   , do
     cs <- try $ do
       equal_T
-      constructor_declarations_P
+      constructor_declarations_P'
     return (Ptype_variant (reverse cs), Private, Nothing)
   , do
     priv <- try $ do
@@ -37,3 +37,5 @@ type_kind_P = choice
     return (Ptype_record labels, priv, Nothing)
   , return (Ptype_abstract, Public, Nothing)
   ]
+  where
+    constructor_declarations_P' = constructor_declarations_P core_type_P

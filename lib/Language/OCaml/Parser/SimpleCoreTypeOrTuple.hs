@@ -8,8 +8,8 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleCoreType
 import Language.OCaml.Parser.Utils.Types
 
-simple_core_type_or_tuple_P :: Parser Core_type
-simple_core_type_or_tuple_P = choice
-  [ simple_core_type_P
+simple_core_type_or_tuple_P :: Parser Core_type -> Parser Core_type
+simple_core_type_or_tuple_P core_type_P = choice
+  [ simple_core_type_P core_type_P
   -- TODO
   ]

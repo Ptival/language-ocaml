@@ -3,13 +3,17 @@ module Language.OCaml.Parser.Tokens
   , as_T
   , bang_T
   , bar_T
+  , caret_T
+  , char_T
   , colon_T
   , colon_colon_T
   , colon_greater_T
   , comma_T
   , dot_T
   , equal_T
+  , exception_T
   , false_T
+  , fun_T
   , function_T
   , in_T
   , int_T
@@ -19,6 +23,7 @@ module Language.OCaml.Parser.Tokens
   , l_ident_T
   , l_paren_T
   , let_T
+  , match_T
   , minus_T
   , minus_greater_T
   , module_T
@@ -41,6 +46,8 @@ module Language.OCaml.Parser.Tokens
   , type_T
   , u_ident_T
   , underscore_T
+  , when_T
+  , with_T
   ) where
 
 import Data.Char
@@ -61,6 +68,16 @@ bang_T = symbol "!"
 
 bar_T :: Parser ()
 bar_T = symbol "|"
+
+caret_T :: Parser ()
+caret_T = symbol "^"
+
+char_T :: Parser Char
+char_T = do
+  symbol "'"
+  c <- satisfy (not . (`elem` ['\\', '\'', '\010', '\013']))
+  symbol "'"
+  return c
 
 colon_T :: Parser ()
 colon_T = symbol ":"
@@ -83,6 +100,9 @@ equal_T = symbol "="
 false_T :: Parser ()
 false_T = rword "false"
 
+fun_T :: Parser ()
+fun_T = rword "fun"
+
 function_T :: Parser ()
 function_T = rword "function"
 
@@ -90,7 +110,7 @@ binDigitChar :: Parser Char
 binDigitChar = char '0' <|> char '1'
 
 bin_literal_P :: Parser String
-bin_literal_P = do
+bin_literal_P = lexeme $ do
   _ <- char '0'
   _ <- char 'b' <|> char 'B'
   h <- binDigitChar
@@ -98,13 +118,16 @@ bin_literal_P = do
   return $ h : t
 
 decimal_literal_P :: Parser String
-decimal_literal_P = do
+decimal_literal_P = lexeme $ do
   h <- digitChar
   t <- many (digitChar <|> char '_')
   return $ h : t
 
+exception_T :: Parser ()
+exception_T = rword "exception"
+
 hex_literal_P :: Parser String
-hex_literal_P = do
+hex_literal_P = lexeme $ do
   _ <- char '0'
   _ <- char 'x' <|> char 'X'
   h <- hexDigitChar
@@ -112,7 +135,7 @@ hex_literal_P = do
   return $ h : t
 
 oct_literal_P :: Parser String
-oct_literal_P = do
+oct_literal_P = lexeme $ do
   _ <- char '0'
   _ <- char 'o' <|> char 'O'
   h <- octDigitChar
@@ -133,8 +156,11 @@ in_T = rword "in"
 int_T :: Parser (String, Maybe Char)
 int_T = do
   l <- int_literal_P
-  m <- literal_modifier_P
-  return $ (l, Just m)
+  m <- choice
+    [ Just <$> literal_modifier_P
+    , return Nothing
+    ]
+  return (l, m)
 
 isBetween :: Char -> Char -> Char -> Bool
 isBetween cmin c cmax = (vmin <= v && v <= vmax)
@@ -182,6 +208,9 @@ let_T = rword "let"
 
 nonrec_T :: Parser ()
 nonrec_T = rword "nonrec"
+
+match_T :: Parser ()
+match_T = rword "match"
 
 minus_T :: Parser ()
 minus_T = symbol "-"
@@ -253,3 +282,9 @@ u_ident_T = identifier $ do
 
 underscore_T :: Parser ()
 underscore_T = symbol "_"
+
+when_T :: Parser ()
+when_T = rword "when"
+
+with_T :: Parser ()
+with_T = rword "with"

@@ -1,19 +1,27 @@
+{-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards #-}
 
 module Language.OCaml.Parser.Common
-  ( MkTypeOpts(..)
+  ( DeclOpts(..)
+  , MkExceptionOpts(..)
+  , MkTypeOpts(..)
   , addlb
   , caseExp
+  , decl
   , expr_of_let_bindings
+  , extra_rhs_core_type
   , ghexp
   , ghpat
   , ghtyp
   , ident_P
+  , mk_exception
   , mkExp
   , mkexp
   , mkexp_attrs
   , mkexp_constraint
+  , mkinfix
   , mkLoc
   , mklb
   , mklbs
@@ -23,34 +31,40 @@ module Language.OCaml.Parser.Common
   , mkOpn
   , mkPat
   , mkpat
+  , mkpat_cons
   , mkpatvar
   , mkRHS
   , mkStr
   , mkstr
   , mkstr_ext
   , mkstrexp
+  , mkTe
   , mkTyp
   , mkType
   , mktyp
   , mkVb
+  , rebind
   , reloc_exp
+  , reloc_pat
+  , rhsLoc
+  , symbol_rloc
   , text_str
   , val_of_let_bindings
   ) where
 
-import           Data.Default
-import           Data.Maybe
-import           Text.Megaparsec
+import Data.Default
+import Data.Maybe
+import Text.Megaparsec
 
-import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
-import           Language.OCaml.Definitions.Parsing.Docstrings
-import           Language.OCaml.Definitions.Parsing.Location
-import           Language.OCaml.Definitions.Parsing.ParseTree
-import           Language.OCaml.Definitions.Parsing.Parser.LetBinding
-import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
-import           Language.OCaml.Parser.Tokens
-import           Language.OCaml.Parser.Utils.Utils
-import           Language.OCaml.Parser.Utils.Types
+import Language.OCaml.Definitions.Parsing.ASTTypes
+import Language.OCaml.Definitions.Parsing.Docstrings
+import Language.OCaml.Definitions.Parsing.Location
+import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Definitions.Parsing.Parser.LetBinding
+import Language.OCaml.Definitions.Parsing.Parser.LetBindings
+import Language.OCaml.Parser.Tokens
+import Language.OCaml.Parser.Utils.Utils
+import Language.OCaml.Parser.Utils.Types
 
 default_loc :: Location
 default_loc = none
@@ -71,12 +85,12 @@ mkstr d = mkStr Nothing d -- FIXME: symbol_rloc
 ghstr :: Structure_item_desc -> Structure_item
 ghstr d = mkStr Nothing d -- FIXME: symbol_gloc
 
-wrap_str_ext :: Structure_item -> Maybe (ASTTypes.Loc String) -> Structure_item
+wrap_str_ext :: Structure_item -> Maybe (Loc String) -> Structure_item
 wrap_str_ext body ext = case ext of
   Nothing -> body
   Just i -> ghstr $ Pstr_extension (i, PStr [body]) []
 
-mkstr_ext :: Structure_item_desc -> Maybe (ASTTypes.Loc String) -> Structure_item
+mkstr_ext :: Structure_item_desc -> Maybe (Loc String) -> Structure_item
 mkstr_ext d ext = wrap_str_ext (mkstr d) ext
 
 mkTyp :: MkTypOpts -> Core_type_desc -> Core_type
@@ -98,13 +112,24 @@ instance Default MkTypOpts where
     , attrs = []
     }
 
-mkExp :: Maybe Location -> Maybe Attributes -> Expression_desc -> Expression
-mkExp loc attrs desc =
+mkExp :: MkExpOpts -> Expression_desc -> Expression
+mkExp (MkExpOpts {..}) desc =
   Expression
   { pexp_desc       = desc
-  , pexp_loc        = fromMaybe default_loc loc
-  , pexp_attributes = fromMaybe []          attrs
+  , pexp_loc        = loc
+  , pexp_attributes = attrs
   }
+
+data MkExpOpts = MkExpOpts
+  { attrs  :: [Attribute]
+  , loc    :: Location
+  }
+
+instance Default MkExpOpts where
+  def = MkExpOpts
+    { attrs  = []
+    , loc    = default_loc
+    }
 
 caseExp :: Pattern -> Maybe Expression -> Expression -> Case
 caseExp lhs guard rhs = Case
@@ -136,7 +161,7 @@ instance Default MkTypeOpts where
     , text   = () -- FIXME
     }
 
-mkType :: MkTypeOpts -> Maybe Core_type -> ASTTypes.Loc String -> Type_declaration
+mkType :: MkTypeOpts -> Maybe Core_type -> Loc String -> Type_declaration
 mkType (MkTypeOpts {..}) manifest name =
   Type_declaration
   { ptype_name       = name
@@ -150,13 +175,13 @@ mkType (MkTypeOpts {..}) manifest name =
   }
 
 mkOpn ::
-  Maybe Location -> Maybe [(ASTTypes.Loc String, Payload)] -> Maybe Docs ->
-  Maybe ASTTypes.Override_flag -> ASTTypes.Loc Longident ->
+  Maybe Location -> Maybe [(Loc String, Payload)] -> Maybe Docs ->
+  Maybe Override_flag -> Loc Longident ->
   Open_description
 mkOpn loc attrs docs override lid =
   Open_description
   { popen_lid        = lid
-  , popen_override   = fromMaybe ASTTypes.Fresh override
+  , popen_override   = fromMaybe Fresh override
   , popen_loc        = fromMaybe default_loc loc
   , popen_attributes = add_docs_attrs (fromMaybe empty_docs docs) (fromMaybe [] attrs)
   }
@@ -167,16 +192,16 @@ mkstrexp e attrs = Structure_item
   , pstr_loc = pexp_loc e
   }
 
-mkLoc :: a -> Location -> ASTTypes.Loc a
-mkLoc t l = ASTTypes.Loc
-  { ASTTypes.txt = t
-  , ASTTypes.loc = l
+mkLoc :: a -> Location -> Loc a
+mkLoc t l = Loc
+  { txt = t
+  , loc = l
   }
 
-rhsLoc :: t -> Location
+rhsLoc :: Int -> Location
 rhsLoc _ = none -- FIXME
 
-mkRHS :: a -> t -> ASTTypes.Loc a
+mkRHS :: a -> Int -> Loc a
 mkRHS rhs pos = mkLoc rhs (rhsLoc pos)
 
 text_str :: a -> [Structure_item]
@@ -199,8 +224,8 @@ mkMod loc attrs d = Module_expr
   }
 
 mkMb ::
-  Maybe Location -> Maybe [(ASTTypes.Loc String, Payload)] -> Maybe Docs ->
-  Maybe [Docstring] -> ASTTypes.Loc String -> Module_expr ->
+  Maybe Location -> Maybe [(Loc String, Payload)] -> Maybe Docs ->
+  Maybe [Docstring] -> Loc String -> Module_expr ->
   Module_binding
 mkMb loc attrs docs text name expr = Module_binding
   { pmb_name       = name
@@ -211,20 +236,33 @@ mkMb loc attrs docs text name expr = Module_binding
   , pmb_loc        = fromMaybe default_loc loc
   }
 
-mkPat ::
-  Maybe Location -> Maybe [(ASTTypes.Loc String, Payload)] -> Pattern_desc ->
-  Pattern
-mkPat loc attrs d = Pattern
+mkPat :: MkPatOpts -> Pattern_desc -> Pattern
+mkPat (MkPatOpts {..}) d = Pattern
   { ppat_desc       = d
-  , ppat_loc        = fromMaybe default_loc loc
-  , ppat_attributes = fromMaybe [] attrs
+  , ppat_loc        = loc
+  , ppat_attributes = attrs
   }
 
-mkpat :: Pattern_desc -> Pattern
-mkpat d = mkPat Nothing Nothing d -- FIXME
+data MkPatOpts = MkPatOpts
+  { attrs :: [Attribute]
+  , loc   :: Location
+  }
 
-mkpatvar :: String -> t -> Pattern
-mkpatvar name pos = mkPat (Just (rhsLoc pos)) Nothing (Ppat_var (mkRHS name pos))
+instance Default MkPatOpts where
+  def = MkPatOpts
+    { attrs = []
+    , loc   = default_loc
+    }
+
+mkpat :: Pattern_desc -> Pattern
+mkpat d = mkPat def d -- FIXME
+
+mkpatvar :: String -> Int -> Pattern
+mkpatvar name pos = mkPat (def { loc = rhsLoc pos }) (Ppat_var (mkRHS name pos))
+
+mkpat_cons :: Location -> Pattern -> Location -> Pattern
+mkpat_cons consloc args loc =
+  mkPat (def { loc }) (Ppat_construct (mkLoc (Lident "::") consloc) (Just args))
 
 mklb :: t -> (Pattern, Expression) -> Attributes -> Let_binding
 mklb _first (p, e) attrs = Let_binding
@@ -237,7 +275,7 @@ mklb _first (p, e) attrs = Let_binding
   , lb_loc        = none -- symbol_rloc ()
   }
 
-mklbs :: Maybe (ASTTypes.Loc String) -> ASTTypes.Rec_flag -> Let_binding -> Let_bindings
+mklbs :: Maybe (Loc String) -> Rec_flag -> Let_binding -> Let_bindings
 mklbs ext rf lb = Let_bindings
   { lbs_bindings  = [lb]
   , lbs_rec       = rf
@@ -249,7 +287,7 @@ addlb :: Let_bindings -> Let_binding -> Let_bindings
 addlb lbs lb =
   lbs { lbs_bindings = lb : lbs_bindings lbs }
 
-mkVb :: Maybe Location -> Maybe [(ASTTypes.Loc String, Payload)] -> Maybe Docs ->
+mkVb :: Maybe Location -> Maybe [(Loc String, Payload)] -> Maybe Docs ->
   Maybe Text -> Pattern -> Expression -> Value_binding
 mkVb loc attrs docs text pat expr = Value_binding
   { pvb_pat        = pat
@@ -295,27 +333,27 @@ expr_of_let_bindings lbs body =
   in
   mkexp_attrs (Pexp_let (lbs_rec lbs) (reverse bindings) body) (lbs_extension lbs, [])
 
-wrap_exp_attrs :: Expression -> (Maybe (ASTTypes.Loc String), [Attribute]) -> Expression
+wrap_exp_attrs :: Expression -> (Maybe (Loc String), [Attribute]) -> Expression
 wrap_exp_attrs body (ext, attrs) =
   let body1 = body { pexp_attributes = attrs ++ pexp_attributes body } in
   case ext of
     Nothing -> body1
     Just i  -> ghexp $ Pexp_extension (i, (PStr [mkstrexp body1 []]))
 
-mkexp_attrs :: Expression_desc -> (Maybe (ASTTypes.Loc String), [Attribute]) -> Expression
+mkexp_attrs :: Expression_desc -> (Maybe (Loc String), [Attribute]) -> Expression
 mkexp_attrs d attrs = wrap_exp_attrs (mkexp d) attrs
 
 mkexp :: Expression_desc -> Expression
-mkexp d = mkExp Nothing Nothing d -- FIXME
+mkexp d = mkExp def d -- FIXME
 
 mktyp :: Core_type_desc -> Core_type
 mktyp d = mkTyp def d -- FIXME
 
 ghexp :: Expression_desc -> Expression
-ghexp d = mkExp Nothing Nothing d -- FIXME
+ghexp d = mkExp def d -- FIXME
 
 ghpat :: Pattern_desc -> Pattern
-ghpat d = mkPat Nothing Nothing d -- FIXME
+ghpat d = mkPat def d -- FIXME
 
 ghtyp :: Core_type_desc -> Core_type
 ghtyp d = mkTyp def d -- FIXME
@@ -328,3 +366,105 @@ mkexp_constraint e (t1, t2) = case (t1, t2) of
 
 reloc_exp :: Expression -> Expression
 reloc_exp e = e { pexp_loc = none } -- FIXME
+
+extra_rhs_core_type :: Core_type -> a -> Core_type
+extra_rhs_core_type ct _pos =
+  -- FIXME
+  -- let docs = rhs_info pos in
+  ct -- { ptyp_attributes = add_info_attrs docs (ptyp_attributes ct) }
+
+mkTe :: MkTeOpts -> Loc Longident -> [ExtensionConstructor] -> TypeExtension
+mkTe (MkTeOpts {..}) path constructors = TypeExtension
+  { ptyext_path         = path
+  , ptyext_params       = params
+  , ptyext_constructors = constructors
+  , ptyext_private      = priv
+  , ptyext_attributes   = attrs
+  }
+
+data MkTeOpts = MkTeOpts
+  { attrs  :: [Attribute]
+  , docs   :: Docs
+  , params :: [(Core_type, Variance)]
+  , priv   :: Private_flag
+  }
+
+mk_exception :: MkExceptionOpts -> ExtensionConstructor -> TypeException
+mk_exception (MkExceptionOpts {..}) ctor = TypeException
+  { ptyexn_constructor = ctor
+  , ptyexn_attributes  = attrs
+  }
+
+data MkExceptionOpts = MkExceptionOpts
+  { attrs  :: [Attribute]
+  , docs   :: Docs
+  }
+
+instance Default MkExceptionOpts where
+  def = MkExceptionOpts
+    { attrs  = []
+    , docs   = empty_docs
+    }
+
+rebind :: RebindOpts -> Loc String -> Loc Longident -> ExtensionConstructor
+rebind (RebindOpts {..}) name lid = ExtensionConstructor
+  { pext_name       = name
+  , pext_kind       = Pext_rebind lid
+  , pext_loc        = loc
+  , pext_attributes = add_docs_attrs docs (add_info_attrs info attrs)
+  }
+
+data RebindOpts = RebindOpts
+  { attrs  :: [Attribute]
+  , docs   :: Docs
+  , loc    :: Location
+  , info   :: Info
+  }
+
+instance Default RebindOpts where
+  def = RebindOpts
+    { attrs  = []
+    , docs   = empty_docs
+    , loc    = default_loc
+    , info   = empty_info
+    }
+
+decl :: DeclOpts -> Maybe Core_type -> Loc String -> ExtensionConstructor
+decl (DeclOpts {..}) res name = ExtensionConstructor
+  { pext_name       = name
+  , pext_kind       = Pext_decl args res
+  , pext_loc        = loc
+  , pext_attributes = add_docs_attrs docs (add_info_attrs info attrs)
+  }
+
+data DeclOpts = DeclOpts
+  { args   :: Constructor_arguments
+  , attrs  :: [Attribute]
+  , docs   :: Docs
+  , loc    :: Location
+  , info   :: Info
+  }
+
+instance Default DeclOpts where
+  def = DeclOpts
+    { args   = Pcstr_tuple []
+    , attrs  = []
+    , docs   = empty_docs
+    , loc    = default_loc
+    , info   = empty_info
+    }
+
+symbol_rloc :: () -> Location
+symbol_rloc () = none -- FIXME
+
+reloc_pat :: Pattern -> Pattern
+reloc_pat e = e { ppat_loc = symbol_rloc () }
+
+mkinfix :: Expression -> String -> Expression -> Expression
+mkinfix arg1 name arg2 =
+  mkexp $ Pexp_apply (mkoperator name 2) [(Nolabel, arg1), (Nolabel, arg2)]
+
+mkoperator :: String -> Int -> Expression
+mkoperator name pos =
+  let loc = rhsLoc pos in
+  mkExp (def { loc }) $ Pexp_ident (mkLoc (Lident name) loc)
