@@ -9,6 +9,7 @@ module Language.OCaml.Parser.Implementation.Test
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal
+-- import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.TestUtils
 
 prefix :: FilePath
@@ -25,6 +26,7 @@ files = map (prefix ++)
   , "test_06.ml"
   , "test_07.ml"
   , "test_08.ml"
+  -- , "FaCT/tast.ml"
   ]
 
 unitTests :: TestTree
@@ -34,16 +36,13 @@ unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
 test :: IO ()
 test = defaultMain unitTests
 
+-- foo = debugParsing implementation_P <$> readFile (prefix ++ "FaCT/tast.ml")
+
 -- foo = debugParsing implementation_P <$> readFile (prefix ++ "stdlib/arg.ml")
 
 -- bar = debugParsing implementation_P [s|
 
--- let print_spec buf (key, spec, doc) =
---   if String.length doc > 0 then
---     match spec with
---     | Symbol (l, _) ->
---         bprintf buf "  %s %s%s\n" key (make_symlist "{" "|" "}" l) doc
---     | _ ->
---         bprintf buf "  %s %s\n" key doc
+-- let add_help speclist =
+--   speclist @ (add1 @ add2)
 
 --   |]

@@ -4,11 +4,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Language.OCaml.Parser.Common
-  ( DeclOpts(..)
+  ( ConstructorOpts(..)
+  , DeclOpts(..)
   , MkExceptionOpts(..)
   , MkTypeOpts(..)
   , addlb
   , caseExp
+  , constructor
   , decl
   , expr_of_let_bindings
   , extra_rhs_core_type
@@ -468,3 +470,32 @@ mkoperator :: String -> Int -> Expression
 mkoperator name pos =
   let loc = rhsLoc pos in
   mkExp (def { loc }) $ Pexp_ident (mkLoc (Lident name) loc)
+
+constructor ::
+  ConstructorOpts ->
+  Maybe Core_type ->
+  Loc String ->
+  Constructor_declaration
+constructor (ConstructorOpts {..}) res name =
+  Constructor_declaration
+  { pcd_name       = name
+  , pcd_args       = args
+  , pcd_res        = res
+  , pcd_loc        = loc
+  , pcd_attributes = attrs
+  }
+
+data ConstructorOpts = ConstructorOpts
+  { args   :: Constructor_arguments
+  , attrs  :: [Attribute]
+  , loc    :: Location
+  , info   :: Info
+  }
+
+instance Default ConstructorOpts where
+  def = ConstructorOpts
+    { args = Pcstr_tuple []
+    , attrs = []
+    , loc   = default_loc
+    , info  = empty_info
+    }

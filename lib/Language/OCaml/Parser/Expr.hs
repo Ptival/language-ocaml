@@ -63,12 +63,28 @@ expr_P structure_P seq_expr_P = choice
         opt_bar_P
         l <- match_cases_P'
         return $ mkexp_attrs (Pexp_match e $ reverse l) (Nothing, []) -- FIXME
+      -- IF ... THEN ... ELSE ...
+      , do
+        try if_T
+        -- TODO: ext_attributes
+        c <- seq_expr_P
+        then_T
+        t <- expr_P'
+        e <- choice
+          [ do
+            try else_T
+            Just <$> expr_P'
+          , return Nothing
+          ]
+        return $ mkexp_attrs (Pexp_ifthenelse c t e) (Nothing, []) -- FIXME
       , simple_expr_P'
       ]
-      [ infixP equal_T "="
-      , infixP plus_T  "+"
-      , infixP minus_T "-"
-      , infixP caret_T "^"
+      [ infixP equal_T   "="
+      , infixP plus_T    "+"
+      , infixP minus_T   "-"
+      , infixP caret_T   "^"
+      , infixP greater_T ">"
+      , infixP at_T      "@"
       ]
 
     infixP :: Parser () -> String -> Parser (Expression -> Expression)

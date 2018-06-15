@@ -43,7 +43,12 @@ parens :: Parser a -> Parser a
 parens = between (symbol "(") (symbol ")")
 
 rword :: String -> Parser ()
-rword w = string w *> notFollowedBy alphaNumChar *> ocamlSpace
+rword w =
+  if w `elem` reservedWords
+  then string w *> notFollowedBy alphaNumChar *> ocamlSpace
+  else error
+       $ "The following word must be added to reservedWords in Language.OCaml.Parser.Utils.Utils: "
+       ++ w
 
 symbol :: String -> Parser ()
 symbol = void . L.symbol ocamlSpace

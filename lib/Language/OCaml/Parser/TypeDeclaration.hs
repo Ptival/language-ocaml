@@ -29,7 +29,7 @@ type_declaration_P structure_P = do
   nonrec_flag <- nonrec_flag_P
   params <- optional_type_parameters_P
   n <- l_ident_T
-  (kind, priv, manifest) <- type_kind_P
+  (kind, priv, manifest) <- type_kind_P structure_P
   -- TODO: constraints
   attrs <- post_item_attributes_P structure_P
   let ty = mkType (def { attrs, kind, params, priv }) manifest (mkRHS n 5)

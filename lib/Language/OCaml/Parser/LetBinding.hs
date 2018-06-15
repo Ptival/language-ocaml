@@ -7,8 +7,8 @@ module Language.OCaml.Parser.LetBinding
 
 import Text.Megaparsec
 
-import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Definitions.Parsing.Parser.LetBindings
+import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.LetBindingBody
 import Language.OCaml.Parser.PostItemAttributes

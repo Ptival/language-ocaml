@@ -14,8 +14,8 @@ import Language.OCaml.Parser.PrivateFlag
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-type_kind_P :: Parser (Type_kind, Private_flag, Maybe Core_type)
-type_kind_P = choice
+type_kind_P :: Parser Structure -> Parser (Type_kind, Private_flag, Maybe Core_type)
+type_kind_P structure_P = choice
   [ do
     t <- try $ do
       equal_T
@@ -38,4 +38,4 @@ type_kind_P = choice
   , return (Ptype_abstract, Public, Nothing)
   ]
   where
-    constructor_declarations_P' = constructor_declarations_P core_type_P
+    constructor_declarations_P' = constructor_declarations_P structure_P core_type_P

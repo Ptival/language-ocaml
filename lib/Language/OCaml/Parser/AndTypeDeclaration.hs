@@ -24,7 +24,7 @@ and_type_declaration_P structure_P = do
   -- TODO: attributes
   -- TODO: optional_type_parameters
   i <- l_ident_T
-  (kind, priv, manifest) <- type_kind_P
+  (kind, priv, manifest) <- type_kind_P structure_P
   -- TODO: constraints
   attrs <- post_item_attributes_P structure_P -- FIXME: use me
   return $ mkType (def { attrs, kind, priv }) manifest (mkRHS i 4) -- FIXME: [] and []

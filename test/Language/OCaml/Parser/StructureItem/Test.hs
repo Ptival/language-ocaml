@@ -68,7 +68,8 @@ test = defaultMain unitTests
 
 -- _debug = debugParsing structure_item_P
 --   [s|
--- type 'a foo =
---   | Beep of 'a
---   | Boop of 'a foo
+
+-- type binary_tree =
+--     | Leaf of a b
+
 --   |]

@@ -28,6 +28,11 @@ expr_tests =
   , "f 0 a 1 b 2 c"
   , "fun x -> x y"
   , "fun x y -> z"
+  , "f a > g b"
+  , "if a then b else c"
+  , "if a then b"
+  , "if (M.f x > 0) then a else b"
+  , "if M.f x > 0 then a else b"
   ]
 
 unitTests :: TestTree

@@ -1,6 +1,7 @@
 module Language.OCaml.Parser.Tokens
   ( and_T
   , as_T
+  , at_T
   , bang_T
   , bar_T
   , caret_T
@@ -10,15 +11,19 @@ module Language.OCaml.Parser.Tokens
   , colon_greater_T
   , comma_T
   , dot_T
+  , else_T
   , equal_T
   , exception_T
   , false_T
   , fun_T
   , function_T
+  , greater_T
+  , if_T
   , in_T
   , int_T
   , l_brace_T
   , l_bracket_T
+  , l_bracket_at_T
   , l_bracket_at_at_T
   , l_ident_T
   , l_paren_T
@@ -42,6 +47,7 @@ module Language.OCaml.Parser.Tokens
   , semi_semi_T
   , star_T
   , string_T
+  , then_T
   , true_T
   , type_T
   , u_ident_T
@@ -63,11 +69,25 @@ and_T = rword "and"
 as_T :: Parser ()
 as_T = rword "as"
 
+at_T :: Parser ()
+at_T = symbol "@"
+
 bang_T :: Parser ()
 bang_T = symbol "!"
 
 bar_T :: Parser ()
 bar_T = symbol "|"
+
+binDigitChar :: Parser Char
+binDigitChar = char '0' <|> char '1'
+
+bin_literal_P :: Parser String
+bin_literal_P = do -- WARNING: do not add `lexeme` here
+  _ <- char '0'
+  _ <- char 'b' <|> char 'B'
+  h <- binDigitChar
+  t <- many (binDigitChar <|> char '_')
+  return $ h : t
 
 caret_T :: Parser ()
 caret_T = symbol "^"
@@ -91,8 +111,17 @@ colon_greater_T = symbol ":>"
 comma_T :: Parser ()
 comma_T = symbol ","
 
+decimal_literal_P :: Parser String
+decimal_literal_P = do -- WARNING: do not add `lexeme` here
+  h <- digitChar
+  t <- many (digitChar <|> char '_')
+  return $ h : t
+
 dot_T :: Parser ()
 dot_T = symbol "."
+
+else_T :: Parser ()
+else_T = rword "else"
 
 equal_T :: Parser ()
 equal_T = symbol "="
@@ -106,40 +135,21 @@ fun_T = rword "fun"
 function_T :: Parser ()
 function_T = rword "function"
 
-binDigitChar :: Parser Char
-binDigitChar = char '0' <|> char '1'
-
-bin_literal_P :: Parser String
-bin_literal_P = lexeme $ do
-  _ <- char '0'
-  _ <- char 'b' <|> char 'B'
-  h <- binDigitChar
-  t <- many (binDigitChar <|> char '_')
-  return $ h : t
-
-decimal_literal_P :: Parser String
-decimal_literal_P = lexeme $ do
-  h <- digitChar
-  t <- many (digitChar <|> char '_')
-  return $ h : t
+if_T :: Parser ()
+if_T = rword "if"
 
 exception_T :: Parser ()
 exception_T = rword "exception"
 
+greater_T :: Parser ()
+greater_T = symbol ">"
+
 hex_literal_P :: Parser String
-hex_literal_P = lexeme $ do
+hex_literal_P = do -- WARNING: do not add `lexeme` here
   _ <- char '0'
   _ <- char 'x' <|> char 'X'
   h <- hexDigitChar
   t <- many (hexDigitChar <|> char '_')
-  return $ h : t
-
-oct_literal_P :: Parser String
-oct_literal_P = lexeme $ do
-  _ <- char '0'
-  _ <- char 'o' <|> char 'O'
-  h <- octDigitChar
-  t <- many (octDigitChar <|> char '_')
   return $ h : t
 
 int_literal_P :: Parser String
@@ -154,7 +164,7 @@ in_T :: Parser ()
 in_T = rword "in"
 
 int_T :: Parser (String, Maybe Char)
-int_T = do
+int_T = lexeme $ do
   l <- int_literal_P
   m <- choice
     [ Just <$> literal_modifier_P
@@ -191,6 +201,9 @@ l_brace_T = symbol "{"
 l_bracket_T :: Parser ()
 l_bracket_T = symbol "["
 
+l_bracket_at_T :: Parser ()
+l_bracket_at_T = symbol "[@"
+
 l_bracket_at_at_T :: Parser ()
 l_bracket_at_at_T = symbol "[@@"
 
@@ -206,9 +219,6 @@ l_paren_T = symbol "("
 let_T :: Parser ()
 let_T = rword "let"
 
-nonrec_T :: Parser ()
-nonrec_T = rword "nonrec"
-
 match_T :: Parser ()
 match_T = rword "match"
 
@@ -223,6 +233,17 @@ module_T = rword "module"
 
 mutable_T :: Parser ()
 mutable_T = rword "mutable"
+
+nonrec_T :: Parser ()
+nonrec_T = rword "nonrec"
+
+oct_literal_P :: Parser String
+oct_literal_P = do -- WARNING: do not add `lexeme` here
+  _ <- char '0'
+  _ <- char 'o' <|> char 'O'
+  h <- octDigitChar
+  t <- many (octDigitChar <|> char '_')
+  return $ h : t
 
 of_T :: Parser ()
 of_T = rword "of"
@@ -267,6 +288,9 @@ string_T = lexeme $ do
   s <- many $ satisfy ((/=) '"')
   _ <- char '"'
   return (s, Nothing)
+
+then_T :: Parser ()
+then_T = rword "then"
 
 true_T :: Parser ()
 true_T = rword "true"

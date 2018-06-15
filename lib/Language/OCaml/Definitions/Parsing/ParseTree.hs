@@ -37,7 +37,6 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , Type_kind(..)
   , Value_binding(..)
   , Value_description(..)
-  , constructor
   , field
   , none
   ) where
@@ -126,11 +125,11 @@ data Label_declaration = Label_declaration
   deriving (Eq, Generic, Show)
 
 data Constructor_declaration = Constructor_declaration
-  { pcd_name :: Loc String
-  , pcd_args :: Constructor_arguments
-  , pcd_res :: Maybe Core_type
-  -- , pcd_loc :: Location
-  -- , pcd_attributes :: attributes
+  { pcd_name       :: Loc String
+  , pcd_args       :: Constructor_arguments
+  , pcd_res        :: Maybe Core_type
+  , pcd_loc        :: Location
+  , pcd_attributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -144,20 +143,6 @@ data Longident
   | Ldot Longident String
   | Lapply Longident Longident
   deriving (Eq, Generic, Show)
-
-constructor ::
-  Constructor_arguments ->
-  Maybe Core_type ->
-  Loc String ->
-  Constructor_declaration
-constructor {- loc attrs info -} args res name =
-  Constructor_declaration
-  { pcd_name = name
-  , pcd_args = args
-  , pcd_res  = res
-  --, pcd_loc :: Location.t
-  --, pcd_attributes :: attributes
-  }
 
 field ::
   Mutable_flag ->

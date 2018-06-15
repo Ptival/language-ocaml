@@ -15,6 +15,7 @@ seq_expr_tests =
   [ "b"
   , "Foo.bar"
   , "Foo.bar_baz"
+  , "M.f x > 0"
   ]
 
 unitTests :: TestTree
