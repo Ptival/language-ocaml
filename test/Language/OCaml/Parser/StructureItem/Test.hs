@@ -66,4 +66,4 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-_debug = debugParsing type_kind_P "= A of n c d [@@ deriving a]"
+-- _debug = debugParsing type_declaration_P "type a = A of n c d [@@deriving eq]"

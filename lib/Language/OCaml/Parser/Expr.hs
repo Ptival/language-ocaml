@@ -2,7 +2,7 @@ module Language.OCaml.Parser.Expr
   ( expr_P
   ) where
 
-import Text.Megaparsec
+import Text.Megaparsec hiding (token)
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
@@ -21,12 +21,12 @@ import Language.OCaml.PrettyPrinter ()
 
 expr_P :: Parser Structure -> Parser Expression -> Parser Expression
 expr_P structure_P seq_expr_P = choice
-  [ try $ p <* notFollowedBy comma_T
+  [ try $ parser <* notFollowedBy comma_T
   , mkexp . Pexp_tuple . reverse <$>
-    chainl1' p (comma_T *> (return $ flip (:))) (: [])
+    chainl1' parser (comma_T *> (return $ flip (:))) (: [])
   ]
   where
-    p = leftRecursive
+    parser = leftRecursive
       [ try $ do
         e <- simple_expr_P'
         l <- simple_labeled_expr_list_P seq_expr_P

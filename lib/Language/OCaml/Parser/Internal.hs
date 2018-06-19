@@ -1,12 +1,16 @@
 module Language.OCaml.Parser.Internal
   ( module Language.OCaml.Parser.Tokens
   , Parser
+  , attribute_P
+  , attributes_P
   , constant_P
   , constr_ident_P
   , constr_longident_P
   , constructor_arguments_P
+  , constructor_declaration_P
   , constructor_declarations_P
   , core_type_P
+  , core_type_list_P
   , expr_P
   , generalized_constructor_arguments_P
   , ident_P
@@ -36,13 +40,17 @@ module Language.OCaml.Parser.Internal
 import           Language.OCaml.Definitions.Parsing.ASTTypes
 import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import           Language.OCaml.Definitions.Parsing.ParseTree
+import qualified Language.OCaml.Parser.Attribute
+import qualified Language.OCaml.Parser.Attributes
 import           Language.OCaml.Parser.Common
 import           Language.OCaml.Parser.Constant
 import           Language.OCaml.Parser.ConstrIdent
 import           Language.OCaml.Parser.ConstrLongident
 import qualified Language.OCaml.Parser.ConstructorArguments
+import qualified Language.OCaml.Parser.ConstructorDeclaration
 import qualified Language.OCaml.Parser.ConstructorDeclarations
 import           Language.OCaml.Parser.CoreType
+import qualified Language.OCaml.Parser.CoreTypeList
 import qualified Language.OCaml.Parser.Expr
 import qualified Language.OCaml.Parser.GeneralizedConstructorArguments
 import           Language.OCaml.Parser.Implementation
@@ -71,13 +79,26 @@ import           Language.OCaml.Parser.Utils.Types
 
 -- Tying the knots for our clients!
 
+attribute_P :: Parser (Loc String, Payload)
+attribute_P = Language.OCaml.Parser.Attribute.attribute_P structure_P
+
+attributes_P :: Parser [(Loc String, Payload)]
+attributes_P = Language.OCaml.Parser.Attributes.attributes_P structure_P
+
 constructor_arguments_P :: Parser Constructor_arguments
 constructor_arguments_P =
   Language.OCaml.Parser.ConstructorArguments.constructor_arguments_P core_type_P
 
+constructor_declaration_P :: Parser Constructor_declaration
+constructor_declaration_P =
+  Language.OCaml.Parser.ConstructorDeclaration.constructor_declaration_P structure_P core_type_P
+
 constructor_declarations_P :: Parser [Constructor_declaration]
 constructor_declarations_P =
   Language.OCaml.Parser.ConstructorDeclarations.constructor_declarations_P structure_P core_type_P
+
+core_type_list_P :: Parser [Core_type]
+core_type_list_P = Language.OCaml.Parser.CoreTypeList.core_type_list_P core_type_P
 
 expr_P :: Parser Expression
 expr_P = Language.OCaml.Parser.Expr.expr_P structure_P seq_expr_P

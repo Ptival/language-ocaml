@@ -14,12 +14,12 @@ import Language.OCaml.Parser.Utils.Types
 
 pattern_P :: Parser Pattern
 pattern_P = choice
-  [ try $ p <* notFollowedBy comma_T
+  [ try $ parser <* notFollowedBy comma_T
   , mkpat . Ppat_tuple <$>
-    chainl1' p (comma_T *> (return $ flip (:))) (: [])
+    chainl1' parser (comma_T *> (return $ flip (:))) (: [])
   ]
   where
-    p = leftRecursive
+    parser = leftRecursive
       [ pattern_gen_P pattern_P
       ]
       -- pattern AS val_ident

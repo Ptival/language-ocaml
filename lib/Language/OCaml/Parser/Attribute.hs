@@ -13,8 +13,9 @@ import           Language.OCaml.Parser.Utils.Types
 
 attribute_P :: Parser Structure -> Parser (ASTTypes.Loc String, Payload)
 attribute_P structure_P = do
-  try $ l_bracket_at_T
-  i <- attr_id_P
+  i <- try $ do
+    l_bracket_at_T
+    attr_id_P
   p <- payload_P structure_P
   r_bracket_T
   return (i, p)

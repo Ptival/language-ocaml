@@ -2,7 +2,7 @@ module Language.OCaml.Parser.LabelDeclarationSemi
   ( label_declaration_semi_P
   ) where
 
-import Text.Megaparsec
+import Text.Megaparsec hiding (label)
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common

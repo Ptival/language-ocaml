@@ -19,8 +19,7 @@ import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.TypeKind
 import           Language.OCaml.Parser.Utils.Types
 
-type_declaration_P ::
-  Parser Structure -> Parser (ASTTypes.Rec_flag, Type_declaration)
+type_declaration_P :: Parser Structure -> Parser (ASTTypes.Rec_flag, Type_declaration)
 type_declaration_P structure_P = do
   try $ type_T
   -- TODO: ext_attributes

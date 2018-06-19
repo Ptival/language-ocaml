@@ -206,7 +206,7 @@ rhsLoc _ = none -- FIXME
 mkRHS :: a -> Int -> Loc a
 mkRHS rhs pos = mkLoc rhs (rhsLoc pos)
 
-text_str :: a -> [Structure_item]
+text_str :: Int -> [Structure_item]
 text_str pos = textStr (rhs_text pos)
 
 attributeStr :: Maybe Location -> Attribute -> Structure_item
