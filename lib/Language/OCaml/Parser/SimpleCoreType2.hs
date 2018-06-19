@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
 module Language.OCaml.Parser.SimpleCoreType2
   ( simple_core_type2_P
   ) where

@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
 module Language.OCaml.Parser.StrictBinding
   ( strict_binding_P
   ) where

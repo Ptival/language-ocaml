@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.TypeKind
   ( type_kind_P
   ) where

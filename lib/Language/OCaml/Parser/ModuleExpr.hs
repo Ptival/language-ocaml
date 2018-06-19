@@ -1,6 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.ModuleExpr
   ( module_expr_P
   ) where

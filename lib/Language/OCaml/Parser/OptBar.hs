@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.OptBar
   ( opt_bar_P
   ) where

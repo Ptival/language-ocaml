@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
 module Language.OCaml.Parser.StrExceptionDeclaration
   ( str_exception_declaration_P
   ) where

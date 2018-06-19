@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.CoreTypeList
   ( core_type_list_P
   ) where

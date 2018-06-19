@@ -1,7 +1,5 @@
-{-# LANGUAGE NamedFieldPuns #-}
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE NamedFieldPuns #-}
 
 module Language.OCaml.Parser.SigExceptionDeclaration
   ( sig_exception_declaration_P

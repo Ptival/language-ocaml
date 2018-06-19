@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.ConstructorDeclarations
   ( constructor_declarations_P
   ) where

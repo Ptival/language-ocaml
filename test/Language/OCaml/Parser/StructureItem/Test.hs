@@ -66,10 +66,4 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 test :: IO ()
 test = defaultMain unitTests
 
--- _debug = debugParsing structure_item_P
---   [s|
-
--- type binary_tree =
---     | Leaf of a b
-
---   |]
+_debug = debugParsing type_kind_P "= A of n c d [@@ deriving a]"

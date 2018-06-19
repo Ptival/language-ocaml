@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
 {-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE DuplicateRecordFields #-}
 {-# LANGUAGE NamedFieldPuns #-}

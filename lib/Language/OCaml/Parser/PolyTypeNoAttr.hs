@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.PolyTypeNoAttr
   ( poly_type_no_attr_P
   ) where

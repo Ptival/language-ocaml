@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-type-defaults #-}
-
 module Language.OCaml.Parser.SimplePatternNotIdent
   ( simple_pattern_not_ident_P
   ) where

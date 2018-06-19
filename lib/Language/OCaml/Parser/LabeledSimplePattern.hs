@@ -1,5 +1,3 @@
-{-# OPTIONS_GHC -fno-warn-name-shadowing #-}
-
 module Language.OCaml.Parser.LabeledSimplePattern
   ( labeled_simple_pattern_P
   ) where
