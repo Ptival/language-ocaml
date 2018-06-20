@@ -5,16 +5,16 @@ module Language.OCaml.Parser.SimpleCoreType
 import Text.Megaparsec
 
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Parser.CoreTypeCommaList
 import Language.OCaml.Parser.SimpleCoreType2
-import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.Parser.Utils.Utils
 
 simple_core_type_P :: Parser Core_type -> Parser Core_type
 simple_core_type_P core_type_P = choice
-  [ simple_core_type2_P
+  [ simple_core_type2_P core_type_P
   , do
-    l <- parens (sepBy core_type_P comma_T)
+    l <- parens $ core_type_comma_list_P core_type_P
     case l of
       [sty] -> return sty
       _ -> fail "Parse error"

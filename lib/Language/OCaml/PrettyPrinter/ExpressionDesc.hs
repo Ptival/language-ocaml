@@ -49,6 +49,11 @@ expression_desc_PP = \case
   Pexp_ifthenelse _e1 _e2 _e3 -> error "TODO"
   Pexp_sequence _e1 _e2 -> error "TODO"
   Pexp_extension _e -> error "TODO"
+  Pexp_try _ _ -> error "TODO"
+  Pexp_array _ -> error "TODO"
+  Pexp_while _ _ -> error "TODO"
+  Pexp_unreachable -> error "TODO"
+  Pexp_record _ _ -> error "TODO"
 
 instance Pretty Expression => Pretty Expression_desc where
   pretty = expression_desc_PP

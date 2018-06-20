@@ -1,5 +1,6 @@
 {-# LANGUAGE DisambiguateRecordFields #-}
 {-# LANGUAGE DuplicateRecordFields #-}
+{-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE RecordWildCards #-}
 
@@ -23,6 +24,7 @@ module Language.OCaml.Parser.Common
   , mkexp
   , mkexp_attrs
   , mkexp_constraint
+  , mkexp_opt_constraint
   , mkinfix
   , mkLoc
   , mklb
@@ -40,6 +42,7 @@ module Language.OCaml.Parser.Common
   , mkstr
   , mkstr_ext
   , mkstrexp
+  , mktailexp
   , mkTe
   , mkTyp
   , mkType
@@ -499,3 +502,28 @@ instance Default ConstructorOpts where
     , loc   = default_loc
     , info  = empty_info
     }
+
+mktailexp :: Location -> [Expression] -> Expression
+mktailexp nilloc = \case
+  [] ->
+    let loc = nilloc { loc_ghost = True } in
+    let nil = Loc { txt = Lident "[]", loc } in
+    mkExp (def { loc }) $ Pexp_construct nil Nothing
+  e1 : el ->
+    let exp_el = mktailexp nilloc el in
+    let loc = Location
+          { loc_start = loc_start . pexp_loc $ e1
+          , loc_end   = loc_end   . pexp_loc $ e1
+          , loc_ghost = True
+          }
+    in
+    let arg = mkExp (def { loc }) $ Pexp_tuple [e1, exp_el] in
+    mkexp_cons (loc {loc_ghost = True}) arg loc
+
+mkexp_cons :: Location -> Expression -> Location -> Expression
+mkexp_cons consloc args loc = mkExp (def { loc }) $ Pexp_construct (mkLoc (Lident "::") consloc) (Just args)
+
+mkexp_opt_constraint :: Expression -> Maybe (Maybe Core_type, Maybe Core_type) -> Expression
+mkexp_opt_constraint e = \case
+  Nothing -> e
+  Just constraint -> mkexp_constraint e constraint

@@ -199,17 +199,17 @@ data Expression_desc
   | Pexp_fun Arg_label (Maybe Expression) Pattern Expression
   | Pexp_apply Expression [(Arg_label, Expression)]
   | Pexp_match Expression [Case]
-  -- | Pexp_try expression * case list
+  | Pexp_try Expression [Case]
   | Pexp_tuple [Expression]
   | Pexp_construct (Loc Longident) (Maybe Expression)
   -- | Pexp_variant Asttypes.label * expression option
-  -- | Pexp_record (Longident.t Asttypes.loc * expression) list * expression option
+  | Pexp_record [(Loc Longident, Expression)] (Maybe Expression)
   | Pexp_field Expression (Loc Longident)
   -- | Pexp_setfield expression * Longident.t Asttypes.loc * expression
-  -- | Pexp_array expression list
+  | Pexp_array [Expression]
   | Pexp_ifthenelse Expression Expression (Maybe Expression)
   | Pexp_sequence Expression Expression
-  -- | Pexp_while expression * expression
+  | Pexp_while Expression Expression
   -- | Pexp_for pattern * expression * expression * Asttypes.direction_flag * expression
   | Pexp_constraint Expression Core_type
   | Pexp_coerce Expression (Maybe Core_type) Core_type
@@ -227,7 +227,7 @@ data Expression_desc
   -- | Pexp_pack module_expr
   -- | Pexp_open Asttypes.override_flag * Longident.t Asttypes.loc * expression
   | Pexp_extension Extension
-  -- | Pexp_unreachable
+  | Pexp_unreachable
   deriving (Eq, Generic, Show)
 
 type Signature = [Signature_item]

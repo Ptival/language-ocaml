@@ -53,9 +53,11 @@ Library
                    Language.OCaml.Parser.ConstructorDeclarations
                    Language.OCaml.Parser.CoreType
                    Language.OCaml.Parser.CoreType2
+                   Language.OCaml.Parser.CoreTypeCommaList
                    Language.OCaml.Parser.CoreTypeList
                    Language.OCaml.Parser.CoreTypeNoAttr
                    Language.OCaml.Parser.Expr
+                   Language.OCaml.Parser.ExprSemiList
                    Language.OCaml.Parser.FunBinding
                    Language.OCaml.Parser.FunDef
                    Language.OCaml.Parser.GeneralizedConstructorArguments
@@ -67,6 +69,8 @@ Library
                    Language.OCaml.Parser.LabelLongident
                    Language.OCaml.Parser.LabeledSimpleExpr
                    Language.OCaml.Parser.LabeledSimplePattern
+                   Language.OCaml.Parser.LblExpr
+                   Language.OCaml.Parser.LblExprList
                    Language.OCaml.Parser.LetBinding
                    Language.OCaml.Parser.LetBindingBody
                    Language.OCaml.Parser.LetBindings
@@ -82,6 +86,8 @@ Library
                    Language.OCaml.Parser.OpenStatement
                    Language.OCaml.Parser.Operator
                    Language.OCaml.Parser.OptBar
+                   Language.OCaml.Parser.OptTypeConstraint
+                   Language.OCaml.Parser.OptSemi
                    Language.OCaml.Parser.OptionalTypeParameter
                    Language.OCaml.Parser.OptionalTypeParameters
                    Language.OCaml.Parser.OptionalTypeVariable
@@ -95,6 +101,7 @@ Library
                    Language.OCaml.Parser.PostItemAttributes
                    Language.OCaml.Parser.PrivateFlag
                    Language.OCaml.Parser.RecFlag
+                   Language.OCaml.Parser.RecordExpr
                    Language.OCaml.Parser.SeqExpr
                    Language.OCaml.Parser.SigExceptionDeclaration
                    Language.OCaml.Parser.SimpleCoreType

@@ -110,7 +110,7 @@ generalized_constructor_arguments_P =
 
 labeled_simple_expr_P :: Parser (Arg_label, Expression)
 labeled_simple_expr_P =
-  Language.OCaml.Parser.LabeledSimpleExpr.labeled_simple_expr_P seq_expr_P
+  Language.OCaml.Parser.LabeledSimpleExpr.labeled_simple_expr_P seq_expr_P expr_P
 
 let_binding_P :: Parser Let_bindings
 let_binding_P =
@@ -130,11 +130,11 @@ seq_expr_P :: Parser Expression
 seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P
 
 simple_expr_P :: Parser Expression
-simple_expr_P = Language.OCaml.Parser.SimpleExpr.simple_expr_P seq_expr_P
+simple_expr_P = Language.OCaml.Parser.SimpleExpr.simple_expr_P seq_expr_P expr_P
 
 simple_labeled_expr_list_P :: Parser [(Arg_label, Expression)]
 simple_labeled_expr_list_P =
-  Language.OCaml.Parser.SimpleLabeledExprList.simple_labeled_expr_list_P seq_expr_P
+  Language.OCaml.Parser.SimpleLabeledExprList.simple_labeled_expr_list_P seq_expr_P expr_P
 
 simple_pattern_P :: Parser Pattern
 simple_pattern_P = Language.OCaml.Parser.SimplePattern.simple_pattern_P pattern_P

@@ -9,10 +9,10 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleExpr
 import Language.OCaml.Parser.Utils.Types
 
-labeled_simple_expr_P :: Parser Expression -> Parser (Arg_label, Expression)
-labeled_simple_expr_P seq_expr_P = choice
+labeled_simple_expr_P :: Parser Expression -> Parser Expression -> Parser (Arg_label, Expression)
+labeled_simple_expr_P seq_expr_P expr_P = choice
   [ do
-    e <- simple_expr_P seq_expr_P
+    e <- simple_expr_P seq_expr_P expr_P
     return (Nolabel, e)
     -- TODO: label_expr
   ]

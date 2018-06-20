@@ -29,7 +29,7 @@ expr_P structure_P seq_expr_P = choice
     parser = leftRecursive
       [ try $ do
         e <- simple_expr_P'
-        l <- simple_labeled_expr_list_P seq_expr_P
+        l <- simple_labeled_expr_list_P'
         return $ mkexp $ Pexp_apply e (reverse l)
       , do
         b <- try $ do
@@ -77,9 +77,11 @@ expr_P structure_P seq_expr_P = choice
         return $ mkexp_attrs (Pexp_ifthenelse c t e) (Nothing, []) -- FIXME
       , simple_expr_P'
       ]
+      -- FIXME: deal with associativity?
       [ infixP equal_T   "="
       , infixP plus_T    "+"
       , infixP minus_T   "-"
+      , infixP star_T    "*"
       , infixP caret_T   "^"
       , infixP greater_T ">"
       , infixP at_T      "@"
@@ -91,6 +93,7 @@ expr_P structure_P seq_expr_P = choice
       e2 <- expr_P'
       return $ \ e1 -> mkinfix e1 symbol e2
 
-    expr_P'        = expr_P        structure_P seq_expr_P
-    simple_expr_P' = simple_expr_P seq_expr_P
-    match_cases_P' = match_cases_P seq_expr_P
+    expr_P'                     = expr_P                     structure_P seq_expr_P
+    simple_expr_P'              = simple_expr_P                          seq_expr_P expr_P'
+    simple_labeled_expr_list_P' = simple_labeled_expr_list_P             seq_expr_P expr_P'
+    match_cases_P'              = match_cases_P                          seq_expr_P

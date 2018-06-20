@@ -33,7 +33,8 @@ type_kind_P structure_P = choice
     labels <- label_declarations_P
     r_brace_T
     return (Ptype_record labels, priv, Nothing)
-  , return (Ptype_abstract, Public, Nothing)
+  -- FIXME: commenting this out as it helps with debugging, but this is a valid parse of type kind
+  -- , return (Ptype_abstract, Public, Nothing)
   ]
   where
     constructor_declarations_P' = constructor_declarations_P structure_P core_type_P
