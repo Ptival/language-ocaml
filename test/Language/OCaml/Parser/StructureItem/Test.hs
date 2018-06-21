@@ -57,6 +57,12 @@ type 'a binary_tree =
     | Tree of 'a binary_tree * 'a binary_tree
   |]
 
+  ,  [s|
+type 'a list =
+  | Nil
+  | Cons of ('a * 'a list)
+  |]
+
   ]
 
 unitTests :: TestTree

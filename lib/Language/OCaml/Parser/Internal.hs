@@ -3,6 +3,7 @@ module Language.OCaml.Parser.Internal
   , Parser
   , attribute_P
   , attributes_P
+  , bar_constructor_declaration_P
   , constant_P
   , constr_ident_P
   , constr_longident_P
@@ -10,6 +11,8 @@ module Language.OCaml.Parser.Internal
   , constructor_declaration_P
   , constructor_declarations_P
   , core_type_P
+  , core_type2_P
+  , core_type_comma_list_P
   , core_type_list_P
   , expr_P
   , generalized_constructor_arguments_P
@@ -28,6 +31,9 @@ module Language.OCaml.Parser.Internal
   , post_item_attributes_P
   , record_expr_P
   , seq_expr_P
+  , simple_core_type_P
+  , simple_core_type2_P
+  , simple_core_type_or_tuple_P
   , simple_expr_P
   , simple_labeled_expr_list_P
   , simple_pattern_P
@@ -45,6 +51,7 @@ import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import qualified Language.OCaml.Parser.Attribute
 import qualified Language.OCaml.Parser.Attributes
+import qualified Language.OCaml.Parser.BarConstructorDeclaration
 import           Language.OCaml.Parser.Common
 import           Language.OCaml.Parser.Constant
 import           Language.OCaml.Parser.ConstrIdent
@@ -53,6 +60,8 @@ import qualified Language.OCaml.Parser.ConstructorArguments
 import qualified Language.OCaml.Parser.ConstructorDeclaration
 import qualified Language.OCaml.Parser.ConstructorDeclarations
 import           Language.OCaml.Parser.CoreType
+import qualified Language.OCaml.Parser.CoreType2
+import qualified Language.OCaml.Parser.CoreTypeCommaList
 import qualified Language.OCaml.Parser.CoreTypeList
 import qualified Language.OCaml.Parser.Expr
 import qualified Language.OCaml.Parser.GeneralizedConstructorArguments
@@ -70,6 +79,9 @@ import           Language.OCaml.Parser.PatternNoExn
 import qualified Language.OCaml.Parser.PostItemAttributes
 import qualified Language.OCaml.Parser.RecordExpr
 import qualified Language.OCaml.Parser.SeqExpr
+import qualified Language.OCaml.Parser.SimpleCoreType
+import qualified Language.OCaml.Parser.SimpleCoreType2
+import qualified Language.OCaml.Parser.SimpleCoreTypeOrTuple
 import qualified Language.OCaml.Parser.SimpleExpr
 import qualified Language.OCaml.Parser.SimpleLabeledExprList
 import qualified Language.OCaml.Parser.SimplePattern
@@ -91,6 +103,10 @@ attribute_P = Language.OCaml.Parser.Attribute.attribute_P structure_P
 attributes_P :: Parser [(Loc String, Payload)]
 attributes_P = Language.OCaml.Parser.Attributes.attributes_P structure_P
 
+bar_constructor_declaration_P :: Parser Constructor_declaration
+bar_constructor_declaration_P =
+  Language.OCaml.Parser.BarConstructorDeclaration.bar_constructor_declaration_P structure_P core_type_P
+
 constructor_arguments_P :: Parser Constructor_arguments
 constructor_arguments_P =
   Language.OCaml.Parser.ConstructorArguments.constructor_arguments_P core_type_P
@@ -102,6 +118,13 @@ constructor_declaration_P =
 constructor_declarations_P :: Parser [Constructor_declaration]
 constructor_declarations_P =
   Language.OCaml.Parser.ConstructorDeclarations.constructor_declarations_P structure_P core_type_P
+
+core_type2_P :: Parser Core_type
+core_type2_P = Language.OCaml.Parser.CoreType2.core_type2_P core_type_P
+
+core_type_comma_list_P :: Parser [Core_type]
+core_type_comma_list_P =
+  Language.OCaml.Parser.CoreTypeCommaList.core_type_comma_list_P core_type_P
 
 core_type_list_P :: Parser [Core_type]
 core_type_list_P = Language.OCaml.Parser.CoreTypeList.core_type_list_P core_type_P
@@ -143,6 +166,16 @@ record_expr_P = Language.OCaml.Parser.RecordExpr.record_expr_P expr_P simple_exp
 
 seq_expr_P :: Parser Expression
 seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P
+
+simple_core_type_P :: Parser Core_type
+simple_core_type_P = Language.OCaml.Parser.SimpleCoreType.simple_core_type_P core_type_P
+
+simple_core_type2_P :: Parser Core_type
+simple_core_type2_P = Language.OCaml.Parser.SimpleCoreType2.simple_core_type2_P core_type_P
+
+simple_core_type_or_tuple_P :: Parser Core_type
+simple_core_type_or_tuple_P =
+  Language.OCaml.Parser.SimpleCoreTypeOrTuple.simple_core_type_or_tuple_P core_type_P
 
 simple_expr_P :: Parser Expression
 simple_expr_P = Language.OCaml.Parser.SimpleExpr.simple_expr_P seq_expr_P expr_P

@@ -12,7 +12,7 @@ import Language.OCaml.Parser.Utils.Utils
 
 simple_core_type_P :: Parser Core_type -> Parser Core_type
 simple_core_type_P core_type_P = choice
-  [ simple_core_type2_P core_type_P
+  [ try $ simple_core_type2_P core_type_P
   , do
     l <- parens $ core_type_comma_list_P core_type_P
     case l of
