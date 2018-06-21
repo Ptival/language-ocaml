@@ -12,6 +12,7 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Language.OCaml.Parser.Internal
+import Language.OCaml.Parser.Utils.Utils
 
 mkParsingTest :: TestName -> Parser a -> String -> TestTree
 mkParsingTest name parser input =
@@ -31,4 +32,4 @@ mkParsingTestFromFile parser fileName =
 
 debugParsing :: Parser a -> String -> Either (ParseError (Token String) Void) a
 debugParsing parser input =
-  parse (parser <* eof) "DEBUG" input
+  parse (ocamlSpace *> parser <* eof) "DEBUG" input
