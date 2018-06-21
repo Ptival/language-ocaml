@@ -5,7 +5,7 @@ module Language.OCaml.Parser.Implementation.Test
   , unitTests
   ) where
 
-import Data.String.QQ
+-- import Data.String.QQ
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal
@@ -26,7 +26,7 @@ files = map (prefix ++)
   , "test_06.ml"
   , "test_07.ml"
   , "test_08.ml"
-  , "FaCT/tast.ml"
+  -- , "FaCT/tast.ml"
   ]
 
 unitTests :: TestTree
@@ -36,12 +36,14 @@ unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
 test :: IO ()
 test = defaultMain unitTests
 
-foo = debugParsing implementation_P <$> readFile (prefix ++ "FaCT/tast.ml")
+-- foo = debugParsing implementation_P <$> readFile (prefix ++ "FaCT/tast.ml")
 
 -- foo = debugParsing implementation_P <$> readFile (prefix ++ "stdlib/arg.ml")
 
-bar = debugParsing implementation_P [s|
+-- bar = debugParsing implementation_P [s|
 
-let default_var_attr = { cache_aligned=false; }
+-- let default_var_attr = { cache_aligned=false; }
 
-  |]
+--   |]
+
+-- baz = debugParsing record_expr_P "a = b"

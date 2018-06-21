@@ -16,6 +16,8 @@ module Language.OCaml.Parser.Internal
   , ident_P
   , implementation_P
   , labeled_simple_expr_P
+  , lbl_expr_P
+  , lbl_expr_list_P
   , let_binding_P
   , let_binding_body_P
   , match_case_P
@@ -24,6 +26,7 @@ module Language.OCaml.Parser.Internal
   , pattern_P
   , pattern_no_exn_P
   , post_item_attributes_P
+  , record_expr_P
   , seq_expr_P
   , simple_expr_P
   , simple_labeled_expr_list_P
@@ -55,6 +58,8 @@ import qualified Language.OCaml.Parser.Expr
 import qualified Language.OCaml.Parser.GeneralizedConstructorArguments
 import           Language.OCaml.Parser.Implementation
 import qualified Language.OCaml.Parser.LabeledSimpleExpr
+import qualified Language.OCaml.Parser.LblExpr
+import qualified Language.OCaml.Parser.LblExprList
 import qualified Language.OCaml.Parser.LetBinding
 import qualified Language.OCaml.Parser.LetBindingBody
 import qualified Language.OCaml.Parser.MatchCase
@@ -63,6 +68,7 @@ import           Language.OCaml.Parser.OpenStatement
 import           Language.OCaml.Parser.Pattern
 import           Language.OCaml.Parser.PatternNoExn
 import qualified Language.OCaml.Parser.PostItemAttributes
+import qualified Language.OCaml.Parser.RecordExpr
 import qualified Language.OCaml.Parser.SeqExpr
 import qualified Language.OCaml.Parser.SimpleExpr
 import qualified Language.OCaml.Parser.SimpleLabeledExprList
@@ -108,6 +114,12 @@ generalized_constructor_arguments_P =
   Language.OCaml.Parser.GeneralizedConstructorArguments.generalized_constructor_arguments_P
   core_type_P
 
+lbl_expr_P :: Parser (Loc Longident, Expression)
+lbl_expr_P = Language.OCaml.Parser.LblExpr.lbl_expr_P expr_P
+
+lbl_expr_list_P :: Parser [(Loc Longident, Expression)]
+lbl_expr_list_P = Language.OCaml.Parser.LblExprList.lbl_expr_list_P expr_P
+
 labeled_simple_expr_P :: Parser (Arg_label, Expression)
 labeled_simple_expr_P =
   Language.OCaml.Parser.LabeledSimpleExpr.labeled_simple_expr_P seq_expr_P expr_P
@@ -125,6 +137,9 @@ match_case_P = Language.OCaml.Parser.MatchCase.match_case_P seq_expr_P
 
 post_item_attributes_P :: Parser [(Loc String, Payload)]
 post_item_attributes_P = Language.OCaml.Parser.PostItemAttributes.post_item_attributes_P structure_P
+
+record_expr_P :: Parser (Maybe Expression, [(Loc Longident, Expression)])
+record_expr_P = Language.OCaml.Parser.RecordExpr.record_expr_P expr_P simple_expr_P
 
 seq_expr_P :: Parser Expression
 seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P

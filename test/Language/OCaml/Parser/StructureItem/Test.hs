@@ -65,5 +65,3 @@ unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
 
 test :: IO ()
 test = defaultMain unitTests
-
-_debug = debugParsing core_type_P "(lvalue' * variable_type') pos_ast"

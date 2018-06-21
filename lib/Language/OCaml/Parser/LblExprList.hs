@@ -10,14 +10,17 @@ import Language.OCaml.Parser.LblExpr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
+-- FIXME: Right now, this is made to look like the OCaml parser, but we could
+-- optimize everything by factoring out the left parsers that are the same.
+
 lbl_expr_list_P :: Parser Expression -> Parser [(Loc Longident, Expression)]
 lbl_expr_list_P expr_P = choice
-  [ do
+  [ try $ do
     e <- lbl_expr_P'
     semi_T
     l <- lbl_expr_list_P'
     return $ e : l
-  , do
+  , try $ do
     e <- lbl_expr_P'
     semi_T
     return [e]

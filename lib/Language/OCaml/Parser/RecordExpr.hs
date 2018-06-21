@@ -14,8 +14,15 @@ record_expr_P ::
   Parser Expression -> Parser Expression -> Parser (Maybe Expression, [(Loc Longident, Expression)])
 record_expr_P expr_P simple_expr_P = choice
   [ do
-    e <- simple_expr_P
-    with_T
-    l <- lbl_expr_list_P expr_P
+    e <- try $ do
+      e <- simple_expr_P
+      with_T
+      return e
+    l <- lbl_expr_list_P'
     return (Just e, l)
+  , do
+    l <- lbl_expr_list_P'
+    return (Nothing, l)
   ]
+  where
+    lbl_expr_list_P' = lbl_expr_list_P expr_P
