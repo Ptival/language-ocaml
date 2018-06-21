@@ -32,6 +32,7 @@ Library
                    Language.OCaml.Definitions.Parsing.ParseTree
                    Language.OCaml.Parser
                    Language.OCaml.Parser.Internal
+                   Language.OCaml.Parser.Utils.Utils
                    Language.OCaml.PrettyPrinter
                    Language.OCaml.PrettyPrinter.Internal
   other-modules:   Language.OCaml.Definitions.Parsing.Docstrings
@@ -127,7 +128,6 @@ Library
                    Language.OCaml.Parser.TypeLongident
                    Language.OCaml.Parser.Utils.Combinators
                    Language.OCaml.Parser.Utils.Types
-                   Language.OCaml.Parser.Utils.Utils
                    Language.OCaml.Parser.ValIdent
                    Language.OCaml.Parser.ValLongident
                    Language.OCaml.PrettyPrinter.ArgLabel
