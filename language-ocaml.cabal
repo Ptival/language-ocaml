@@ -1,5 +1,5 @@
 Name:          language-ocaml
-Version:       0.1.19
+Version:       0.1.20
 Synopsis:      Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 Description:   Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 License:       MIT
@@ -16,9 +16,9 @@ Source-repository head
   location: https://github.com/Ptival/language-ocaml
 
 Library
-  default-language: Haskell2010
-  ghc-options:      -Wall -Wno-orphans
-  hs-source-dirs:   lib, test
+  default-language:  Haskell2010
+  ghc-options:       -Wall -Wno-orphans
+  hs-source-dirs:    lib, test
   pkgconfig-depends: zlib
   build-depends: base                      >= 4.9   && < 4.11,
                  data-default              >= 0.7   && < 0.8,
@@ -37,6 +37,7 @@ Library
                    Language.OCaml.PrettyPrinter.Internal
   other-modules:   Language.OCaml.Definitions.Parsing.Docstrings
                    Language.OCaml.Definitions.Parsing.Location
+                   Language.OCaml.Definitions.Parsing.Longident
                    Language.OCaml.Definitions.Parsing.Parser.LetBinding
                    Language.OCaml.Definitions.Parsing.Parser.LetBindings
                    Language.OCaml.Definitions.StdLib.Lexing
@@ -72,6 +73,8 @@ Library
                    Language.OCaml.Parser.LabeledSimplePattern
                    Language.OCaml.Parser.LblExpr
                    Language.OCaml.Parser.LblExprList
+                   Language.OCaml.Parser.LblPattern
+                   Language.OCaml.Parser.LblPatternList
                    Language.OCaml.Parser.LetBinding
                    Language.OCaml.Parser.LetBindingBody
                    Language.OCaml.Parser.LetBindings
@@ -87,6 +90,7 @@ Library
                    Language.OCaml.Parser.OpenStatement
                    Language.OCaml.Parser.Operator
                    Language.OCaml.Parser.OptBar
+                   Language.OCaml.Parser.OptPatternTypeConstraint
                    Language.OCaml.Parser.OptTypeConstraint
                    Language.OCaml.Parser.OptSemi
                    Language.OCaml.Parser.OptionalTypeParameter
@@ -96,6 +100,7 @@ Library
                    Language.OCaml.Parser.Pattern
                    Language.OCaml.Parser.PatternGen
                    Language.OCaml.Parser.PatternNoExn
+                   Language.OCaml.Parser.PatternSemiList
                    Language.OCaml.Parser.Payload
                    Language.OCaml.Parser.PolyTypeNoAttr
                    Language.OCaml.Parser.PostItemAttribute
@@ -108,6 +113,7 @@ Library
                    Language.OCaml.Parser.SimpleCoreType
                    Language.OCaml.Parser.SimpleCoreType2
                    Language.OCaml.Parser.SimpleCoreTypeOrTuple
+                   Language.OCaml.Parser.SimpleDelimitedPattern
                    Language.OCaml.Parser.SimpleExpr
                    Language.OCaml.Parser.SimplePattern
                    Language.OCaml.Parser.SimpleLabeledExprList

@@ -15,5 +15,7 @@ simple_pattern_P pattern_P = choice
   [ do
     i <- val_ident_P
     return $ mkpat $ Ppat_var $ mkRHS i 1
-  , simple_pattern_not_ident_P pattern_P
+  , simple_pattern_not_ident_P'
   ]
+  where
+    simple_pattern_not_ident_P' = simple_pattern_not_ident_P pattern_P

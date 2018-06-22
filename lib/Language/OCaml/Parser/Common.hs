@@ -25,6 +25,7 @@ module Language.OCaml.Parser.Common
   , mkexp_attrs
   , mkexp_constraint
   , mkexp_opt_constraint
+  , mkpat_opt_constraint
   , mkinfix
   , mkLoc
   , mklb
@@ -43,11 +44,13 @@ module Language.OCaml.Parser.Common
   , mkstr_ext
   , mkstrexp
   , mktailexp
+  , mktailpat
   , mkTe
   , mkTyp
   , mkType
   , mktyp
   , mkVb
+  , pat_of_label
   , rebind
   , reloc_exp
   , reloc_pat
@@ -64,6 +67,7 @@ import Text.Megaparsec
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.Definitions.Parsing.Docstrings
 import Language.OCaml.Definitions.Parsing.Location
+import Language.OCaml.Definitions.Parsing.Longident as Longident
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Definitions.Parsing.Parser.LetBinding
 import Language.OCaml.Definitions.Parsing.Parser.LetBindings
@@ -527,3 +531,28 @@ mkexp_opt_constraint :: Expression -> Maybe (Maybe Core_type, Maybe Core_type) -
 mkexp_opt_constraint e = \case
   Nothing -> e
   Just constraint -> mkexp_constraint e constraint
+
+mkpat_opt_constraint :: Pattern -> Maybe Core_type -> Pattern
+mkpat_opt_constraint p = \case
+  Nothing -> p
+  Just typ -> mkpat (Ppat_constraint p typ)
+
+pat_of_label :: Longident -> Int -> Pattern
+pat_of_label lbl pos = mkpat $ Ppat_var $ mkRHS (Longident.last lbl) pos
+
+mktailpat :: Location -> [Pattern] -> Pattern
+mktailpat nilloc = \case
+  [] ->
+    let loc = nilloc { loc_ghost = True } in
+    let nil = Loc { txt = Lident "[]", loc } in
+    mkPat (def { loc }) $ Ppat_construct nil Nothing
+  p1 : pl ->
+    let pat_pl = mktailpat nilloc pl in
+    let loc = Location
+          { loc_start = loc_start $ ppat_loc p1
+          , loc_end   = loc_end   $ ppat_loc pat_pl
+          , loc_ghost = True
+          }
+    in
+    let arg = mkPat (def { loc }) $ Ppat_tuple [p1, pat_pl] in
+    mkpat_cons (loc { loc_ghost = True }) arg loc

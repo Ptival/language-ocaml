@@ -2,6 +2,7 @@
 
 module Language.OCaml.Definitions.Parsing.ASTTypes
   ( Arg_label(..)
+  , Closed_flag(..)
   , Constant(..)
   , Loc(..)
   , Override_flag(..)
@@ -52,4 +53,9 @@ data Variance
   = Covariant
   | Contravariant
   | Invariant
+  deriving (Eq, Generic, Show)
+
+data Closed_flag
+  = Closed
+  | Open
   deriving (Eq, Generic, Show)

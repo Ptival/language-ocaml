@@ -28,6 +28,8 @@ pattern_desc_PP = \case
     Nothing -> pretty i
     Just p' -> fillSep [ pretty i, pretty p' ]
   Ppat_or p1 p2 -> vcat [ pretty p1, fillSep [ pipe, pretty p2 ] ]
+  Ppat_record _ _ -> error "TODO"
+  Ppat_array _ -> error "TODO"
 
 instance Pretty Pattern => Pretty Pattern_desc where
   pretty = pattern_desc_PP

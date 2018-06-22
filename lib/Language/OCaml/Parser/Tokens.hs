@@ -4,6 +4,7 @@ module Language.OCaml.Parser.Tokens
   , at_T
   , bang_T
   , bar_T
+  , bar_r_bracket_T
   , caret_T
   , char_T
   , colon_T
@@ -25,6 +26,7 @@ module Language.OCaml.Parser.Tokens
   , l_bracket_T
   , l_bracket_at_T
   , l_bracket_at_at_T
+  , l_bracket_bar_T
   , l_ident_T
   , l_paren_T
   , let_T
@@ -77,6 +79,9 @@ bang_T = symbol "!"
 
 bar_T :: Parser ()
 bar_T = symbol "|"
+
+bar_r_bracket_T :: Parser ()
+bar_r_bracket_T = symbol "|]"
 
 binDigitChar :: Parser Char
 binDigitChar = char '0' <|> char '1'
@@ -206,6 +211,9 @@ l_bracket_at_T = symbol "[@"
 
 l_bracket_at_at_T :: Parser ()
 l_bracket_at_at_T = symbol "[@@"
+
+l_bracket_bar_T :: Parser ()
+l_bracket_bar_T = symbol "[|"
 
 l_ident_T :: Parser String
 l_ident_T = identifier $ do

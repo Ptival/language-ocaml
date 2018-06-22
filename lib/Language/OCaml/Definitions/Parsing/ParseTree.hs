@@ -45,6 +45,7 @@ import GHC.Generics
 
 import Language.OCaml.Definitions.Parsing.ASTTypes hiding (Constant)
 import Language.OCaml.Definitions.Parsing.Location
+import Language.OCaml.Definitions.Parsing.Longident
 
 data Constant
   = Pconst_integer String (Maybe Char)
@@ -136,12 +137,6 @@ data Constructor_declaration = Constructor_declaration
 data Mutable_flag
   = Immutable
   | Mutable
-  deriving (Eq, Generic, Show)
-
-data Longident
-  = Lident String
-  | Ldot Longident String
-  | Lapply Longident Longident
   deriving (Eq, Generic, Show)
 
 field ::
@@ -279,8 +274,8 @@ data Pattern_desc
   | Ppat_tuple [Pattern]
   | Ppat_construct (Loc Longident) (Maybe Pattern)
   -- | Ppat_variant Asttypes.label * pattern option
-  -- | Ppat_record (Longident.t Asttypes.loc * pattern) list * Asttypes.closed_flag
-  -- | Ppat_array pattern list
+  | Ppat_record [(Loc Longident, Pattern)] Closed_flag
+  | Ppat_array [Pattern]
   | Ppat_or Pattern Pattern
   | Ppat_constraint Pattern Core_type
   -- | Ppat_type Longident.t Asttypes.loc

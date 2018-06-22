@@ -27,6 +27,8 @@ files = map (prefix ++)
   , "test_07.ml"
   , "test_08.ml"
   -- , "FaCT/tast.ml"
+  -- , "FaCT/tast-00.ml"
+  -- , "FaCT/tast-01.ml"
   ]
 
 unitTests :: TestTree
@@ -36,13 +38,15 @@ unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
 test :: IO ()
 test = defaultMain unitTests
 
--- foo = debugParsing implementation_P <$> readFile (prefix ++ "FaCT/tast.ml")
+-- foo = debugParsing implementation_P <$> readFile (prefix ++ "FaCT/tast-01.ml")
 
 -- foo = debugParsing implementation_P <$> readFile (prefix ++ "stdlib/arg.ml")
 
 -- bar = debugParsing implementation_P [s|
 
--- let default_var_attr = { cache_aligned=false; }
+-- let update_fn venv { pos=p; data=tfdec } =
+--   let args = List.map (fun { data={ lt } } -> lt) tfdec.t_params in
+--   Hashtbl.add venv tfdec.t_name (Env.FunEntry { f_rty=tfdec.t_rty; f_rlbl=tfdec.t_rlbl; f_args=args })
 
 --   |]
 
