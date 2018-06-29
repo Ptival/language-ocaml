@@ -16,7 +16,7 @@ import Language.OCaml.Definitions.Parsing.ASTTypes
 rec_flag_PP :: Rec_flag -> Doc a
 rec_flag_PP = \case
   Recursive    -> "rec "
-  Nonrecursive -> ""
+  NonRecursive -> ""
 
 instance Pretty Rec_flag where
   pretty = rec_flag_PP

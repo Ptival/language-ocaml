@@ -5,7 +5,8 @@
 {-# LANGUAGE RecordWildCards #-}
 
 module Language.OCaml.Parser.Common
-  ( ConstructorOpts(..)
+  ( CaseExpOpts(..)
+  , ConstructorOpts(..)
   , DeclOpts(..)
   , MkExceptionOpts(..)
   , MkTypeOpts(..)
@@ -140,8 +141,17 @@ instance Default MkExpOpts where
     , loc    = default_loc
     }
 
-caseExp :: Pattern -> Maybe Expression -> Expression -> Case
-caseExp lhs guard rhs = Case
+data CaseExpOpts = CaseExpOpts
+  { guard :: Maybe Expression
+  }
+
+instance Default CaseExpOpts where
+  def = CaseExpOpts
+    { guard  = Nothing
+    }
+
+caseExp :: CaseExpOpts -> Pattern -> Expression -> Case
+caseExp (CaseExpOpts {..}) lhs rhs = Case
   { pc_lhs   = lhs
   , pc_guard = guard
   , pc_rhs   = rhs

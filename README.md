@@ -2,11 +2,17 @@
 
 # language-ocaml: Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 
-This is work-in-progress.  For now, we only provide `Language.OCaml.Parser`,
-which itself only provides `implementation_P`, a parser for `.ml` files.
+Current target version: OCaml 4.07.0rc2
+
+This is work-in-progress.
+
+`Language.OCaml.Parser` provides:
+
+- `parseImplementationC`, written using parser combinators, i.e. Megaparsec
+  (slow?)
+
+- `parseImplementationG`, written using parser generators, i.e. Alex and Happy
+  (fast?)
 
 Note that the current parser only supports productions I have needed so far, and
 is not complete in any way!
-
-Finally, it is built using parser combinators, so do not expect extreme
-performance.

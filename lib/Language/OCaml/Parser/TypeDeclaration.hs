@@ -12,7 +12,7 @@ import           Text.Megaparsec
 import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.Common
-import           Language.OCaml.Parser.NonrecFlag
+import           Language.OCaml.Parser.NonRecFlag
 import           Language.OCaml.Parser.OptionalTypeParameters
 import           Language.OCaml.Parser.PostItemAttributes
 import           Language.OCaml.Parser.Tokens

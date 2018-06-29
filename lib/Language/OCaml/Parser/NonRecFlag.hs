@@ -1,4 +1,4 @@
-module Language.OCaml.Parser.NonrecFlag
+module Language.OCaml.Parser.NonRecFlag
   ( nonrec_flag_P
   ) where
 
@@ -10,6 +10,6 @@ import           Language.OCaml.Parser.Utils.Types
 
 nonrec_flag_P :: Parser ASTTypes.Rec_flag
 nonrec_flag_P = choice
-  [ nonrec_T *> return ASTTypes.Nonrecursive
+  [ nonrec_T *> return ASTTypes.NonRecursive
   , return ASTTypes.Recursive
   ]

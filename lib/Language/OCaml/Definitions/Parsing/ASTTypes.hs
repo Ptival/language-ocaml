@@ -39,7 +39,7 @@ data Override_flag
   deriving (Eq, Generic, Show)
 
 data Rec_flag
-  = Nonrecursive
+  = NonRecursive
   | Recursive
   deriving (Eq, Generic, Show)
 

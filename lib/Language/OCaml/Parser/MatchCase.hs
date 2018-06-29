@@ -2,6 +2,7 @@ module Language.OCaml.Parser.MatchCase
   ( match_case_P
   ) where
 
+import Data.Default
 import Text.Megaparsec
 
 import Language.OCaml.Definitions.Parsing.ParseTree
@@ -18,7 +19,7 @@ match_case_P seq_expr_P = choice
       minus_greater_T
       return p
     e <- seq_expr_P
-    return $ caseExp p Nothing e
+    return $ caseExp def p e
   , do
     p <- try $ do
       p <- pattern_P
@@ -27,6 +28,6 @@ match_case_P seq_expr_P = choice
     w <- seq_expr_P
     minus_greater_T
     e <- seq_expr_P
-    return $ caseExp p (Just w) e
+    return $ caseExp (def { guard = Just w }) p e
   -- TODO: others
   ]

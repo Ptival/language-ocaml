@@ -11,5 +11,5 @@ import           Language.OCaml.Parser.Utils.Types
 rec_flag_P :: Parser ASTTypes.Rec_flag
 rec_flag_P = choice
   [ rec_T *> return ASTTypes.Recursive
-  , return ASTTypes.Nonrecursive
+  , return ASTTypes.NonRecursive
   ]
