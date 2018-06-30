@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.GeneralizedConstructorArguments
-  ( generalized_constructor_arguments_P
+  ( generalizedConstructorArgumentsP
   ) where
 
 import Text.Megaparsec
@@ -9,9 +9,9 @@ import Language.OCaml.Parser.ConstructorArguments
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-generalized_constructor_arguments_P :: Parser Core_type -> Parser (Constructor_arguments, Maybe a)
-generalized_constructor_arguments_P core_type_P = choice
-  [ flip (,) Nothing <$> (of_T *> constructor_arguments_P core_type_P)
+generalizedConstructorArgumentsP :: Parser CoreType -> Parser (ConstructorArguments, Maybe a)
+generalizedConstructorArgumentsP coreTypeP = choice
+  [ flip (,) Nothing <$> (ofT *> constructorArgumentsP coreTypeP)
     -- TODO: colon
-  , return (Pcstr_tuple [], Nothing)
+  , return (PcstrTuple [], Nothing)
   ]

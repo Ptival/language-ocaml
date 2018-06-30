@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LabeledSimpleExpr
-  ( labeled_simple_expr_P
+  ( labeledSimpleExprP
   ) where
 
 import Text.Megaparsec
@@ -9,10 +9,10 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimpleExpr
 import Language.OCaml.Parser.Utils.Types
 
-labeled_simple_expr_P :: Parser Expression -> Parser Expression -> Parser (Arg_label, Expression)
-labeled_simple_expr_P seq_expr_P expr_P = choice
+labeledSimpleExprP :: Parser Expression -> Parser Expression -> Parser (ArgLabel, Expression)
+labeledSimpleExprP seqExprP exprP = choice
   [ do
-    e <- simple_expr_P seq_expr_P expr_P
+    e <- simpleExprP seqExprP exprP
     return (Nolabel, e)
-    -- TODO: label_expr
+    -- TODO: labelExpr
   ]

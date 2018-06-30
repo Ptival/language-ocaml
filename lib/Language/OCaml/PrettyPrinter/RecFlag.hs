@@ -6,17 +6,17 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.RecFlag
-  ( rec_flag_PP
+  ( recFlagPP
   ) where
 
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
 
-rec_flag_PP :: Rec_flag -> Doc a
-rec_flag_PP = \case
+recFlagPP :: RecFlag -> Doc a
+recFlagPP = \case
   Recursive    -> "rec "
   NonRecursive -> ""
 
-instance Pretty Rec_flag where
-  pretty = rec_flag_PP
+instance Pretty RecFlag where
+  pretty = recFlagPP

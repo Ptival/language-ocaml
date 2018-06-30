@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SimpleCoreType2
-  ( simple_core_type2_P
+  ( simpleCoreType2P
   ) where
 
 import Text.Megaparsec
@@ -12,27 +12,27 @@ import Language.OCaml.Parser.TypeLongident
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-simple_core_type2_P :: Parser Core_type -> Parser Core_type
-simple_core_type2_P core_type_P = leftRecursive
+simpleCoreType2P :: Parser CoreType -> Parser CoreType
+simpleCoreType2P coreTypeP = leftRecursive
   [ choice
-    [ mktyp . Ptyp_var <$> try (quote_T *> ident_P)
-    , mktyp . const Ptyp_any <$> underscore_T
+    [ mktyp . PtypVar <$> try (quoteT *> identP)
+    , mktyp . const PtypAny <$> underscoreT
     , try $ do
-      t <- type_longident_P
-      return $ mktyp $ Ptyp_constr (mkRHS t 1) []
+      t <- typeLongidentP
+      return $ mktyp $ PtypConstr (mkRHS t 1) []
     , do
-      l_paren_T
-      l <- core_type_comma_list_P core_type_P
-      r_paren_T
-      i <- type_longident_P
-      return . mktyp $ Ptyp_constr (mkRHS i 4)(reverse l)
+      lParenT
+      l <- coreTypeCommaListP coreTypeP
+      rParenT
+      i <- typeLongidentP
+      return . mktyp $ PtypConstr (mkRHS i 4)(reverse l)
     -- , do
-    --   a <- chainl1' simple_core_type2_P _ _ -- (return $ \ a b -> Ptyp_constr (mkRHS b 2) [a])
-    --   t <- type_longident_P
-    --   return $ mkTyp $ Ptyp_constr (mkRHS t 2) [a]
+    --   a <- chainl1' simpleCoreType2P _ _ -- (return $ \ a b -> PtypConstr (mkRHS b 2) [a])
+    --   t <- typeLongidentP
+    --   return $ mkTyp $ PtypConstr (mkRHS t 2) [a]
     ]
   ]
   [ do
-    t <- type_longident_P
-    return $ \ x -> mktyp $ Ptyp_constr (mkRHS t 2) [x]
+    t <- typeLongidentP
+    return $ \ x -> mktyp $ PtypConstr (mkRHS t 2) [x]
   ]

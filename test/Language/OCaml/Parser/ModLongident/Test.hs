@@ -10,8 +10,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-mod_longident_tests :: [String]
-mod_longident_tests =
+modLongidentTests :: [String]
+modLongidentTests =
   [ "Foo"
   , "Foo.Bar"
   , "Foo_foo.Bar_bar"
@@ -19,7 +19,7 @@ mod_longident_tests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.ModLongident" $ []
-  ++ map (mkParsingTest "mod_longident_P" mod_longident_P) mod_longident_tests
+  ++ map (mkParsingTest "modLongidentP" modLongidentP) modLongidentTests
 
 test :: IO ()
 test = defaultMain unitTests

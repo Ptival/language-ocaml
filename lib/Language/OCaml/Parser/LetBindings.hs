@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LetBindings
-  ( let_bindings_P
+  ( letBindingsP
   ) where
 
 import Text.Megaparsec
@@ -15,14 +15,14 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-let_bindings_P :: Parser Structure -> Parser Expression -> Parser Let_bindings
-let_bindings_P structure_P seq_expr_P = leftRecursive
-  [ let_binding_P structure_P seq_expr_P
+letBindingsP :: Parser Structure -> Parser Expression -> Parser LetBindings
+letBindingsP structureP seqExprP = leftRecursive
+  [ letBindingP structureP seqExprP
   ]
   [ do
-    try $ and_T
-    -- a <- attributes_P
-    b <- let_binding_body_P seq_expr_P
-    _p <- post_item_attributes_P structure_P
+    try $ andT
+    -- a <- attributesP
+    b <- letBindingBodyP seqExprP
+    _p <- postItemAttributesP structureP
     return $ \ x -> addlb x (mklb False b []) -- FIXME
   ]

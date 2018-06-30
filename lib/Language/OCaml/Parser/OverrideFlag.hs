@@ -1,5 +1,5 @@
-module Language.OCaml.Parser.Override_flag
-  ( override_flag_P
+module Language.OCaml.Parser.OverrideFlag
+  ( overrideFlagP
   ) where
 
 import           Text.Megaparsec
@@ -8,8 +8,8 @@ import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.Utils.Types
 
-override_flag_P :: Parser ASTTypes.Override_flag
-override_flag_P = choice
-  [ bang_T *> return ASTTypes.Override
+overrideFlagP :: Parser ASTTypes.OverrideFlag
+overrideFlagP = choice
+  [ bangT *> return ASTTypes.Override
   , return ASTTypes.Fresh
   ]

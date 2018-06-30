@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LblPatternList
-  ( lbl_pattern_list_P
+  ( lblPatternListP
   ) where
 
 import Text.Megaparsec
@@ -14,27 +14,27 @@ import Language.OCaml.Parser.Utils.Types
 -- FIXME: Right now, this is made to look like the OCaml parser, but we could
 -- optimize everything by factoring out the left parsers that are the same.
 
-lbl_pattern_list_P :: Parser Pattern -> Parser ([(Loc Longident, Pattern)], Closed_flag)
-lbl_pattern_list_P pattern_P = choice
+lblPatternListP :: Parser Pattern -> Parser ([(Loc Longident, Pattern)], ClosedFlag)
+lblPatternListP patternP = choice
   [ try $ do
-    p <- lbl_pattern_P'
-    semi_T
-    (fields, closed) <- lbl_pattern_list_P'
+    p <- lblPatternP'
+    semiT
+    (fields, closed) <- lblPatternListP'
     return (p : fields, closed)
   , try $ do
-    p <- lbl_pattern_P'
-    semi_T
-    underscore_T
-    opt_semi_P
+    p <- lblPatternP'
+    semiT
+    underscoreT
+    optSemiP
     return ([p], Open)
   , try $ do
-    p <- lbl_pattern_P'
-    semi_T
+    p <- lblPatternP'
+    semiT
     return ([p], Closed)
   , do
-    p <- lbl_pattern_P'
+    p <- lblPatternP'
     return ([p], Closed)
   ]
   where
-    lbl_pattern_P'      = lbl_pattern_P      pattern_P
-    lbl_pattern_list_P' = lbl_pattern_list_P pattern_P
+    lblPatternP'      = lblPatternP      patternP
+    lblPatternListP' = lblPatternListP patternP

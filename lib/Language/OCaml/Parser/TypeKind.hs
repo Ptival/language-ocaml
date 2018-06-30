@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.TypeKind
-  ( type_kind_P
+  ( typeKindP
   ) where
 
 import Text.Megaparsec
@@ -12,29 +12,29 @@ import Language.OCaml.Parser.PrivateFlag
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-type_kind_P :: Parser Structure -> Parser (Type_kind, Private_flag, Maybe Core_type)
-type_kind_P structure_P = choice
+typeKindP :: Parser Structure -> Parser (TypeKind, PrivateFlag, Maybe CoreType)
+typeKindP structureP = choice
   [ do
     t <- try $ do
-      equal_T
-      core_type_P
-    return (Ptype_abstract, Public, Just t)
+      equalT
+      coreTypeP
+    return (PtypeAbstract, Public, Just t)
   , do
     cs <- try $ do
-      equal_T
-      constructor_declarations_P'
-    return (Ptype_variant (reverse cs), Private, Nothing)
+      equalT
+      constructorDeclarationsP'
+    return (PtypeVariant (reverse cs), Private, Nothing)
   , do
     priv <- try $ do
-      equal_T
-      priv <- private_flag_P
-      l_brace_T
+      equalT
+      priv <- privateFlagP
+      lBraceT
       return priv
-    labels <- label_declarations_P
-    r_brace_T
-    return (Ptype_record labels, priv, Nothing)
+    labels <- labelDeclarationsP
+    rBraceT
+    return (PtypeRecord labels, priv, Nothing)
   -- FIXME: commenting this out as it helps with debugging, but this is a valid parse of type kind
-  -- , return (Ptype_abstract, Public, Nothing)
+  -- , return (PtypeAbstract, Public, Nothing)
   ]
   where
-    constructor_declarations_P' = constructor_declarations_P structure_P core_type_P
+    constructorDeclarationsP' = constructorDeclarationsP structureP coreTypeP

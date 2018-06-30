@@ -3,7 +3,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Language.OCaml.Parser.ConstructorDeclaration
-  ( constructor_declaration_P
+  ( constructorDeclarationP
   ) where
 
 import Data.Default
@@ -15,10 +15,10 @@ import Language.OCaml.Parser.ConstrIdent
 import Language.OCaml.Parser.GeneralizedConstructorArguments
 import Language.OCaml.Parser.Utils.Types
 
-constructor_declaration_P ::
-  Parser Structure -> Parser Core_type -> Parser Constructor_declaration
-constructor_declaration_P structure_P core_type_P = do
-  name <- constr_ident_P
-  (args, res) <- generalized_constructor_arguments_P core_type_P
-  attrs <- attributes_P structure_P
+constructorDeclarationP ::
+  Parser Structure -> Parser CoreType -> Parser ConstructorDeclaration
+constructorDeclarationP structureP coreTypeP = do
+  name <- constrIdentP
+  (args, res) <- generalizedConstructorArgumentsP coreTypeP
+  attrs <- attributesP structureP
   return $ constructor (def { args, attrs }) res (mkRHS name (1 :: Int))

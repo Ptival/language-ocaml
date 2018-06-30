@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.Attributes
-  ( attributes_P
+  ( attributesP
   ) where
 
 import Text.Megaparsec
@@ -9,5 +9,5 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Attribute
 import Language.OCaml.Parser.Utils.Types
 
-attributes_P :: Parser Structure -> Parser [(Loc String, Payload)]
-attributes_P structure_P = many (attribute_P structure_P)
+attributesP :: Parser Structure -> Parser [(Loc String, Payload)]
+attributesP structureP = many (attributeP structureP)

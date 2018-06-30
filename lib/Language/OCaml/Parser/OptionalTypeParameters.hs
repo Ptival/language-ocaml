@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.OptionalTypeParameters
-  ( optional_type_parameters_P
+  ( optionalTypeParametersP
   ) where
 
 import Text.Megaparsec
@@ -10,9 +10,9 @@ import Language.OCaml.Parser.OptionalTypeParameter
 import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.Parser.Utils.Utils
 
-optional_type_parameters_P :: Parser [(Core_type, Variance)]
-optional_type_parameters_P = choice
-  [ (: []) <$> optional_type_parameter_P
-  , parens (many optional_type_parameter_P)
+optionalTypeParametersP :: Parser [(CoreType, Variance)]
+optionalTypeParametersP = choice
+  [ (: []) <$> optionalTypeParameterP
+  , parens (many optionalTypeParameterP)
   , pure []
   ]

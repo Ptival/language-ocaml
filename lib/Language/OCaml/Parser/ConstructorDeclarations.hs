@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.ConstructorDeclarations
-  ( constructor_declarations_P
+  ( constructorDeclarationsP
   ) where
 
 import Language.OCaml.Definitions.Parsing.ParseTree
@@ -9,15 +9,15 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-constructor_declarations_P ::
-  Parser Structure -> Parser Core_type -> Parser [Constructor_declaration]
-constructor_declarations_P structure_P core_type_P = leftRecursive
-  [ (: []) <$> constructor_declaration_P'
-  , (: []) <$> bar_constructor_declaration_P'
-  , bar_T *> return []
+constructorDeclarationsP ::
+  Parser Structure -> Parser CoreType -> Parser [ConstructorDeclaration]
+constructorDeclarationsP structureP coreTypeP = leftRecursive
+  [ (: []) <$> constructorDeclarationP'
+  , (: []) <$> barConstructorDeclarationP'
+  , barT *> return []
   ]
-  [ (:) <$> bar_constructor_declaration_P'
+  [ (:) <$> barConstructorDeclarationP'
   ]
   where
-    constructor_declaration_P'     = constructor_declaration_P     structure_P core_type_P
-    bar_constructor_declaration_P' = bar_constructor_declaration_P structure_P core_type_P
+    constructorDeclarationP'     = constructorDeclarationP     structureP coreTypeP
+    barConstructorDeclarationP' = barConstructorDeclarationP structureP coreTypeP

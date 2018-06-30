@@ -6,7 +6,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.ExpressionDesc
-  ( expression_desc_PP
+  ( expressionDescPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -20,40 +20,40 @@ import Language.OCaml.PrettyPrinter.Longident ()
 import Language.OCaml.PrettyPrinter.RecFlag ()
 import Language.OCaml.PrettyPrinter.ValueBinding ()
 
-expression_desc_PP :: (Pretty Expression) => Expression_desc -> Doc a
-expression_desc_PP = \case
-  Pexp_ident i -> pretty i
-  Pexp_coerce _ _ _ -> error "TODO"
-  Pexp_constant c -> pretty c
-  Pexp_constraint _ _ -> error "TODO"
-  Pexp_fun _ _ _ _ -> error "TODO"
-  Pexp_let r l e -> case l of
+expressionDescPP :: (Pretty Expression) => ExpressionDesc -> Doc a
+expressionDescPP = \case
+  PexpIdent i -> pretty i
+  PexpCoerce _ _ _ -> error "TODO"
+  PexpConstant c -> pretty c
+  PexpConstraint _ _ -> error "TODO"
+  PexpFun _ _ _ _ -> error "TODO"
+  PexpLet r l e -> case l of
     []  -> error "TODO"
     [x] -> fillCat [ "let ", pretty r, pretty x, " in ", pretty e ]
     _   -> error "TODO"
-  Pexp_function l -> case l of
+  PexpFunction l -> case l of
     []  -> error "TODO"
     [x] -> fillSep [ "function", pretty x ]
     _   -> fillSep [ "function", nest 2 $ line <> (vcat $ map pretty l) ]
-  Pexp_apply e l ->
-    case (pexp_desc e, l) of
-    {- Pairs that appear naked (without parentheses) give rise to Pexp_tuple
-       whereas pairs that appear parenthesized show up as Pexp_apply of
-       Pexp_tuple to [].  We display them back accordingly. -}
-    (e'@(Pexp_tuple _), []) -> fillCat [ lparen, expression_desc_PP e', rparen ]
+  PexpApply e l ->
+    case (pexpDesc e, l) of
+    {- Pairs that appear naked (without parentheses) give rise to PexpTuple
+       whereas pairs that appear parenthesized show up as PexpApply of
+       PexpTuple to [].  We display them back accordingly. -}
+    (e'@(PexpTuple _), []) -> fillCat [ lparen, expressionDescPP e', rparen ]
     (_, _)                  -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l -- FIXME: lbl
-  Pexp_match _e _l -> error "TODO"
-  Pexp_tuple l -> encloseSep "" "" comma (map pretty l)
-  Pexp_construct i e -> fillSep [ pretty i, pretty e ]
-  Pexp_field _e _i -> error "TODO"
-  Pexp_ifthenelse _e1 _e2 _e3 -> error "TODO"
-  Pexp_sequence _e1 _e2 -> error "TODO"
-  Pexp_extension _e -> error "TODO"
-  Pexp_try _ _ -> error "TODO"
-  Pexp_array _ -> error "TODO"
-  Pexp_while _ _ -> error "TODO"
-  Pexp_unreachable -> error "TODO"
-  Pexp_record _ _ -> error "TODO"
+  PexpMatch _e _l -> error "TODO"
+  PexpTuple l -> encloseSep "" "" comma (map pretty l)
+  PexpConstruct i e -> fillSep [ pretty i, pretty e ]
+  PexpField _e _i -> error "TODO"
+  PexpIfthenelse _e1 _e2 _e3 -> error "TODO"
+  PexpSequence _e1 _e2 -> error "TODO"
+  PexpExtension _e -> error "TODO"
+  PexpTry _ _ -> error "TODO"
+  PexpArray _ -> error "TODO"
+  PexpWhile _ _ -> error "TODO"
+  PexpUnreachable -> error "TODO"
+  PexpRecord _ _ -> error "TODO"
 
-instance Pretty Expression => Pretty Expression_desc where
-  pretty = expression_desc_PP
+instance Pretty Expression => Pretty ExpressionDesc where
+  pretty = expressionDescPP

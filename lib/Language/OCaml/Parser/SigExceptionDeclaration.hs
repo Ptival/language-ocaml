@@ -2,7 +2,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Language.OCaml.Parser.SigExceptionDeclaration
-  ( sig_exception_declaration_P
+  ( sigExceptionDeclarationP
   ) where
 
 import Data.Default
@@ -16,16 +16,19 @@ import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-sig_exception_declaration_P :: Parser Structure -> Parser (TypeException, ())
-sig_exception_declaration_P structure_P = do
-  exception_T
-  -- TODO: ext_attributes
-  i <- constr_ident_P
-  (args, res) <- generalized_constructor_arguments_P core_type_P
-  -- a <- attributes_P
-  attrs <- post_item_attributes_P structure_P
-  return $ ( mk_exception (def { attrs })
-             (decl (def { args, attrs = attrs {- ++ a -} {- loc and docs -} })
-              res (mkRHS i (3 :: Int)))
+sigExceptionDeclarationP :: Parser Structure -> Parser (TypeException, ())
+sigExceptionDeclarationP structureP = do
+  exceptionT
+  -- TODO: extAttributes
+  i <- constrIdentP
+  (args, res) <- generalizedConstructorArgumentsP coreTypeP
+  -- a <- attributesP
+  attrs <- postItemAttributesP structureP
+  return $ ( mkException (def { attrs })
+             (decl
+              (def { args, attrs = attrs {- ++ a -} {- loc and docs -} })
+              res
+              (mkRHS i (3 :: Int))
+             )
            , ()
            )

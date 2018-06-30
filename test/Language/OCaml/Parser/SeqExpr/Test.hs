@@ -10,8 +10,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-seq_expr_tests :: [String]
-seq_expr_tests =
+seqExprTests :: [String]
+seqExprTests =
   [ "b"
   , "Foo.bar"
   , "Foo.bar_baz"
@@ -20,7 +20,7 @@ seq_expr_tests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.SeqExpr" $ []
-  ++ map (mkParsingTest "seq_expr_P" seq_expr_P) seq_expr_tests
+  ++ map (mkParsingTest "seqExprP" seqExprP) seqExprTests
 
 test :: IO ()
 test = defaultMain unitTests

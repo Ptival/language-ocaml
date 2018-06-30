@@ -2,7 +2,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Language.OCaml.Parser.BarConstructorDeclaration
-  ( bar_constructor_declaration_P
+  ( barConstructorDeclarationP
   ) where
 
 import Data.Default
@@ -16,11 +16,11 @@ import Language.OCaml.Parser.GeneralizedConstructorArguments
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-bar_constructor_declaration_P ::
-  Parser Structure -> Parser Core_type -> Parser Constructor_declaration
-bar_constructor_declaration_P structure_P core_type_P = try $ do
-  bar_T
-  i <- constr_ident_P
-  (args, res) <- generalized_constructor_arguments_P core_type_P
-  attrs <- attributes_P structure_P
+barConstructorDeclarationP ::
+  Parser Structure -> Parser CoreType -> Parser ConstructorDeclaration
+barConstructorDeclarationP structureP coreTypeP = try $ do
+  barT
+  i <- constrIdentP
+  (args, res) <- generalizedConstructorArgumentsP coreTypeP
+  attrs <- attributesP structureP
   return $ constructor (def { args, attrs }) res (mkRHS i (2 :: Int))

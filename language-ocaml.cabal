@@ -101,7 +101,7 @@ Library
                    Language.OCaml.Parser.OptionalTypeParameter
                    Language.OCaml.Parser.OptionalTypeParameters
                    Language.OCaml.Parser.OptionalTypeVariable
-                   Language.OCaml.Parser.Override_flag
+                   Language.OCaml.Parser.OverrideFlag
                    Language.OCaml.Parser.Pattern
                    Language.OCaml.Parser.PatternGen
                    Language.OCaml.Parser.PatternNoExn

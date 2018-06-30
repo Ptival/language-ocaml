@@ -10,15 +10,15 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-val_ident_tests :: [String]
-val_ident_tests =
+valIdentTests :: [String]
+valIdentTests =
   [ "foo"
   , "(!)"
   ]
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.ValIdent" $ []
-  ++ map (mkParsingTest "val_ident_P" val_ident_P) val_ident_tests
+  ++ map (mkParsingTest "valIdentP" valIdentP) valIdentTests
 
 test :: IO ()
 test = defaultMain unitTests

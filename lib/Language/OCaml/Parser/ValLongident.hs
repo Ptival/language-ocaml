@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.ValLongident
-  ( val_longident_P
+  ( valLongidentP
   ) where
 
 import Text.Megaparsec
@@ -10,14 +10,14 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.Parser.ValIdent
 
-val_longident_P :: Parser Longident
-val_longident_P = choice
-  [ Lident <$> val_ident_P
+valLongidentP :: Parser Longident
+valLongidentP = choice
+  [ Lident <$> valIdentP
   , do
     l <- try $ do
-      l <- mod_longident_P
-      dot_T
+      l <- modLongidentP
+      dotT
       return l
-    i <- val_ident_P
+    i <- valIdentP
     return $ Ldot l i
   ]

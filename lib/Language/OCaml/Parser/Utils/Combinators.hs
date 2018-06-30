@@ -16,7 +16,7 @@ import Language.OCaml.Parser.Utils.Types
 This combinator is necessary because we want to parse succesfully even when
 the `op` is not part of the chain.
 
-For instance, in OCaml, a mod_longident is a sequence of `Foo.Bar.Baz` and must
+For instance, in OCaml, a modLongident is a sequence of `Foo.Bar.Baz` and must
 be parsed as a chain.  However, when presented with `Foo.Bar.baz`, we'd like the
 chain to capture `Foo.Bar` and ignore the `.baz`.
 

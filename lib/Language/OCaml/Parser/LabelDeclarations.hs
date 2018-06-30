@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LabelDeclarations
-  ( label_declarations_P
+  ( labelDeclarationsP
   ) where
 
 import Text.Megaparsec
@@ -9,12 +9,12 @@ import Language.OCaml.Parser.LabelDeclaration
 import Language.OCaml.Parser.LabelDeclarationSemi
 import Language.OCaml.Parser.Utils.Types
 
-label_declarations_P :: Parser [Label_declaration]
-label_declarations_P = choice
+labelDeclarationsP :: Parser [LabelDeclaration]
+labelDeclarationsP = choice
   [ do
-    h <- label_declaration_semi_P
-    t <- label_declarations_P
+    h <- labelDeclarationSemiP
+    t <- labelDeclarationsP
     return $ h : t
-  , (: []) <$> label_declaration_semi_P
-  , (: []) <$> label_declaration_P
+  , (: []) <$> labelDeclarationSemiP
+  , (: []) <$> labelDeclarationP
   ]

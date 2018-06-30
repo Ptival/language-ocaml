@@ -12,8 +12,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-structure_item_tests :: [String]
-structure_item_tests =
+structureItemTests :: [String]
+structureItemTests =
   [ "type a = _"
   , "type a = 'b"
   , "type a = b"
@@ -67,7 +67,7 @@ type 'a list =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
-  ++ map (mkParsingTest "structure_item_P" structure_item_P) structure_item_tests
+  ++ map (mkParsingTest "structureItemP" structureItemP) structureItemTests
 
 test :: IO ()
 test = defaultMain unitTests

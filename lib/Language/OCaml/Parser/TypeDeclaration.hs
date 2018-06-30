@@ -3,7 +3,7 @@
 {-# LANGUAGE NamedFieldPuns #-}
 
 module Language.OCaml.Parser.TypeDeclaration
-  ( type_declaration_P
+  ( typeDeclarationP
   ) where
 
 import           Data.Default
@@ -19,15 +19,15 @@ import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.TypeKind
 import           Language.OCaml.Parser.Utils.Types
 
-type_declaration_P :: Parser Structure -> Parser (ASTTypes.Rec_flag, Type_declaration)
-type_declaration_P structure_P = do
-  try $ type_T
-  -- TODO: ext_attributes
-  nonrec_flag <- nonrec_flag_P
-  params <- optional_type_parameters_P
-  n <- l_ident_T
-  (kind, priv, manifest) <- type_kind_P structure_P
+typeDeclarationP :: Parser Structure -> Parser (ASTTypes.RecFlag, TypeDeclaration)
+typeDeclarationP structureP = do
+  try $ typeT
+  -- TODO: extAttributes
+  nonrecFlag <- nonrecFlagP
+  params <- optionalTypeParametersP
+  n <- lIdentT
+  (kind, priv, manifest) <- typeKindP structureP
   -- TODO: constraints
-  attrs <- post_item_attributes_P structure_P
+  attrs <- postItemAttributesP structureP
   let ty = mkType (def { attrs, kind, params, priv }) manifest (mkRHS n 5)
-  return (nonrec_flag, ty)
+  return (nonrecFlag, ty)

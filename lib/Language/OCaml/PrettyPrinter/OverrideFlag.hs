@@ -4,17 +4,17 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.OverrideFlag
-  ( override_flag_PP
+  ( overrideFlagPP
   ) where
 
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
 
-override_flag_PP :: Override_flag -> Doc a
-override_flag_PP = \case
+overrideFlagPP :: OverrideFlag -> Doc a
+overrideFlagPP = \case
   Override -> "!"
   Fresh    -> ""
 
-instance Pretty Override_flag where
-  pretty = override_flag_PP
+instance Pretty OverrideFlag where
+  pretty = overrideFlagPP

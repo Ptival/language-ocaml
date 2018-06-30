@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.MatchCase
-  ( match_case_P
+  ( matchCaseP
   ) where
 
 import Data.Default
@@ -11,23 +11,23 @@ import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-match_case_P :: Parser Expression -> Parser Case
-match_case_P seq_expr_P = choice
+matchCaseP :: Parser Expression -> Parser Case
+matchCaseP seqExprP = choice
   [ do
     p <- try $ do
-      p <- pattern_P
-      minus_greater_T
+      p <- patternP
+      minusGreaterT
       return p
-    e <- seq_expr_P
+    e <- seqExprP
     return $ caseExp def p e
   , do
     p <- try $ do
-      p <- pattern_P
-      when_T
+      p <- patternP
+      whenT
       return p
-    w <- seq_expr_P
-    minus_greater_T
-    e <- seq_expr_P
+    w <- seqExprP
+    minusGreaterT
+    e <- seqExprP
     return $ caseExp (def { guard = Just w }) p e
   -- TODO: others
   ]

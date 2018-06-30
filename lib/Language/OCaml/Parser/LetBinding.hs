@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LetBinding
-  ( let_binding_P
+  ( letBindingP
   ) where
 
 import Text.Megaparsec
@@ -13,11 +13,11 @@ import Language.OCaml.Parser.RecFlag
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-let_binding_P :: Parser Structure -> Parser Expression -> Parser Let_bindings
-let_binding_P structure_P seq_expr_P = do
-  try let_T
-  -- TODO: ext_attributes
-  r <- rec_flag_P
-  b <- let_binding_body_P seq_expr_P
-  _a <- post_item_attributes_P structure_P
+letBindingP :: Parser Structure -> Parser Expression -> Parser LetBindings
+letBindingP structureP seqExprP = do
+  try letT
+  -- TODO: extAttributes
+  r <- recFlagP
+  b <- letBindingBodyP seqExprP
+  _a <- postItemAttributesP structureP
   return $ mklbs Nothing r (mklb True b []) -- FIXME

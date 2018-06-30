@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.OptionalTypeParameter
-  ( optional_type_parameter_P
+  ( optionalTypeParameterP
   ) where
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
@@ -8,8 +8,8 @@ import Language.OCaml.Parser.OptionalTypeVariable
 import Language.OCaml.Parser.TypeVariance
 import Language.OCaml.Parser.Utils.Types
 
-optional_type_parameter_P :: Parser (Core_type, Variance)
-optional_type_parameter_P = do
-  v <- type_variance_P
-  t <- optional_type_variable_P
+optionalTypeParameterP :: Parser (CoreType, Variance)
+optionalTypeParameterP = do
+  v <- typeVarianceP
+  t <- optionalTypeVariableP
   return (t, v)

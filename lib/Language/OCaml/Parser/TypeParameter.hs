@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.TypeParameter
-  ( type_parameter_P
+  ( typeParameterP
   ) where
 
 import           Data.Default
@@ -16,8 +16,8 @@ import           Language.OCaml.Parser.TypeVariable
 import           Language.OCaml.Parser.TypeVariance
 import           Language.OCaml.Parser.Utils.Types
 
-type_parameter_P :: Parser [a]
-type_parameter_P = do
-  v <- type_variance_P
-  t <- type_variable_P
+typeParameterP :: Parser [a]
+typeParameterP = do
+  v <- typeVarianceP
+  t <- typeVariableP
   return (v, t)

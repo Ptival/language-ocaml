@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.OptBar
-  ( opt_bar_P
+  ( optBarP
   ) where
 
 import Text.Megaparsec
@@ -7,8 +7,8 @@ import Text.Megaparsec
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-opt_bar_P :: Parser ()
-opt_bar_P = choice
-  [ bar_T *> return ()
+optBarP :: Parser ()
+optBarP = choice
+  [ barT *> return ()
   , return ()
   ]

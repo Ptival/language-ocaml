@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LabeledSimplePattern
-  ( labeled_simple_pattern_P
+  ( labeledSimplePatternP
   ) where
 
 import Text.Megaparsec
@@ -9,10 +9,10 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.SimplePattern
 import Language.OCaml.Parser.Utils.Types
 
-labeled_simple_pattern_P :: Parser Pattern -> Parser (Arg_label, Maybe a, Pattern)
-labeled_simple_pattern_P pattern_P = choice
+labeledSimplePatternP :: Parser Pattern -> Parser (ArgLabel, Maybe a, Pattern)
+labeledSimplePatternP patternP = choice
   [ -- TODO: lots of things
     do
-      p <- simple_pattern_P pattern_P
+      p <- simplePatternP patternP
       return (Nolabel, Nothing, p)
   ]

@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.TypeDeclaration
-  ( type_declaration_PP
+  ( typeDeclarationPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -15,22 +15,22 @@ import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
 import Language.OCaml.PrettyPrinter.LabelDeclaration ()
 import Language.OCaml.PrettyPrinter.Variance ()
 
-type_declaration_PP :: (Pretty Payload) => Type_declaration -> Doc a
-type_declaration_PP d =
+typeDeclarationPP :: (Pretty Payload) => TypeDeclaration -> Doc a
+typeDeclarationPP d =
   fillCat [ params, name, space, "=", body, attrs ]
   where
-    params = hcat $ map prettyParam $ ptype_params d
+    params = hcat $ map prettyParam $ ptypeParams d
     prettyParam (t, v) = fillCat [ pretty v, pretty t, space ]
-    name = pretty $ ptype_name d
-    manifest = case ptype_manifest d of
+    name = pretty $ ptypeName d
+    manifest = case ptypeManifest d of
       Nothing -> error "TODO"
       Just t -> pretty t
-    body = case ptype_kind d of
-      Ptype_abstract -> fillCat [ space, manifest ]
-      Ptype_variant l -> case l of
+    body = case ptypeKind d of
+      PtypeAbstract -> fillCat [ space, manifest ]
+      PtypeVariant l -> case l of
         [] -> fillCat [ space, pipe ]
         _  -> nest 2 $ fillCat [ line, vcat $ map pretty l ]
-      Ptype_record l ->
+      PtypeRecord l ->
         space
         <> (nest 2
             $ line
@@ -40,12 +40,12 @@ type_declaration_PP d =
             (semi <> space)
             (map pretty l)
            )
-      Ptype_open -> "TODO: Ptype_open"
-    attrs = case ptype_attributes d of
+      PtypeOpen -> "TODO: Ptype_open"
+    attrs = case ptypeAttributes d of
       [] -> ""
       as -> line <> (vcat . map displayAttr $ as)
         where
           displayAttr (s, p) = fillSep [ "[@@", pretty s, pretty p, "]" ]
 
-instance (Pretty Payload) => Pretty Type_declaration where
-  pretty = type_declaration_PP
+instance (Pretty Payload) => Pretty TypeDeclaration where
+  pretty = typeDeclarationPP

@@ -10,26 +10,26 @@ import GHC.Generics
 import Language.OCaml.Definitions.StdLib.Lexing
 
 data Location = Location
-  { loc_start :: Position
-  , loc_end   :: Position
-  , loc_ghost :: Bool
+  { locStart :: Position
+  , locEnd   :: Position
+  , locGhost :: Bool
   }
   deriving (Eq, Generic, Show)
 
-in_file :: String -> Location
-in_file name =
+inFile :: String -> Location
+inFile name =
   Location
-  { loc_start = loc
-  , loc_end   = loc
-  , loc_ghost = True
+  { locStart = loc
+  , locEnd   = loc
+  , locGhost = True
   }
   where
     loc = Position
-          { pos_fname = name
-          , pos_lnum = 1
-          , pos_bol = 0
-          , pos_cnum = -1
+          { posFName = name
+          , posLNum = 1
+          , posBOL = 0
+          , posCNum = -1
           }
 
 none :: Location
-none = in_file "__none__"
+none = inFile "__none__"

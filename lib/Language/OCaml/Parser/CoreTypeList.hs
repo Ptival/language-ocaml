@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.CoreTypeList
-  ( core_type_list_P
+  ( coreTypelistP
   ) where
 
 import Text.Megaparsec
@@ -10,12 +10,12 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-core_type_list_P :: Parser Core_type -> Parser [Core_type]
-core_type_list_P core_type_P = leftRecursive
-  [ (: []) <$> simple_core_type_P core_type_P
+coreTypelistP :: Parser CoreType -> Parser [CoreType]
+coreTypelistP coreTypeP = leftRecursive
+  [ (: []) <$> simpleCoreTypeP coreTypeP
   ]
   [ do
-    try $ star_T
-    t <- simple_core_type_P core_type_P
+    try $ starT
+    t <- simpleCoreTypeP coreTypeP
     return $ (:) t
   ]

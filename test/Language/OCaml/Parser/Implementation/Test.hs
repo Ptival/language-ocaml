@@ -33,16 +33,16 @@ files = map (prefix ++)
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
-  ++ map (mkParsingTestFromFile implementation_P) files
+  ++ map (mkParsingTestFromFile implementationP) files
 
 test :: IO ()
 test = defaultMain unitTests
 
--- foo = debugParsing implementation_P <$> readFile (prefix ++ "FaCT/tast-01.ml")
+-- foo = debugParsing implementationP <$> readFile (prefix ++ "FaCT/tast-01.ml")
 
--- foo = debugParsing implementation_P <$> readFile (prefix ++ "stdlib/arg.ml")
+-- foo = debugParsing implementationP <$> readFile (prefix ++ "stdlib/arg.ml")
 
--- bar = debugParsing implementation_P [s|
+-- bar = debugParsing implementationP [s|
 
 -- let update_fn venv { pos=p; data=tfdec } =
 --   let args = List.map (fun { data={ lt } } -> lt) tfdec.t_params in
@@ -50,4 +50,4 @@ test = defaultMain unitTests
 
 --   |]
 
--- baz = debugParsing record_expr_P "a = b"
+-- baz = debugParsing recordExprP "a = b"

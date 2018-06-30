@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.Constant
-  ( constant_P
+  ( constantP
   ) where
 
 import Text.Megaparsec
@@ -8,16 +8,16 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-constant_P :: Parser Constant
-constant_P = choice
+constantP :: Parser Constant
+constantP = choice
   [ do
-    (n, m) <- int_T
-    return $ Pconst_integer n m
-  , Pconst_char <$> char_T
+    (n, m) <- intT
+    return $ PconstInteger n m
+  , PconstChar <$> charT
   , do
-    (s, d) <- string_T
-    return $ Pconst_string s d
+    (s, d) <- stringT
+    return $ PconstString s d
   -- , do
-  --   (f, m) <- string_T
-  --   return $ Pconst_float f m
+  --   (f, m) <- stringT
+  --   return $ PconstFloat f m
   ]

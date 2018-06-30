@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SeqExpr
-  ( seq_expr_P
+  ( seqExprP
   ) where
 
 import Data.Default
@@ -11,20 +11,20 @@ import Language.OCaml.Parser.Expr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-seq_expr_P :: Parser Structure -> Parser Expression
-seq_expr_P structure_P = choice
+seqExprP :: Parser Structure -> Parser Expression
+seqExprP structureP = choice
   [ try $ do
-    e <- expr_P'
-    semi_T
-    s <- seq_expr_P'
-    return $ mkExp def (Pexp_sequence e s)
+    e <- exprP'
+    semiT
+    s <- seqExprP'
+    return $ mkExp def (PexpSequence e s)
   , try $ do
-    e <- expr_P'
-    semi_T
+    e <- exprP'
+    semiT
     return e
-  , try $ expr_P'
+  , try $ exprP'
   -- TODO: percent
   ]
   where
-    expr_P' = expr_P structure_P seq_expr_P'
-    seq_expr_P' = seq_expr_P structure_P
+    exprP' = exprP structureP seqExprP'
+    seqExprP' = seqExprP structureP

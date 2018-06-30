@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.RecordExpr
-  ( record_expr_P
+  ( recordExprP
   ) where
 
 import Text.Megaparsec
@@ -10,19 +10,19 @@ import Language.OCaml.Parser.LblExprList
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-record_expr_P ::
+recordExprP ::
   Parser Expression -> Parser Expression -> Parser (Maybe Expression, [(Loc Longident, Expression)])
-record_expr_P expr_P simple_expr_P = choice
+recordExprP exprP simpleExprP = choice
   [ do
     e <- try $ do
-      e <- simple_expr_P
-      with_T
+      e <- simpleExprP
+      withT
       return e
-    l <- lbl_expr_list_P'
+    l <- lblExprListP'
     return (Just e, l)
   , do
-    l <- lbl_expr_list_P'
+    l <- lblExprListP'
     return (Nothing, l)
   ]
   where
-    lbl_expr_list_P' = lbl_expr_list_P expr_P
+    lblExprListP' = lblExprListP exprP

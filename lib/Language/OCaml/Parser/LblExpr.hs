@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LblExpr
-  ( lbl_expr_P
+  ( lblExprP
   ) where
 
 import Text.Megaparsec
@@ -12,12 +12,12 @@ import Language.OCaml.Parser.OptTypeConstraint
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-lbl_expr_P :: Parser Expression -> Parser (Loc Longident, Expression)
-lbl_expr_P expr_P = choice
+lblExprP :: Parser Expression -> Parser (Loc Longident, Expression)
+lblExprP exprP = choice
   [ do
-    i <- label_longident_P
-    c <- opt_type_constraint_P
-    equal_T
-    e <- expr_P
-    return (mkRHS i 1, mkexp_opt_constraint e c)
+    i <- labelLongidentP
+    c <- optTypeConstraintP
+    equalT
+    e <- exprP
+    return (mkRHS i 1, mkexpOptConstraint e c)
   ]

@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LabelDeclaration
-  ( label_declaration_P
+  ( labelDeclarationP
   ) where
 
 import Text.Megaparsec hiding (label)
@@ -12,11 +12,11 @@ import Language.OCaml.Parser.PolyTypeNoAttr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-label_declaration_P :: Parser Label_declaration
-label_declaration_P = try $ do
-  mut <- mutable_flag_P
-  label <- label_P
-  colon_T
-  t <- poly_type_no_attr_P
+labelDeclarationP :: Parser LabelDeclaration
+labelDeclarationP = try $ do
+  mut <- mutableFlagP
+  label <- labelP
+  colonT
+  t <- polyTypeNoAttrP
   -- TODO: attributes
   return $ field mut (mkRHS label 2) t

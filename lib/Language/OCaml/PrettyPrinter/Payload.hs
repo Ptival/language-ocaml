@@ -7,7 +7,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.Payload
-  ( payload_PP
+  ( payloadPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -17,17 +17,17 @@ import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
 import Language.OCaml.PrettyPrinter.LabelDeclaration ()
 import Language.OCaml.PrettyPrinter.Structure
 
-payload_PP ::
-  --( Pretty Signature_item
-  ( Pretty Structure_item
+payloadPP ::
+  --( Pretty SignatureItem
+  ( Pretty StructureItem
   ) => Payload -> Doc a
-payload_PP = \case
-  PStr s -> structure_PP s
+payloadPP = \case
+  PStr s -> structurePP s
   PSig _s -> error "TODO" -- pretty s
   PTyp t -> pretty t
   PPat _p _e -> error "TODO"
 
-instance --( Pretty Signature_item
-         ( Pretty Structure_item
+instance --( Pretty SignatureItem
+         ( Pretty StructureItem
          ) => Pretty Payload where
-  pretty = payload_PP
+  pretty = payloadPP

@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.ModuleBinding
-  ( module_binding_PP
+  ( moduleBindingPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -12,11 +12,11 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.ModuleExpr ()
 
-module_binding_PP :: Module_binding -> Doc a
-module_binding_PP d = fillSep [ "module", name, "=", expr ]
+moduleBindingPP :: ModuleBinding -> Doc a
+moduleBindingPP d = fillSep [ "module", name, "=", expr ]
   where
-    name = pretty $ pmb_name d
-    expr = pretty $ pmb_expr d
+    name = pretty $ pmbName d
+    expr = pretty $ pmbExpr d
 
-instance Pretty Module_binding where
-  pretty = module_binding_PP
+instance Pretty ModuleBinding where
+  pretty = moduleBindingPP

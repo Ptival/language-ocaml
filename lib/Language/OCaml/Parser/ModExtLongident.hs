@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.ModExtLongident
-  ( mod_ext_longident_P
+  ( modExtLongidentP
   ) where
 
 import Text.Megaparsec
@@ -9,13 +9,13 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-mod_ext_longident_P :: Parser Longident
-mod_ext_longident_P = leftRecursive
-  [ Lident <$> u_ident_T
+modExtLongidentP :: Parser Longident
+modExtLongidentP = leftRecursive
+  [ Lident <$> uIdentT
   ]
   [ try $ do
-    dot_T
-    i <- u_ident_T
+    dotT
+    i <- uIdentT
     return $ \ x -> Ldot x i
     -- TODO: parens
   ]

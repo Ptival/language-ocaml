@@ -5,14 +5,14 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , Docstring(..)
   , Info
   , Text
-  , add_docs_attrs
-  , add_info_attrs
-  , add_text_attrs
-  , docs_attr
-  , empty_docs
-  , empty_info
-  , rhs_text
-  , text_attr
+  , addDocsAttrs
+  , addInfoAttrs
+  , addTextAttrs
+  , docsAttr
+  , emptyDocs
+  , emptyInfo
+  , rhsText
+  , textAttr
   ) where
 
 import GHC.Generics
@@ -23,7 +23,7 @@ import Language.OCaml.Definitions.Parsing.Location
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Definitions.StdLib.Parsing
 
-data Ds_attached
+data DsAttached
    = Unattached   {- Not yet attached anything. -}
    | Info         {- Attached to a field or constructor. -}
    | Docs         {- Attached to an item or as floating text. -}
@@ -31,105 +31,105 @@ data Ds_attached
 
 {- A docstring is "associated" with an item if there are no blank lines between
    them. This is used for generating docstring ambiguity warnings. -}
-data Ds_associated
+data DsAssociated
   = Zero             {- Not associated with an item -}
   | One              {- Associated with one item -}
   | Many
   deriving (Eq, Generic, Show)
 
 data Docstring = Docstring
-  { ds_body       :: String
-  , ds_loc        :: Location
-  , ds_attached   :: Ds_attached
-  , ds_associated :: Ds_associated
+  { dsBody       :: String
+  , dsLoc        :: Location
+  , dsAttached   :: DsAttached
+  , dsAssociated :: DsAssociated
   }
   deriving (Eq, Generic, Show)
 
 type Text = [Docstring]
 
-text_loc :: Loc String
-text_loc = Loc
+textLoc :: Loc String
+textLoc = Loc
   { txt = "ocaml.text"
   , loc = none
   }
 
-text_attr :: Docstring -> Attribute
-text_attr ds =
+textAttr :: Docstring -> Attribute
+textAttr ds =
   let exp =
         Expression
-        { pexp_desc       = Pexp_constant (Pconst_string (ds_body ds) Nothing)
-        , pexp_loc        = ds_loc ds
-        , pexp_attributes = []
+        { pexpDesc       = PexpConstant (PconstString (dsBody ds) Nothing)
+        , pexpLoc        = dsLoc ds
+        , pexpAttributes = []
         }
   in
   let item =
-        Structure_item
-        { pstr_desc = Pstr_eval exp []
-        , pstr_loc  = pexp_loc exp
+        StructureItem
+        { pstrDesc = PstrEval exp []
+        , pstrLoc  = pexpLoc exp
         }
   in
-  (text_loc, PStr [item])
+  (textLoc, PStr [item])
 
-add_text_attrs :: [Docstring] -> [Attribute] -> [Attribute]
-add_text_attrs dsl attrs = (map text_attr dsl) ++ attrs
+addTextAttrs :: [Docstring] -> [Attribute] -> [Attribute]
+addTextAttrs dsl attrs = (map textAttr dsl) ++ attrs
 
-rhs_text :: a -> [b]
-rhs_text pos = get_text (rhs_start_pos pos)
+rhsText :: a -> [b]
+rhsText pos = getText (rhsStartPos pos)
 
-get_text :: a -> [b]
-get_text _pos = [] -- FIXME
+getText :: a -> [b]
+getText _pos = [] -- FIXME
 
 data Docs = Docs'
-  { docs_pre  :: Maybe Docstring
-  , docs_post :: Maybe Docstring
+  { docsPre  :: Maybe Docstring
+  , docsPost :: Maybe Docstring
   }
   deriving (Eq, Generic, Show)
 
-add_docs_attrs :: Docs -> [(Loc String, Payload)] -> [(Loc String, Payload)]
-add_docs_attrs docs attrs =
-  let attrs1 = case docs_pre docs of
+addDocsAttrs :: Docs -> [(Loc String, Payload)] -> [(Loc String, Payload)]
+addDocsAttrs docs attrs =
+  let attrs1 = case docsPre docs of
                Nothing -> attrs
-               Just ds -> docs_attr ds : attrs
+               Just ds -> docsAttr ds : attrs
   in
-  let attrs2 = case docs_post docs of
+  let attrs2 = case docsPost docs of
                Nothing -> attrs1
-               Just ds -> attrs1 ++ [docs_attr ds]
+               Just ds -> attrs1 ++ [docsAttr ds]
   in
   attrs2
 
-add_info_attrs :: a -> b -> b
-add_info_attrs _info attrs = attrs -- FIXME
+addInfoAttrs :: a -> b -> b
+addInfoAttrs _info attrs = attrs -- FIXME
 
-empty_docs :: Docs
-empty_docs =
+emptyDocs :: Docs
+emptyDocs =
   Docs'
-  { docs_pre = Nothing
-  , docs_post = Nothing
+  { docsPre = Nothing
+  , docsPost = Nothing
   }
 
-doc_loc :: Loc String
-doc_loc =
+docLoc :: Loc String
+docLoc =
   Loc
   { txt = "ocaml.doc"
   , loc = none
   }
 
-docs_attr :: Docstring -> (Loc String, Payload)
-docs_attr ds =
+docsAttr :: Docstring -> (Loc String, Payload)
+docsAttr ds =
   let exp = Expression
-        { pexp_desc = Pexp_constant $ Pconst_string (ds_body ds) Nothing
-        , pexp_loc = ds_loc ds
-        , pexp_attributes = []
+        { pexpDesc = PexpConstant $ PconstString (dsBody ds) Nothing
+        , pexpLoc = dsLoc ds
+        , pexpAttributes = []
         }
   in
-  let item = Structure_item
-        { pstr_desc = Pstr_eval exp []
-        , pstr_loc = pexp_loc exp
+  let item = StructureItem
+        { pstrDesc = PstrEval exp []
+        , pstrLoc = pexpLoc exp
         }
   in
-  (doc_loc, PStr [item])
+  (docLoc, PStr [item])
 
 type Info = Maybe Docstring
 
-empty_info :: Info
-empty_info = Nothing
+emptyInfo :: Info
+emptyInfo = Nothing

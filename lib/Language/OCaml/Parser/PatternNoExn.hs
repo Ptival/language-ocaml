@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.PatternNoExn
-  ( pattern_no_exn_P
+  ( patternNoExnP
   ) where
 
 import Text.Megaparsec
@@ -13,22 +13,22 @@ import Language.OCaml.Parser.ValIdent
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-pattern_no_exn_P :: Parser Pattern
-pattern_no_exn_P = leftRecursive
-  [ pattern_gen_P pattern_P
+patternNoExnP :: Parser Pattern
+patternNoExnP = leftRecursive
+  [ patternGenP patternP
   ]
   [ do
-    try as_T
-    i <- val_ident_P
-    return $ \ x -> mkpat $ Ppat_alias x (mkRHS i 3)
-  -- TODO: pattern_no_exn_comma_list
+    try asT
+    i <- valIdentP
+    return $ \ x -> mkpat $ PpatAlias x (mkRHS i 3)
+  -- TODO: patternNoExnCommaList
   -- , do
-  --   try colon_colon_T
-  --   p <- pattern_P
-  --   return $ mkpat_cons _ _
+  --   try colonColonT
+  --   p <- patternP
+  --   return $ mkpatCons _ _
   , do
-    try bar_T
-    p <- pattern_P
-    return $ \ x -> mkpat $ Ppat_or x p
+    try barT
+    p <- patternP
+    return $ \ x -> mkpat $ PpatOr x p
   -- TODO: attribute
   ]

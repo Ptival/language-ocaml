@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.PatternGen
-  ( pattern_gen_P
+  ( patternGenP
   ) where
 
 import Text.Megaparsec
@@ -10,13 +10,13 @@ import Language.OCaml.Parser.ConstrLongident
 import Language.OCaml.Parser.SimplePattern
 import Language.OCaml.Parser.Utils.Types
 
-pattern_gen_P :: Parser Pattern -> Parser Pattern
-pattern_gen_P pattern_P = choice
+patternGenP :: Parser Pattern -> Parser Pattern
+patternGenP patternP = choice
   [ try $ do
-    i <- constr_longident_P
-    p <- pattern_P
-    return $ mkpat $ Ppat_construct (mkRHS i 1) (Just p)
-  , try $ simple_pattern_P'
+    i <- constrLongidentP
+    p <- patternP
+    return $ mkpat $ PpatConstruct (mkRHS i 1) (Just p)
+  , try $ simplePatternP'
   ]
   where
-    simple_pattern_P' = simple_pattern_P pattern_P
+    simplePatternP' = simplePatternP patternP

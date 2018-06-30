@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.ModuleBindingBody
-  ( module_binding_body_P
+  ( moduleBindingBodyP
   ) where
 
 import Text.Megaparsec
@@ -9,10 +9,10 @@ import Language.OCaml.Parser.ModuleExpr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-module_binding_body_P :: Parser Module_expr
-module_binding_body_P = choice
+moduleBindingBodyP :: Parser ModuleExpr
+moduleBindingBodyP = choice
   [ do
-    try $ equal_T
-    module_expr_P
+    try $ equalT
+    moduleExprP
     -- TODO: rest
   ]

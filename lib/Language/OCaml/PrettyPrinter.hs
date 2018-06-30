@@ -1,6 +1,6 @@
 module Language.OCaml.PrettyPrinter
   ( pretty
-  , structure_PP
+  , structurePP
   ) where
 
 import Data.Text.Prettyprint.Doc (pretty)

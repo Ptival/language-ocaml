@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.MutableFlag
-  ( mutable_flag_PP
+  ( mutableFlagPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -15,10 +15,10 @@ import Language.OCaml.PrettyPrinter.Loc ()
 import Language.OCaml.PrettyPrinter.Longident ()
 import Language.OCaml.PrettyPrinter.OverrideFlag ()
 
-mutable_flag_PP :: Mutable_flag -> Doc a
-mutable_flag_PP = \case
+mutableFlagPP :: MutableFlag -> Doc a
+mutableFlagPP = \case
   Immutable -> ""
   Mutable   -> fillCat [ "mutable", space ]
 
-instance Pretty Mutable_flag where
-  pretty = mutable_flag_PP
+instance Pretty MutableFlag where
+  pretty = mutableFlagPP

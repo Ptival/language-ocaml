@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.ModuleBinding
-  ( module_binding_P
+  ( moduleBindingP
   ) where
 
 import Text.Megaparsec
@@ -11,13 +11,13 @@ import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-module_binding_P :: Parser Structure -> Parser (Module_binding, ())
-module_binding_P structure_P = do
-  try $ module_T
-  -- TODO: ext_attributes
-  i <- u_ident_T
-  b <- module_binding_body_P
-  _a <- post_item_attributes_P structure_P
+moduleBindingP :: Parser Structure -> Parser (ModuleBinding, ())
+moduleBindingP structureP = do
+  try $ moduleT
+  -- TODO: extAttributes
+  i <- uIdentT
+  b <- moduleBindingBodyP
+  _a <- postItemAttributesP structureP
   return $ (mkMb Nothing Nothing Nothing Nothing (mkRHS i 3) b -- FIXME
            , () -- FIXME
            )

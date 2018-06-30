@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SimpleCoreTypeOrTuple
-  ( simple_core_type_or_tuple_P
+  ( simpleCoreTypeOrTupleP
   ) where
 
 import Text.Megaparsec
@@ -11,16 +11,16 @@ import Language.OCaml.Parser.SimpleCoreType
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-simple_core_type_or_tuple_P :: Parser Core_type -> Parser Core_type
-simple_core_type_or_tuple_P core_type_P = choice
+simpleCoreTypeOrTupleP :: Parser CoreType -> Parser CoreType
+simpleCoreTypeOrTupleP coreTypeP = choice
   [ do
     t <- try $ do
-      t <- simple_core_type_P'
-      star_T
+      t <- simpleCoreTypeP'
+      starT
       return t
-    l <- core_type_list_P core_type_P
-    return . mktyp . Ptyp_tuple $ t : reverse l
-  , simple_core_type_P'
+    l <- coreTypelistP coreTypeP
+    return . mktyp . PtypTuple $ t : reverse l
+  , simpleCoreTypeP'
   ]
   where
-    simple_core_type_P' = simple_core_type_P core_type_P
+    simpleCoreTypeP' = simpleCoreTypeP coreTypeP

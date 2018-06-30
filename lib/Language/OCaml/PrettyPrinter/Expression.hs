@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.Expression
-  ( expression_PP
+  ( expressionPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -11,8 +11,8 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.ExpressionDesc ()
 
-expression_PP :: Expression -> Doc a
-expression_PP = pretty . pexp_desc
+expressionPP :: Expression -> Doc a
+expressionPP = pretty . pexpDesc
 
 instance Pretty Expression where
-  pretty = expression_PP
+  pretty = expressionPP

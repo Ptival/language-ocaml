@@ -10,8 +10,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-match_case_tests :: [String]
-match_case_tests =
+matchCaseTests :: [String]
+matchCaseTests =
   [ "a -> b"
   , "a -> B.c_d"
   , "a when b -> c"
@@ -19,7 +19,7 @@ match_case_tests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.MatchCase" $ []
-  ++ map (mkParsingTest "match_case_P" match_case_P) match_case_tests
+  ++ map (mkParsingTest "matchCaseP" matchCaseP) matchCaseTests
 
 test :: IO ()
 test = defaultMain unitTests

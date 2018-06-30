@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.Expr
-  ( expr_P
+  ( exprP
   ) where
 
 import Text.Megaparsec hiding (token)
@@ -19,81 +19,81 @@ import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.PrettyPrinter ()
 
-expr_P :: Parser Structure -> Parser Expression -> Parser Expression
-expr_P structure_P seq_expr_P = choice
-  [ try $ parser <* notFollowedBy comma_T
-  , mkexp . Pexp_tuple . reverse <$>
-    chainl1' parser (comma_T *> (return $ flip (:))) (: [])
+exprP :: Parser Structure -> Parser Expression -> Parser Expression
+exprP structureP seqExprP = choice
+  [ try $ parser <* notFollowedBy commaT
+  , mkexp . PexpTuple . reverse <$>
+    chainl1' parser (commaT *> (return $ flip (:))) (: [])
   ]
   where
     parser = leftRecursive
       [ try $ do
-        e <- simple_expr_P'
-        l <- simple_labeled_expr_list_P'
-        return $ mkexp $ Pexp_apply e (reverse l)
+        e <- simpleExprP'
+        l <- simpleLabeledExprListP'
+        return $ mkexp $ PexpApply e (reverse l)
       , do
         b <- try $ do
-          b <- let_bindings_P structure_P seq_expr_P
-          in_T
+          b <- letBindingsP structureP seqExprP
+          inT
           return b
-        e <- seq_expr_P
-        return $ expr_of_let_bindings b e
+        e <- seqExprP
+        return $ exprOfLetBindings b e
       -- FUNCTION
       , do
-        try $ function_T
-        -- TODO: ext_attributes
-        opt_bar_P
-        l <- match_cases_P'
-        return $ mkexp_attrs (Pexp_function $ reverse l) (Nothing, []) -- FIXME
+        try $ functionT
+        -- TODO: extAttributes
+        optBarP
+        l <- matchCasesP'
+        return $ mkexpAttrs (PexpFunction $ reverse l) (Nothing, []) -- FIXME
       -- FUN
       , do
-        try $ fun_T
-        -- TODO: ext_attributes
-        (l, o, p) <- labeled_simple_pattern_P pattern_P
-        d <- fun_def_P seq_expr_P
-        return $ mkexp_attrs (Pexp_fun l o p d) (Nothing, []) -- FIXME
+        try $ funT
+        -- TODO: extAttributes
+        (l, o, p) <- labeledSimplePatternP patternP
+        d <- funDefP seqExprP
+        return $ mkexpAttrs (PexpFun l o p d) (Nothing, []) -- FIXME
       -- MATCH
       , do
-        try $ match_T
-        -- TODO: ext_attributes
-        e <- seq_expr_P
-        with_T
-        opt_bar_P
-        l <- match_cases_P'
-        return $ mkexp_attrs (Pexp_match e $ reverse l) (Nothing, []) -- FIXME
+        try $ matchT
+        -- TODO: extAttributes
+        e <- seqExprP
+        withT
+        optBarP
+        l <- matchCasesP'
+        return $ mkexpAttrs (PexpMatch e $ reverse l) (Nothing, []) -- FIXME
       -- IF ... THEN ... ELSE ...
       , do
-        try if_T
-        -- TODO: ext_attributes
-        c <- seq_expr_P
-        then_T
-        t <- expr_P'
+        try ifT
+        -- TODO: extAttributes
+        c <- seqExprP
+        thenT
+        t <- exprP'
         e <- choice
           [ do
-            try else_T
-            Just <$> expr_P'
+            try elseT
+            Just <$> exprP'
           , return Nothing
           ]
-        return $ mkexp_attrs (Pexp_ifthenelse c t e) (Nothing, []) -- FIXME
-      , simple_expr_P'
+        return $ mkexpAttrs (PexpIfthenelse c t e) (Nothing, []) -- FIXME
+      , simpleExprP'
       ]
       -- FIXME: deal with associativity?
-      [ infixP equal_T   "="
-      , infixP plus_T    "+"
-      , infixP minus_T   "-"
-      , infixP star_T    "*"
-      , infixP caret_T   "^"
-      , infixP greater_T ">"
-      , infixP at_T      "@"
+      [ infixP equalT   "="
+      , infixP plusT    "+"
+      , infixP minusT   "-"
+      , infixP starT    "*"
+      , infixP caretT   "^"
+      , infixP greaterT ">"
+      , infixP atT      "@"
       ]
 
     infixP :: Parser () -> String -> Parser (Expression -> Expression)
     infixP token symbol = try $ do
       token
-      e2 <- expr_P'
+      e2 <- exprP'
       return $ \ e1 -> mkinfix e1 symbol e2
 
-    expr_P'                     = expr_P                     structure_P seq_expr_P
-    simple_expr_P'              = simple_expr_P                          seq_expr_P expr_P'
-    simple_labeled_expr_list_P' = simple_labeled_expr_list_P             seq_expr_P expr_P'
-    match_cases_P'              = match_cases_P                          seq_expr_P
+    exprP'                     = exprP                     structureP seqExprP
+    simpleExprP'              = simpleExprP                          seqExprP exprP'
+    simpleLabeledExprListP' = simpleLabeledExprListP             seqExprP exprP'
+    matchCasesP'              = matchCasesP                          seqExprP

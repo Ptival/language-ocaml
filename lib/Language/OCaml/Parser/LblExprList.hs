@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LblExprList
-  ( lbl_expr_list_P
+  ( lblExprListP
   ) where
 
 import Text.Megaparsec
@@ -13,19 +13,19 @@ import Language.OCaml.Parser.Utils.Types
 -- FIXME: Right now, this is made to look like the OCaml parser, but we could
 -- optimize everything by factoring out the left parsers that are the same.
 
-lbl_expr_list_P :: Parser Expression -> Parser [(Loc Longident, Expression)]
-lbl_expr_list_P expr_P = choice
+lblExprListP :: Parser Expression -> Parser [(Loc Longident, Expression)]
+lblExprListP exprP = choice
   [ try $ do
-    e <- lbl_expr_P'
-    semi_T
-    l <- lbl_expr_list_P'
+    e <- lblExprP'
+    semiT
+    l <- lblExprListP'
     return $ e : l
   , try $ do
-    e <- lbl_expr_P'
-    semi_T
+    e <- lblExprP'
+    semiT
     return [e]
-  , (: []) <$> lbl_expr_P'
+  , (: []) <$> lblExprP'
   ]
   where
-    lbl_expr_P'      = lbl_expr_P      expr_P
-    lbl_expr_list_P' = lbl_expr_list_P expr_P
+    lblExprP'      = lblExprP      exprP
+    lblExprListP' = lblExprListP exprP

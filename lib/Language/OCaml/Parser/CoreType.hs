@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.CoreType
-  ( core_type_P
+  ( coreTypeP
   ) where
 
 import Text.Megaparsec
@@ -8,11 +8,11 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.CoreTypeNoAttr
 import Language.OCaml.Parser.Utils.Types
 
-core_type_P :: Parser Core_type
-core_type_P = choice
-  [ core_type_no_attr_P core_type_P
+coreTypeP :: Parser CoreType
+coreTypeP = choice
+  [ coreTypenoAttrP coreTypeP
   -- , do
-  --   t <- core_type
+  --   t <- coreType
   --   a <- attribute
   --   return $ attr t a
   ]

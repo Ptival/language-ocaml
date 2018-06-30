@@ -14,8 +14,8 @@ import Language.OCaml.Parser.Internal
 import Language.OCaml.PrettyPrinter.Internal
 import Language.OCaml.PrettyPrinter.TestUtils
 
-structure_item_tests :: [String]
-structure_item_tests =
+structureItemTests :: [String]
+structureItemTests =
   [ "type a = _"
   , "type a = 'b"
   , "type a = b"
@@ -92,12 +92,12 @@ type 'a binary_tree =
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
   ++ map (mkPrettyPrinterTest
-          "structure_item_PP"
-          structure_item_P
-          structure_item_PP
-         ) structure_item_tests
+          "structureItemPP"
+          structureItemP
+          structureItemPP
+         ) structureItemTests
 
 test :: IO ()
 test = defaultMain unitTests
 
--- _foo = debugPrettyPrinter structure_item_P structure_item_PP (structure_item_tests !! (length structure_item_tests - 1))
+-- _foo = debugPrettyPrinter structureItemP structureItemPP (structureItemTests !! (length structureItemTests - 1))

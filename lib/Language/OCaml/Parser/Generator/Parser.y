@@ -38,13 +38,14 @@ import Language.OCaml.Parser.Generator.Lexer
   '='        { Located _  TokEqual }
   fun        { Located _  TokFun }
   function   { Located _  TokFunction }
-  "->"       { Located _  TokMinusGreater }
-  let        { Located _  TokLet }
-  "[@@"      { Located _  TokLBracketAtAt }
-  '('        { Located _  TokLParen }
-  LIDENT     { Located _ (TokLIdent $$) }
   in         { Located _  TokIn }
   initialier { Located _  TokInitializer }
+  let        { Located _  TokLet }
+  "[@@"      { Located _  TokLBracketAtAt }
+  "[>"       { Located _  TokLBracketGreater }
+  '('        { Located _  TokLParen }
+  LIDENT     { Located _ (TokLIdent $$) }
+  "->"       { Located _  TokMinusGreater }
   '%'        { Located _  TokPercent }
   '\''       { Located _  TokQuote }
   ']'        { Located _  TokRBracket }
@@ -68,7 +69,7 @@ import Language.OCaml.Parser.Generator.Lexer
 %right    ":="
 %nonassoc as
 %left     '|'
-%nonassoc below_COMMA
+%nonassoc belowCOMMA
 %left     ','
 %right   "->"
 %right   or "||"
@@ -83,13 +84,13 @@ import Language.OCaml.Parser.Generator.Lexer
 %left     INFIXOP2 '+' "+." '-' "-." "+="
 %left     '%' INFIXOP3 '*'
 %right    INFIXOP4
-%nonassoc prec_unary_minus prec_unary_plus
-%nonassoc prec_constant_constructor
-%nonassoc prec_constr_appl
+%nonassoc prec_unary_minus prec_unaryPlus
+%nonassoc precConstantConstructor
+%nonassoc precConstrAppl
 %nonassoc below_HASH
 %nonassoc '#'
 %left     HASHOP
-%nonassoc below_DOT
+%nonassoc belowDOT
 %nonassoc '.' DOTOP
 %nonassoc '`' '!' begin CHAR false float int
           '{' "{<" '[' "[|" LIDENT '('
@@ -109,37 +110,37 @@ Attributes :: { [c] }
   | Attribute Attributes { $1 : $2 }
 
 AttrId :: { d }
-  : SingleAttrId { mkLoc $1 (symbol_rloc ()) }
-  | SingleAttrId '.' AttrId { mkLoc ($1 ++ "." ++ txt $3) (symbol_rloc ()) }
+  : SingleAttrId { mkLoc $1 (symbolRLoc ()) }
+  | SingleAttrId '.' AttrId { mkLoc ($1 ++ "." ++ txt $3) (symbolRLoc ()) }
 
-CoreType :: { Core_type }
+CoreType :: { CoreType }
   : CoreTypeNoAttr     { $1 }
   -- | CoreType Attribute { attrTyp $1 $2 }
 
-CoreType2 :: { Core_type }
+CoreType2 :: { CoreType }
   : SimpleCoreTypeOrTuple { $1 }
   -- TODO
 
-CoreTypeCommaList :: { [Core_type] }
+CoreTypeCommaList :: { [CoreType] }
   : CoreType                       { [$1] }
   | CoreTypeCommaList ',' CoreType { $3 : $1 }
 
-CoreTypeList :: { [Core_type] }
+CoreTypeList :: { [CoreType] }
   : CoreType                  { [$1] }
   | CoreTypeList '*' CoreType { $3 : $1 }
 
-CoreTypeNoAttr :: { Core_type }
+CoreTypeNoAttr :: { CoreType }
   : CoreType2               %prec "->" { $1 }
-  | CoreType2 as '\'' Ident            { mktyp $ Ptyp_alias $1 $4 }
+  | CoreType2 as '\'' Ident            { mktyp $ PtypAlias $1 $4 }
 
 Expr :: { e }
   : SimpleExpr                               %prec below_HASH { $1 }
-  | SimpleExpr SimpleLabeledExprList                          { mkexp $ Pexp_apply $1 (reverse $2) }
-  | LetBindings in SeqExpr                                    { expr_of_let_bindings $1 $3 }
+  | SimpleExpr SimpleLabeledExprList                          { mkexp $ PexpApply $1 (reverse $2) }
+  | LetBindings in SeqExpr                                    { exprOfLetBindings $1 $3 }
   -- TODO
-  | function ExtAttributes OptBar MatchCases                  { mkexp_attrs (Pexp_function (reverse $4)) $2 }
+  | function ExtAttributes OptBar MatchCases                  { mkexpAttrs (PexpFunction (reverse $4)) $2 }
   | fun ExtAttributes LabeledSimplePattern FunDef             { let (l, o, p) = $3 in
-                                                                mkexp_attrs (Pexp_fun l o p $4) $2
+                                                                mkexpAttrs (PexpFun l o p $4) $2
                                                               }
 
 ExtAttributes :: { f }
@@ -149,13 +150,13 @@ ExtAttributes :: { f }
 
 FunBinding :: { Expression }
   : StrictBinding { $1 }
-  -- | TypeConstraint '=' SeqExpr { mkexp_constraint $3 $1 }
+  -- | TypeConstraint '=' SeqExpr { mkexpConstraint $3 $1 }
 
 FunDef :: { Expression }
   : "->" SeqExpr                    { $2 }
-  | ':' SimpleCoreType "->" SeqExpr { mkExp def $ Pexp_constraint $4 $2 }
+  | ':' SimpleCoreType "->" SeqExpr { mkExp def $ PexpConstraint $4 $2 }
   | LabeledSimplePattern FunDef { let (l, o, p) = $1 in
-                                  ghexp $ Pexp_fun l o p $2
+                                  ghexp $ PexpFun l o p $2
                                 }
 
 Ident :: { String }
@@ -169,7 +170,7 @@ LabeledSimpleExpr :: { h }
   : SimpleExpr %prec below_HASH { (Nolabel, $1) }
   -- | LabelExpr                   { $1 }
 
-LabeledSimplePattern :: { (Arg_label, Maybe Expression, Pattern) }
+LabeledSimplePattern :: { (ArgLabel, Maybe Expression, Pattern) }
   -- TODO
   : SimplePattern { (Nolabel, Nothing, $1) }
 
@@ -209,10 +210,10 @@ OptBar :: { () }
   | '|'         { () }
 
 Pattern :: { Pattern }
-  : Pattern as ValIdent                    { mkpat $ Ppat_alias $1 (mkRHS $3 3) }
+  : Pattern as ValIdent                    { mkpat $ PpatAlias $1 (mkRHS $3 3) }
   | Pattern as                             {% alexError "Pattern as <!> ValIdent" }
-  | PatternCommaList     %prec below_COMMA { mkpat $ Ppat_tuple (reverse $1) }
-  | Pattern "::" Pattern                   { mkpat_cons (rhsLoc 2) (ghpat $ Ppat_tuple [$1, $3]) (symbol_rloc ()) }
+  | PatternCommaList     %prec belowCOMMA { mkpat $ PpatTuple (reverse $1) }
+  | Pattern "::" Pattern                   { mkpatCons (rhsLoc 2) (ghpat $ PpatTuple [$1, $3]) (symbolRLoc ()) }
 
 PatternCommaList :: { [Pattern] }
   : PatternCommaList ',' Pattern { $3 : $1 }
@@ -237,9 +238,13 @@ RecFlag :: { n }
 SeqExpr :: { o }
   : Expr %prec below_SEMI { $1 }
   | Expr ';'              { $1 }
-  | Expr ';' SeqExpr      { mkexp $ Pexp_sequence $1 $3 }
+  | Expr ';' SeqExpr      { mkexp $ PexpSequence $1 $3 }
+  | Expr ';' '%' AttrId SeqExpr { let seq = mkexp $ PexpSequence $1 $5 in
+                                  let payload = PStr [mkstrexp seq []] in
+                                  mkexp $ PexpExtension ($4, payload)
+                                }
 
-SimpleCoreType :: { Core_type }
+SimpleCoreType :: { CoreType }
   : SimpleCoreType2           %prec below_HASH { $1 }
   | '(' CoreTypeCommaList ')' %prec below_HASH
     {% case $2 of
@@ -247,32 +252,33 @@ SimpleCoreType :: { Core_type }
        _     -> alexError "( CoreTypeCommaList ) [expected length 1]"
     }
 
-SimpleCoreType2 :: { Core_type }
-  : '\'' Ident                              { mktyp $ Ptyp_var $2 }
-  | '_'                                     { mktyp $ Ptyp_any }
-  | TypeLongident                           { mktyp $ Ptyp_constr (mkRHS $1 1) [] }
-  | SimpleCoreType2 TypeLongident           { mktyp $ Ptyp_constr (mkRHS $2 2) [$1] }
-  -- | '(' CoreTypeCommaList ')' TypeLongident { mktyp $ Ptyp_constr (mkRHS $4 4) (reverse $2) }
+SimpleCoreType2 :: { CoreType }
+  : '\'' Ident                              { mktyp $ PtypVar $2 }
+  | '_'                                     { mktyp $ PtypAny }
+  | TypeLongident                           { mktyp $ PtypConstr (mkRHS $1 1) [] }
+  | SimpleCoreType2 TypeLongident           { mktyp $ PtypConstr (mkRHS $2 2) [$1] }
+  | '(' CoreTypeCommaList ')' TypeLongident { mktyp $ PtypConstr (mkRHS $4 4) (reverse $2) }
   -- TODO
+  | "[>" ']'                                { mktyp $ PtypVariant [] Open Nothing }
 
-SimpleCoreTypeOrTuple :: { Core_type }
+SimpleCoreTypeOrTuple :: { CoreType }
   : SimpleCoreType                  { $1 }
-  | SimpleCoreType '*' CoreTypeList { mktyp $ Ptyp_tuple ($1 : reverse $3) }
+  | SimpleCoreType '*' CoreTypeList { mktyp $ PtypTuple ($1 : reverse $3) }
 
 SimpleExpr :: { p }
-  : ValLongident { mkexp $ Pexp_ident (mkRHS $1 1) }
+  : ValLongident { mkexp $ PexpIdent (mkRHS $1 1) }
   -- TODO
 
-SimpleLabeledExprList :: { [(Arg_label, Expression)] }
+SimpleLabeledExprList :: { [(ArgLabel, Expression)] }
   : LabeledSimpleExpr                       { [$1] }
   | SimpleLabeledExprList LabeledSimpleExpr { $2 : $1 }
 
 SimplePattern :: { Pattern }
-  : ValIdent %prec below_EQUAL { mkpat $ Ppat_var (mkRHS $1 1) }
+  : ValIdent %prec below_EQUAL { mkpat $ PpatVar (mkRHS $1 1) }
   | SimplePatternNotIdent      { $1 }
 
 SimplePatternNotIdent :: { Pattern }
-  : '_' { mkpat $ Ppat_any }
+  : '_' { mkpat $ PpatAny }
   -- TODO
 
 SingleAttrId :: { String }
@@ -287,27 +293,26 @@ SingleAttrId :: { String }
 
 StrictBinding :: { q }
   : '=' SeqExpr { $2 }
-  | LabeledSimplePattern FunBinding { do
-                                      let (l, o, p) = $1
-                                      ghexp $ Pexp_fun l o p $2
+  | LabeledSimplePattern FunBinding { let (l, o, p) = $1 in
+                                      ghexp $ PexpFun l o p $2
                                     }
-  -- TODO
+  -- | '(' LidentList ')' FunBinding   { mk_newtypes $3 $5 }
 
 Structure :: { Structure }
   : SeqExpr PostItemAttributes StructureTail { do
-                                               -- TODO: mark_rhs_docs 1 2
-                                               (text_str 1) ++ mkstrexp $1 $2 : $3
+                                               -- TODO: mark_rhsDocs 1 2
+                                               (textStr 1) ++ mkstrexp $1 $2 : $3
                                              }
   | StructureTail                            { $1 }
 
-StructureItem :: { Structure_item }
-  : LetBindings { val_of_let_bindings $1 }
+StructureItem :: { StructureItem }
+  : LetBindings { valOfLetBindings $1 }
   -- TODO
 
 StructureTail :: { Structure }
   : {- empty -}                 { [] }
-  | "::" Structure              { (text_str 1) ++ $2 }
-  | StructureItem StructureTail { (text_str 1) ++ $1 : $2 }
+  | "::" Structure              { (textStr 1) ++ $2 }
+  | StructureItem StructureTail { (textStr 1) ++ $1 : $2 }
 
 TypeLongident :: { Longident }
   : LIDENT                     { Lident $1 }

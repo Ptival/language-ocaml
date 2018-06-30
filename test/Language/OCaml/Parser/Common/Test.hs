@@ -11,8 +11,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-constr_ident_tests :: [String]
-constr_ident_tests =
+constrIdentTests :: [String]
+constrIdentTests =
   [ "A"
   , "Ab"
   , "AB"
@@ -27,8 +27,8 @@ constr_ident_tests =
   , "true "
   ]
 
-ident_tests :: [String]
-ident_tests =
+identTests :: [String]
+identTests =
   [ "A"
   , "Ab"
   , "AB"
@@ -45,8 +45,8 @@ ident_tests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Common" $ []
-  ++ map (mkParsingTest "constr_ident_P" constr_ident_P) constr_ident_tests
-  ++ map (mkParsingTest "ident_P" ident_P) ident_tests
+  ++ map (mkParsingTest "constrIdentP" constrIdentP) constrIdentTests
+  ++ map (mkParsingTest "identP" identP) identTests
 
 test :: IO ()
 test = defaultMain unitTests

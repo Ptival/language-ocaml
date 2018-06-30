@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.ConstrIdent
-  ( constr_ident_P
+  ( constrIdentP
   ) where
 
 import Text.Megaparsec
@@ -7,12 +7,12 @@ import Text.Megaparsec
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-constr_ident_P :: Parser String
-constr_ident_P = choice
-  [ u_ident_T
-  , l_bracket_T *> r_bracket_T *> return "[]"
-  , l_paren_T *> r_paren_T *> return "()"
-  , l_paren_T *> colon_colon_T *> r_paren_T *> return "::"
-  , false_T *> return "false"
-  , true_T *> return "true"
+constrIdentP :: Parser String
+constrIdentP = choice
+  [ uIdentT
+  , lBracketT *> rBracketT *> return "[]"
+  , lParenT *> rParenT *> return "()"
+  , lParenT *> colonColonT *> rParenT *> return "::"
+  , falseT *> return "false"
+  , trueT *> return "true"
   ]

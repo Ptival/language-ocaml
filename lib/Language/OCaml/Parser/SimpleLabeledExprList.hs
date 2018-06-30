@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SimpleLabeledExprList
-  ( simple_labeled_expr_list_P
+  ( simpleLabeledExprListP
   ) where
 
 import Text.Megaparsec
@@ -12,5 +12,5 @@ import Language.OCaml.Parser.Utils.Types
 -- NOTE: the OCaml version builds the list backwards for efficiency reasons
 -- We call `reverse` to match it, even though it is inefficient.
 -- We could update this once the whole code base is ready. #FIXME
-simple_labeled_expr_list_P :: Parser Expression -> Parser Expression -> Parser [(Arg_label, Expression)]
-simple_labeled_expr_list_P seq_expr_P expr_P = reverse <$> many (labeled_simple_expr_P seq_expr_P expr_P)
+simpleLabeledExprListP :: Parser Expression -> Parser Expression -> Parser [(ArgLabel, Expression)]
+simpleLabeledExprListP seqExprP exprP = reverse <$> many (labeledSimpleExprP seqExprP exprP)

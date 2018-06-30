@@ -5,7 +5,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.ValueBinding
-  ( value_binding_PP
+  ( valueBindingPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -13,11 +13,11 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.Pattern ()
 
-value_binding_PP :: (Pretty Expression) => Value_binding -> Doc a
-value_binding_PP d = fillSep [ pattern', "=", expr ]
+valueBindingPP :: (Pretty Expression) => ValueBinding -> Doc a
+valueBindingPP d = fillSep [ pattern', "=", expr ]
   where
-    pattern' = pretty $ pvb_pat d
-    expr     = pretty $ pvb_expr d
+    pattern' = pretty $ pvbPat d
+    expr     = pretty $ pvbExpr d
 
-instance (Pretty Expression) => Pretty Value_binding where
-  pretty = value_binding_PP
+instance (Pretty Expression) => Pretty ValueBinding where
+  pretty = valueBindingPP

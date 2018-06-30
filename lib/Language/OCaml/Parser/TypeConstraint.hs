@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.TypeConstraint
-  ( type_constraint_P
+  ( typeConstraintP
   ) where
 
 import Text.Megaparsec
@@ -9,22 +9,22 @@ import Language.OCaml.Parser.CoreType
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-type_constraint_P :: Parser (Maybe Core_type, Maybe Core_type)
-type_constraint_P = choice
+typeConstraintP :: Parser (Maybe CoreType, Maybe CoreType)
+typeConstraintP = choice
   [ do
     t1 <- try $ do
-      colon_T
-      t1 <- core_type_P
-      colon_greater_T
+      colonT
+      t1 <- coreTypeP
+      colonGreaterT
       return t1
-    t2 <- core_type_P
+    t2 <- coreTypeP
     return (Just t1, Just t2)
   , try $ do
-    colon_T
-    t <- core_type_P
+    colonT
+    t <- coreTypeP
     return (Just t, Nothing)
   , do
-    try $ colon_greater_T
-    t <- core_type_P
+    try $ colonGreaterT
+    t <- coreTypeP
     return (Nothing, Just t)
   ]

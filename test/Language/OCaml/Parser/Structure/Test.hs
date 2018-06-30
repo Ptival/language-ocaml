@@ -12,8 +12,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-structure_tests :: [String]
-structure_tests =
+structureTests :: [String]
+structureTests =
   [ " "
   , "(* A *) type a = A"
   , "type a = A (* A *)"
@@ -70,9 +70,9 @@ and tstm = tstm' pos_ast [@@deriving show, eq]
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Structure" $ []
-  ++ map (mkParsingTest "structure_P" structure_P) structure_tests
+  ++ map (mkParsingTest "structureP" structureP) structureTests
 
 test :: IO ()
 test = defaultMain unitTests
 
--- debug = debugParsing structure_P (structure_tests !! 9)
+-- debug = debugParsing structureP (structureTests !! 9)

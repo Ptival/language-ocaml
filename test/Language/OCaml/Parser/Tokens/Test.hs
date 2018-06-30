@@ -13,25 +13,25 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
--- l_ident_tests :: [String]
--- l_ident_tests = [ "a", "a " ]
+-- lIdentTests :: [String]
+-- lIdentTests = [ "a", "a " ]
 
--- u_ident_tests :: [String]
--- u_ident_tests = [ "A", "A " ]
+-- uIdentTests :: [String]
+-- uIdentTests = [ "A", "A " ]
 
--- star_tests :: [String]
--- star_tests = [ "*", "* ", " *", " * " ]
+-- starTests :: [String]
+-- starTests = [ "*", "* ", " *", " * " ]
 
-string_tests :: [String]
-string_tests =
+stringTests :: [String]
+stringTests =
   [ [s|"foo"|]
   ]
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Tokens" $ []
-  ++ map (mkParsingTest "string_T" string_T) string_tests
+  ++ map (mkParsingTest "stringT" stringT) stringTests
 
 test :: IO ()
 test = defaultMain unitTests
 
--- foo = debugParsing (string_T *> string_T) [s|"foo" "bar"|]
+-- foo = debugParsing (stringT *> stringT) [s|"foo" "bar"|]

@@ -4,7 +4,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.StructureItem
-  ( structure_item_PP
+  ( structureItemPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -12,8 +12,8 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.StructureItemDesc ()
 
-structure_item_PP :: (Pretty Payload) => Structure_item -> Doc a
-structure_item_PP = pretty . pstr_desc
+structureItemPP :: (Pretty Payload) => StructureItem -> Doc a
+structureItemPP = pretty . pstrDesc
 
-instance (Pretty Payload) => Pretty Structure_item where
-  pretty = structure_item_PP
+instance (Pretty Payload) => Pretty StructureItem where
+  pretty = structureItemPP

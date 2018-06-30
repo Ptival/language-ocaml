@@ -1,5 +1,5 @@
 module Language.OCaml.PrettyPrinter.Internal
-  ( structure_item_PP
+  ( structureItemPP
   ) where
 
 import Language.OCaml.PrettyPrinter.Payload ()

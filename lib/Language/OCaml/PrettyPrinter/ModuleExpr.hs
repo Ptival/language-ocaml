@@ -4,7 +4,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.ModuleExpr
-  ( module_expr_PP
+  ( moduleExprPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -12,8 +12,8 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.ModuleExprDesc ()
 
-module_expr_PP :: Module_expr -> Doc a
-module_expr_PP = pretty . pmod_desc
+moduleExprPP :: ModuleExpr -> Doc a
+moduleExprPP = pretty . pmodDesc
 
-instance Pretty Module_expr where
-  pretty = module_expr_PP
+instance Pretty ModuleExpr where
+  pretty = moduleExprPP

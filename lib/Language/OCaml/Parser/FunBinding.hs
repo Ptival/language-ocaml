@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.FunBinding
-  ( fun_binding_P
+  ( funBindingP
   ) where
 
 import Text.Megaparsec
@@ -11,12 +11,12 @@ import Language.OCaml.Parser.StrictBinding
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-fun_binding_P :: Parser Expression -> Parser Expression
-fun_binding_P seq_expr_P = choice
-  [ strict_binding_P seq_expr_P (fun_binding_P seq_expr_P)
+funBindingP :: Parser Expression -> Parser Expression
+funBindingP seqExprP = choice
+  [ strictBindingP seqExprP (funBindingP seqExprP)
   , do
-    c <- type_constraint_P
-    equal_T
-    e <- seq_expr_P
-    return $ mkexp_constraint e c
+    c <- typeConstraintP
+    equalT
+    e <- seqExprP
+    return $ mkexpConstraint e c
   ]

@@ -1,49 +1,49 @@
 module Language.OCaml.Parser.Internal
   ( module Language.OCaml.Parser.Tokens
   , Parser
-  , attribute_P
-  , attributes_P
-  , bar_constructor_declaration_P
-  , constant_P
-  , constr_ident_P
-  , constr_longident_P
-  , constructor_arguments_P
-  , constructor_declaration_P
-  , constructor_declarations_P
-  , core_type_P
-  , core_type2_P
-  , core_type_comma_list_P
-  , core_type_list_P
-  , expr_P
-  , generalized_constructor_arguments_P
-  , ident_P
-  , implementation_P
-  , labeled_simple_expr_P
-  , lbl_expr_P
-  , lbl_expr_list_P
-  , let_binding_P
-  , let_binding_body_P
-  , match_case_P
-  , mod_longident_P
-  , open_statement_P
-  , pattern_P
-  , pattern_no_exn_P
-  , post_item_attributes_P
-  , record_expr_P
-  , seq_expr_P
-  , simple_core_type_P
-  , simple_core_type2_P
-  , simple_core_type_or_tuple_P
-  , simple_expr_P
-  , simple_labeled_expr_list_P
-  , simple_pattern_P
-  , structure_P
-  , structure_item_P
-  , type_declaration_P
-  , type_declarations_P
-  , type_kind_P
-  , val_ident_P
-  , val_longident_P
+  , attributeP
+  , attributesP
+  , barConstructorDeclarationP
+  , constantP
+  , constrIdentP
+  , constrLongidentP
+  , constructorArgumentsP
+  , constructorDeclarationP
+  , constructorDeclarationsP
+  , coreTypeP
+  , coreType2P
+  , coreTypeCommaListP
+  , coreTypelistP
+  , exprP
+  , generalizedConstructorArgumentsP
+  , identP
+  , implementationP
+  , labeledSimpleExprP
+  , lblExprP
+  , lblExprListP
+  , letBindingP
+  , letBindingBodyP
+  , matchCaseP
+  , modLongidentP
+  , openStatementP
+  , patternP
+  , patternNoExnP
+  , postItemAttributesP
+  , recordExprP
+  , seqExprP
+  , simpleCoreTypeP
+  , simpleCoreType2P
+  , simpleCoreTypeOrTupleP
+  , simpleExprP
+  , simpleLabeledExprListP
+  , simplePatternP
+  , structureP
+  , structureItemP
+  , typeDeclarationP
+  , typeDeclarationsP
+  , typeKindP
+  , valIdentP
+  , valLongidentP
   ) where
 
 import           Language.OCaml.Definitions.Parsing.ASTTypes
@@ -97,104 +97,104 @@ import           Language.OCaml.Parser.Utils.Types
 
 -- Tying the knots for our clients!
 
-attribute_P :: Parser (Loc String, Payload)
-attribute_P = Language.OCaml.Parser.Attribute.attribute_P structure_P
+attributeP :: Parser (Loc String, Payload)
+attributeP = Language.OCaml.Parser.Attribute.attributeP structureP
 
-attributes_P :: Parser [(Loc String, Payload)]
-attributes_P = Language.OCaml.Parser.Attributes.attributes_P structure_P
+attributesP :: Parser [(Loc String, Payload)]
+attributesP = Language.OCaml.Parser.Attributes.attributesP structureP
 
-bar_constructor_declaration_P :: Parser Constructor_declaration
-bar_constructor_declaration_P =
-  Language.OCaml.Parser.BarConstructorDeclaration.bar_constructor_declaration_P structure_P core_type_P
+barConstructorDeclarationP :: Parser ConstructorDeclaration
+barConstructorDeclarationP =
+  Language.OCaml.Parser.BarConstructorDeclaration.barConstructorDeclarationP structureP coreTypeP
 
-constructor_arguments_P :: Parser Constructor_arguments
-constructor_arguments_P =
-  Language.OCaml.Parser.ConstructorArguments.constructor_arguments_P core_type_P
+constructorArgumentsP :: Parser ConstructorArguments
+constructorArgumentsP =
+  Language.OCaml.Parser.ConstructorArguments.constructorArgumentsP coreTypeP
 
-constructor_declaration_P :: Parser Constructor_declaration
-constructor_declaration_P =
-  Language.OCaml.Parser.ConstructorDeclaration.constructor_declaration_P structure_P core_type_P
+constructorDeclarationP :: Parser ConstructorDeclaration
+constructorDeclarationP =
+  Language.OCaml.Parser.ConstructorDeclaration.constructorDeclarationP structureP coreTypeP
 
-constructor_declarations_P :: Parser [Constructor_declaration]
-constructor_declarations_P =
-  Language.OCaml.Parser.ConstructorDeclarations.constructor_declarations_P structure_P core_type_P
+constructorDeclarationsP :: Parser [ConstructorDeclaration]
+constructorDeclarationsP =
+  Language.OCaml.Parser.ConstructorDeclarations.constructorDeclarationsP structureP coreTypeP
 
-core_type2_P :: Parser Core_type
-core_type2_P = Language.OCaml.Parser.CoreType2.core_type2_P core_type_P
+coreType2P :: Parser CoreType
+coreType2P = Language.OCaml.Parser.CoreType2.coreType2P coreTypeP
 
-core_type_comma_list_P :: Parser [Core_type]
-core_type_comma_list_P =
-  Language.OCaml.Parser.CoreTypeCommaList.core_type_comma_list_P core_type_P
+coreTypeCommaListP :: Parser [CoreType]
+coreTypeCommaListP =
+  Language.OCaml.Parser.CoreTypeCommaList.coreTypeCommaListP coreTypeP
 
-core_type_list_P :: Parser [Core_type]
-core_type_list_P = Language.OCaml.Parser.CoreTypeList.core_type_list_P core_type_P
+coreTypelistP :: Parser [CoreType]
+coreTypelistP = Language.OCaml.Parser.CoreTypeList.coreTypelistP coreTypeP
 
-expr_P :: Parser Expression
-expr_P = Language.OCaml.Parser.Expr.expr_P structure_P seq_expr_P
+exprP :: Parser Expression
+exprP = Language.OCaml.Parser.Expr.exprP structureP seqExprP
 
-generalized_constructor_arguments_P :: Parser (Constructor_arguments, Maybe a)
-generalized_constructor_arguments_P =
-  Language.OCaml.Parser.GeneralizedConstructorArguments.generalized_constructor_arguments_P
-  core_type_P
+generalizedConstructorArgumentsP :: Parser (ConstructorArguments, Maybe a)
+generalizedConstructorArgumentsP =
+  Language.OCaml.Parser.GeneralizedConstructorArguments.generalizedConstructorArgumentsP
+  coreTypeP
 
-lbl_expr_P :: Parser (Loc Longident, Expression)
-lbl_expr_P = Language.OCaml.Parser.LblExpr.lbl_expr_P expr_P
+lblExprP :: Parser (Loc Longident, Expression)
+lblExprP = Language.OCaml.Parser.LblExpr.lblExprP exprP
 
-lbl_expr_list_P :: Parser [(Loc Longident, Expression)]
-lbl_expr_list_P = Language.OCaml.Parser.LblExprList.lbl_expr_list_P expr_P
+lblExprListP :: Parser [(Loc Longident, Expression)]
+lblExprListP = Language.OCaml.Parser.LblExprList.lblExprListP exprP
 
-labeled_simple_expr_P :: Parser (Arg_label, Expression)
-labeled_simple_expr_P =
-  Language.OCaml.Parser.LabeledSimpleExpr.labeled_simple_expr_P seq_expr_P expr_P
+labeledSimpleExprP :: Parser (ArgLabel, Expression)
+labeledSimpleExprP =
+  Language.OCaml.Parser.LabeledSimpleExpr.labeledSimpleExprP seqExprP exprP
 
-let_binding_P :: Parser Let_bindings
-let_binding_P =
-  Language.OCaml.Parser.LetBinding.let_binding_P structure_P seq_expr_P
+letBindingP :: Parser LetBindings
+letBindingP =
+  Language.OCaml.Parser.LetBinding.letBindingP structureP seqExprP
 
-let_binding_body_P :: Parser (Pattern, Expression)
-let_binding_body_P =
-  Language.OCaml.Parser.LetBindingBody.let_binding_body_P seq_expr_P
+letBindingBodyP :: Parser (Pattern, Expression)
+letBindingBodyP =
+  Language.OCaml.Parser.LetBindingBody.letBindingBodyP seqExprP
 
-match_case_P :: Parser Case
-match_case_P = Language.OCaml.Parser.MatchCase.match_case_P seq_expr_P
+matchCaseP :: Parser Case
+matchCaseP = Language.OCaml.Parser.MatchCase.matchCaseP seqExprP
 
-post_item_attributes_P :: Parser [(Loc String, Payload)]
-post_item_attributes_P = Language.OCaml.Parser.PostItemAttributes.post_item_attributes_P structure_P
+postItemAttributesP :: Parser [(Loc String, Payload)]
+postItemAttributesP = Language.OCaml.Parser.PostItemAttributes.postItemAttributesP structureP
 
-record_expr_P :: Parser (Maybe Expression, [(Loc Longident, Expression)])
-record_expr_P = Language.OCaml.Parser.RecordExpr.record_expr_P expr_P simple_expr_P
+recordExprP :: Parser (Maybe Expression, [(Loc Longident, Expression)])
+recordExprP = Language.OCaml.Parser.RecordExpr.recordExprP exprP simpleExprP
 
-seq_expr_P :: Parser Expression
-seq_expr_P = Language.OCaml.Parser.SeqExpr.seq_expr_P structure_P
+seqExprP :: Parser Expression
+seqExprP = Language.OCaml.Parser.SeqExpr.seqExprP structureP
 
-simple_core_type_P :: Parser Core_type
-simple_core_type_P = Language.OCaml.Parser.SimpleCoreType.simple_core_type_P core_type_P
+simpleCoreTypeP :: Parser CoreType
+simpleCoreTypeP = Language.OCaml.Parser.SimpleCoreType.simpleCoreTypeP coreTypeP
 
-simple_core_type2_P :: Parser Core_type
-simple_core_type2_P = Language.OCaml.Parser.SimpleCoreType2.simple_core_type2_P core_type_P
+simpleCoreType2P :: Parser CoreType
+simpleCoreType2P = Language.OCaml.Parser.SimpleCoreType2.simpleCoreType2P coreTypeP
 
-simple_core_type_or_tuple_P :: Parser Core_type
-simple_core_type_or_tuple_P =
-  Language.OCaml.Parser.SimpleCoreTypeOrTuple.simple_core_type_or_tuple_P core_type_P
+simpleCoreTypeOrTupleP :: Parser CoreType
+simpleCoreTypeOrTupleP =
+  Language.OCaml.Parser.SimpleCoreTypeOrTuple.simpleCoreTypeOrTupleP coreTypeP
 
-simple_expr_P :: Parser Expression
-simple_expr_P = Language.OCaml.Parser.SimpleExpr.simple_expr_P seq_expr_P expr_P
+simpleExprP :: Parser Expression
+simpleExprP = Language.OCaml.Parser.SimpleExpr.simpleExprP seqExprP exprP
 
-simple_labeled_expr_list_P :: Parser [(Arg_label, Expression)]
-simple_labeled_expr_list_P =
-  Language.OCaml.Parser.SimpleLabeledExprList.simple_labeled_expr_list_P seq_expr_P expr_P
+simpleLabeledExprListP :: Parser [(ArgLabel, Expression)]
+simpleLabeledExprListP =
+  Language.OCaml.Parser.SimpleLabeledExprList.simpleLabeledExprListP seqExprP exprP
 
-simple_pattern_P :: Parser Pattern
-simple_pattern_P = Language.OCaml.Parser.SimplePattern.simple_pattern_P pattern_P
+simplePatternP :: Parser Pattern
+simplePatternP = Language.OCaml.Parser.SimplePattern.simplePatternP patternP
 
-structure_item_P :: Parser Structure_item
-structure_item_P = Language.OCaml.Parser.StructureItem.structure_item_P structure_P
+structureItemP :: Parser StructureItem
+structureItemP = Language.OCaml.Parser.StructureItem.structureItemP structureP
 
-type_declaration_P :: Parser (Rec_flag, Type_declaration)
-type_declaration_P = Language.OCaml.Parser.TypeDeclaration.type_declaration_P structure_P
+typeDeclarationP :: Parser (RecFlag, TypeDeclaration)
+typeDeclarationP = Language.OCaml.Parser.TypeDeclaration.typeDeclarationP structureP
 
-type_declarations_P :: Parser (Rec_flag, [Type_declaration])
-type_declarations_P = Language.OCaml.Parser.TypeDeclarations.type_declarations_P structure_P
+typeDeclarationsP :: Parser (RecFlag, [TypeDeclaration])
+typeDeclarationsP = Language.OCaml.Parser.TypeDeclarations.typeDeclarationsP structureP
 
-type_kind_P :: Parser (Type_kind, Private_flag, Maybe Core_type)
-type_kind_P = Language.OCaml.Parser.TypeKind.type_kind_P structure_P
+typeKindP :: Parser (TypeKind, PrivateFlag, Maybe CoreType)
+typeKindP = Language.OCaml.Parser.TypeKind.typeKindP structureP

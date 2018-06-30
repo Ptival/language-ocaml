@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.Attribute
-  ( attribute_P
+  ( attributeP
   ) where
 
 import           Text.Megaparsec
@@ -11,11 +11,11 @@ import           Language.OCaml.Parser.Payload
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.Utils.Types
 
-attribute_P :: Parser Structure -> Parser (ASTTypes.Loc String, Payload)
-attribute_P structure_P = do
+attributeP :: Parser Structure -> Parser (ASTTypes.Loc String, Payload)
+attributeP structureP = do
   i <- try $ do
-    l_bracket_at_T
-    attr_id_P
-  p <- payload_P structure_P
-  r_bracket_T
+    lBracketAtT
+    attrIdP
+  p <- payloadP structureP
+  rBracketT
   return (i, p)

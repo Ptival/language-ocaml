@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.AttrId
-  ( attr_id_P
+  ( attrIdP
   ) where
 
 import           Text.Megaparsec
@@ -11,11 +11,11 @@ import           Language.OCaml.Parser.SingleAttrId
 import           Language.OCaml.Parser.Tokens
 import           Language.OCaml.Parser.Utils.Types
 
-attr_id_P :: Parser (ASTTypes.Loc String)
-attr_id_P = choice
+attrIdP :: Parser (ASTTypes.Loc String)
+attrIdP = choice
   [ do
-    a <- try $ single_attr_id_P <* dot_T
-    b <- attr_id_P
-    return $ mkLoc (a ++ "^" ++ ASTTypes.txt b) none -- FIXME symbol_rloc
-  , single_attr_id_P >>= \ a -> return $ mkLoc a none -- FIXME symbol_rloc
+    a <- try $ singleAttrIdP <* dotT
+    b <- attrIdP
+    return $ mkLoc (a ++ "^" ++ ASTTypes.txt b) none -- FIXME symbolRLoc
+  , singleAttrIdP >>= \ a -> return $ mkLoc a none -- FIXME symbolRLoc
   ]

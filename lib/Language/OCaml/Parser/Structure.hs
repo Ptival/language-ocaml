@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.Structure
-  ( structure_P
+  ( structureP
   ) where
 
 import Text.Megaparsec
@@ -13,27 +13,27 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Utils
 import Language.OCaml.Parser.Utils.Types
 
-structure_P :: Parser Structure
-structure_P = ocamlSpace *> choice
+structureP :: Parser Structure
+structureP = ocamlSpace *> choice
   [ do
-    e <- seq_expr_P structure_P
-    a <- post_item_attributes_P structure_P
-    s <- structure_tail_P
-    return $ text_str 1 ++ mkstrexp e a : s
-  , structure_tail_P
+    e <- seqExprP structureP
+    a <- postItemAttributesP structureP
+    s <- structureTailP
+    return $ textStr 1 ++ mkstrexp e a : s
+  , structureTailP
   ]
   where
-    structure_tail_P :: Parser [Structure_item]
-    structure_tail_P = choice
+    structureTailP :: Parser [StructureItem]
+    structureTailP = choice
       [ do
         (i, t) <- try $ do
-          i <- structure_item_P structure_P
-          t <- structure_tail_P
+          i <- structureItemP structureP
+          t <- structureTailP
           return (i, t)
-        return $ text_str 1 ++ i : t
+        return $ textStr 1 ++ i : t
       , do
-        try $ semi_semi_T
-        s <- structure_P
-        return $ text_str 1 ++ s
+        try $ semiSemiT
+        s <- structureP
+        return $ textStr 1 ++ s
       , ocamlSpace *> return []
       ]

@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LetBindingBody
-  ( let_binding_body_P
+  ( letBindingBodyP
   ) where
 
 import Text.Megaparsec
@@ -17,45 +17,45 @@ import Language.OCaml.Parser.TypeConstraint
 import Language.OCaml.Parser.ValIdent
 import Language.OCaml.Parser.Utils.Types
 
-let_binding_body_P :: Parser Expression -> Parser (Pattern, Expression)
-let_binding_body_P seq_expr_P = choice
+letBindingBodyP :: Parser Expression -> Parser (Pattern, Expression)
+letBindingBodyP seqExprP = choice
   [ try $ do
-    i <- val_ident_P
-    b <- strict_binding_P seq_expr_P (fun_binding_P seq_expr_P)
+    i <- valIdentP
+    b <- strictBindingP seqExprP (funBindingP seqExprP)
     return (mkpatvar i 1, b)
   , do
     (i, c) <- try $ do
-      i <- val_ident_P
-      c <- type_constraint_P
+      i <- valIdentP
+      c <- typeConstraintP
       return (i, c)
-    equal_T
-    e <- seq_expr_P
+    equalT
+    e <- seqExprP
     let v = mkpatvar i 1
     let t = case c of
           (Just t', Nothing) -> t'
           (_,       Just t') -> t'
           _ -> error "This should not happen"
-    return ( ghpat $ Ppat_constraint v (ghtyp $ Ptyp_poly [] t)
-           , mkexp_constraint e c
+    return ( ghpat $ PpatConstraint v (ghtyp $ PtypPoly [] t)
+           , mkexpConstraint e c
            )
-  -- TODO: typevar_list
-  -- TODO: lident_list
+  -- TODO: typevarList
+  -- TODO: lidentList
   , do
     p <- try $ do
-      p <- pattern_no_exn_P
-      equal_T
+      p <- patternNoExnP
+      equalT
       return p
-    e <- seq_expr_P
+    e <- seqExprP
     return (p, e)
   , do
     p <- try $ do
-      p <- simple_pattern_not_ident_P pattern_P
-      colon_T
+      p <- simplePatternNotIdentP patternP
+      colonT
       return p
-    t <- core_type_P
-    equal_T
-    e <- seq_expr_P
-    return ( ghpat $ Ppat_constraint p t
+    t <- coreTypeP
+    equalT
+    e <- seqExprP
+    return ( ghpat $ PpatConstraint p t
            , e
            )
   ]

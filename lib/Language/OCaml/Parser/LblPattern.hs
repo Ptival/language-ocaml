@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.LblPattern
-  ( lbl_pattern_P
+  ( lblPatternP
   ) where
 
 import Text.Megaparsec
@@ -12,18 +12,18 @@ import Language.OCaml.Parser.OptPatternTypeConstraint
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-lbl_pattern_P :: Parser Pattern -> Parser (Loc Longident, Pattern)
-lbl_pattern_P pattern_P = choice
+lblPatternP :: Parser Pattern -> Parser (Loc Longident, Pattern)
+lblPatternP patternP = choice
   [ do
     (i, c) <- try $ do
-      i <- label_longident_P
-      c <- opt_pattern_type_constraint_P
-      equal_T
+      i <- labelLongidentP
+      c <- optPatternTypeConstraintP
+      equalT
       return (i, c)
-    p <- pattern_P
-    return (mkRHS i 1, mkpat_opt_constraint p c)
+    p <- patternP
+    return (mkRHS i 1, mkpatOptConstraint p c)
   , do
-    i <- label_longident_P
-    c <- opt_pattern_type_constraint_P
-    return (mkRHS i 1, mkpat_opt_constraint (pat_of_label i 1) c)
+    i <- labelLongidentP
+    c <- optPatternTypeConstraintP
+    return (mkRHS i 1, mkpatOptConstraint (patOfLabel i 1) c)
   ]

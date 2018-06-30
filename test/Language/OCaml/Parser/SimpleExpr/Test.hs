@@ -10,8 +10,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-simple_expr_tests :: [String]
-simple_expr_tests =
+simpleExprTests :: [String]
+simpleExprTests =
   [ "foo"
   , "foo.bar"
   , "Foo"
@@ -23,9 +23,9 @@ simple_expr_tests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.SimpleExpr" $ []
-  ++ map (mkParsingTest "simple_expr_P" simple_expr_P) simple_expr_tests
+  ++ map (mkParsingTest "simpleExprP" simpleExprP) simpleExprTests
 
 test :: IO ()
 test = defaultMain unitTests
 
--- debug = debugParsing simple_expr_P "(foo)"
+-- debug = debugParsing simpleExprP "(foo)"

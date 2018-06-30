@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.StrictBinding
-  ( strict_binding_P
+  ( strictBindingP
   ) where
 
 import Text.Megaparsec
@@ -11,14 +11,14 @@ import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-strict_binding_P :: Parser Expression -> Parser Expression -> Parser Expression
-strict_binding_P seq_expr_P fun_binding_P = choice
+strictBindingP :: Parser Expression -> Parser Expression -> Parser Expression
+strictBindingP seqExprP funBindingP = choice
   [ do
-    try $ equal_T
-    seq_expr_P
+    try $ equalT
+    seqExprP
   , do
-    (l, o, p) <- labeled_simple_pattern_P pattern_P
-    b <- fun_binding_P
-    return $ ghexp $ Pexp_fun l o p b
+    (l, o, p) <- labeledSimplePatternP patternP
+    b <- funBindingP
+    return $ ghexp $ PexpFun l o p b
     -- TODO
   ]

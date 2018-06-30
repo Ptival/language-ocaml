@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SimpleDelimitedPattern
-  ( simple_delimited_pattern_P
+  ( simpleDelimitedPatternP
   ) where
 
 import Text.Megaparsec
@@ -12,34 +12,34 @@ import Language.OCaml.Parser.PatternSemiList
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-simple_delimited_pattern_P :: Parser Pattern -> Parser Pattern
-simple_delimited_pattern_P pattern_P = choice
+simpleDelimitedPatternP :: Parser Pattern -> Parser Pattern
+simpleDelimitedPatternP patternP = choice
   [ do
     (fields, closed) <- try $ do
-      l_brace_T
-      lbl_pattern_list_P pattern_P
-    r_brace_T
-    return $ mkpat $ Ppat_record fields closed
+      lBraceT
+      lblPatternListP patternP
+    rBraceT
+    return $ mkpat $ PpatRecord fields closed
   , do
     l <- try $ do
-      l_bracket_T
-      l <- pattern_semi_list_P pattern_P
-      opt_semi_P
+      lBracketT
+      l <- patternSemiListP patternP
+      optSemiP
       return l
-    r_bracket_T
+    rBracketT
     return $ mktailpat (rhsLoc 4) (reverse l)
   , do
     l <- try $ do
-      l_bracket_bar_T
-      l <- pattern_semi_list_P'
-      opt_semi_P
+      lBracketBarT
+      l <- patternSemiListP'
+      optSemiP
       return l
-    bar_r_bracket_T
-    return $ mkpat $ Ppat_array (reverse l)
+    barRBracketT
+    return $ mkpat $ PpatArray (reverse l)
   , do
-    l_bracket_bar_T
-    bar_r_bracket_T
-    return $ mkpat $ Ppat_array []
+    lBracketBarT
+    barRBracketT
+    return $ mkpat $ PpatArray []
   ]
   where
-    pattern_semi_list_P' = pattern_semi_list_P pattern_P
+    patternSemiListP' = patternSemiListP patternP

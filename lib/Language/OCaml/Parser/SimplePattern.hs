@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SimplePattern
-  ( simple_pattern_P
+  ( simplePatternP
   ) where
 
 import Text.Megaparsec
@@ -10,12 +10,12 @@ import Language.OCaml.Parser.SimplePatternNotIdent
 import Language.OCaml.Parser.ValIdent
 import Language.OCaml.Parser.Utils.Types
 
-simple_pattern_P :: Parser Pattern -> Parser Pattern
-simple_pattern_P pattern_P = choice
+simplePatternP :: Parser Pattern -> Parser Pattern
+simplePatternP patternP = choice
   [ do
-    i <- val_ident_P
-    return $ mkpat $ Ppat_var $ mkRHS i 1
-  , simple_pattern_not_ident_P'
+    i <- valIdentP
+    return $ mkpat $ PpatVar $ mkRHS i 1
+  , simplePatternNotIdentP'
   ]
   where
-    simple_pattern_not_ident_P' = simple_pattern_not_ident_P pattern_P
+    simplePatternNotIdentP' = simplePatternNotIdentP patternP

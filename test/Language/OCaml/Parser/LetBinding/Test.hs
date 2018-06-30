@@ -14,8 +14,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-let_binding_tests :: [String]
-let_binding_tests =
+letBindingTests :: [String]
+letBindingTests =
   [ "let a = b"
   , "let a : b :> c = d"
   , "let _ : a = b"
@@ -28,10 +28,10 @@ let_binding_tests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
-  ++ map (mkParsingTest "let_binding_P" (let_binding_P structure_P)) let_binding_tests
+  ++ map (mkParsingTest "letBindingP" (letBindingP structureP)) letBindingTests
 
 test :: IO ()
 test = defaultMain unitTests
 
--- debug :: Int -> Either (ParseError Char Dec) Let_bindings
--- debug n = debugParsing (let_binding_P structure_P) (let_binding_tests !! n)
+-- debug :: Int -> Either (ParseError Char Dec) LetBindings
+-- debug n = debugParsing (letBindingP structureP) (letBindingTests !! n)

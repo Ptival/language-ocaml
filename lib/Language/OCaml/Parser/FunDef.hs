@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.FunDef
-  ( fun_def_P
+  ( funDefP
   ) where
 
 import Text.Megaparsec
@@ -12,16 +12,16 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 import Language.OCaml.PrettyPrinter ()
 
-fun_def_P :: Parser Expression -> Parser Expression
-fun_def_P seq_expr_P = choice
+funDefP :: Parser Expression -> Parser Expression
+funDefP seqExprP = choice
   [ do
-    minus_greater_T
-    seq_expr_P
+    minusGreaterT
+    seqExprP
   -- TODO
   , do
-    (l, o, p) <- labeled_simple_pattern_P pattern_P
-    d <- fun_def_P'
-    return $ ghexp $ Pexp_fun l o p d
+    (l, o, p) <- labeledSimplePatternP patternP
+    d <- funDefP'
+    return $ ghexp $ PexpFun l o p d
   ]
   where
-    fun_def_P' = fun_def_P seq_expr_P
+    funDefP' = funDefP seqExprP

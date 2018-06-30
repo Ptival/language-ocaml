@@ -1,12 +1,13 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Language.OCaml.Definitions.Parsing.ASTTypes
-  ( Arg_label(..)
-  , Closed_flag(..)
+  ( ArgLabel(..)
+  , ClosedFlag(..)
   , Constant(..)
+  , Label
   , Loc(..)
-  , Override_flag(..)
-  , Rec_flag(..)
+  , OverrideFlag(..)
+  , RecFlag(..)
   , Variance(..)
   ) where
 
@@ -15,12 +16,12 @@ import GHC.Generics
 import Language.OCaml.Definitions.Parsing.Location
 
 data Constant
-   = Const_int Int
-   | Const_char Char
-   | Const_string String (Maybe String)
-   | Const_float String
-   -- | Const_int32 Int32
-   -- | Const_int64 Int64
+   = ConstInt Int
+   | ConstChar Char
+   | ConstString String (Maybe String)
+   | ConstFloat String
+   -- | ConstInt32 Int32
+   -- | ConstInt64 Int64
    -- | Const_nativeint Nativeint
   deriving (Eq, Generic, Show)
 
@@ -33,17 +34,17 @@ data Loc a = Loc
 instance Eq a => Eq (Loc a) where
   a == b = txt a == txt b
 
-data Override_flag
+data OverrideFlag
   = Override
   | Fresh
   deriving (Eq, Generic, Show)
 
-data Rec_flag
+data RecFlag
   = NonRecursive
   | Recursive
   deriving (Eq, Generic, Show)
 
-data Arg_label
+data ArgLabel
   = Nolabel
   | Labelled String
   | Optional String
@@ -55,7 +56,9 @@ data Variance
   | Invariant
   deriving (Eq, Generic, Show)
 
-data Closed_flag
+data ClosedFlag
   = Closed
   | Open
   deriving (Eq, Generic, Show)
+
+type Label = String

@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.Pattern
-  ( pattern_P
+  ( patternP
   ) where
 
 import Text.Megaparsec
@@ -12,29 +12,29 @@ import Language.OCaml.Parser.ValIdent
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-pattern_P :: Parser Pattern
-pattern_P = choice
-  [ try $ parser <* notFollowedBy comma_T
-  , mkpat . Ppat_tuple <$>
-    chainl1' parser (comma_T *> (return $ flip (:))) (: [])
+patternP :: Parser Pattern
+patternP = choice
+  [ try $ parser <* notFollowedBy commaT
+  , mkpat . PpatTuple <$>
+    chainl1' parser (commaT *> (return $ flip (:))) (: [])
   ]
   where
     parser = leftRecursive
-      [ pattern_gen_P pattern_P
+      [ patternGenP patternP
       ]
-      -- pattern AS val_ident
+      -- pattern AS valIdent
       [ do
-        try $ as_T
-        i <- val_ident_P
-        return $ \ x -> mkpat $ Ppat_alias x (mkRHS i 3)
+        try $ asT
+        i <- valIdentP
+        return $ \ x -> mkpat $ PpatAlias x (mkRHS i 3)
       -- pattern COLONCOLON pattern
       , do
-        try $ colon_colon_T
-        p2 <- pattern_P
-        return $ \ p1 -> mkpat_cons (rhsLoc 2) (ghpat $ Ppat_tuple [p1, p2]) (symbol_rloc ())
+        try $ colonColonT
+        p2 <- patternP
+        return $ \ p1 -> mkpatCons (rhsLoc 2) (ghpat $ PpatTuple [p1, p2]) (symbolRLoc ())
       , do
-        try $ bar_T
-        p <- pattern_P
-        return $ \ x -> mkpat $ Ppat_or x p
+        try $ barT
+        p <- patternP
+        return $ \ x -> mkpat $ PpatOr x p
       -- TODO: bunch of other patterns
       ]

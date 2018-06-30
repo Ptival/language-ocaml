@@ -6,7 +6,7 @@
 {-# LANGUAGE UndecidableInstances #-}
 
 module Language.OCaml.PrettyPrinter.CoreTypeDesc
-  ( core_type_desc_PP
+  ( coreTypedescPP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -15,18 +15,19 @@ import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.Loc ()
 import Language.OCaml.PrettyPrinter.Longident ()
 
-core_type_desc_PP :: (Pretty Core_type) => Core_type_desc -> Doc a
-core_type_desc_PP = \case
-  Ptyp_alias _ _ -> error "TODO"
-  Ptyp_any -> "_"
-  Ptyp_arrow _ _ _ -> error "TODO"
-  Ptyp_class _ _ -> error "TODO"
-  Ptyp_constr i [] -> pretty i
-  Ptyp_constr i [x] -> fillSep $ [ pretty x, pretty i ]
-  Ptyp_constr _ _ -> error "TODO"
-  Ptyp_poly _ _ -> error "TODO"
-  Ptyp_tuple l -> fillSep $ map pretty l
-  Ptyp_var s -> fillCat [ squote, pretty s ]
+coreTypedescPP :: (Pretty CoreType) => CoreTypeDesc -> Doc a
+coreTypedescPP = \case
+  PtypAlias _ _ -> error "TODO"
+  PtypAny -> "_"
+  PtypArrow _ _ _ -> error "TODO"
+  PtypClass _ _ -> error "TODO"
+  PtypConstr i [] -> pretty i
+  PtypConstr i [x] -> fillSep $ [ pretty x, pretty i ]
+  PtypConstr _ _ -> error "TODO"
+  PtypPoly _ _ -> error "TODO"
+  PtypTuple l -> fillSep $ map pretty l
+  PtypVar s -> fillCat [ squote, pretty s ]
+  PtypVariant _ _ _ -> error "TODO"
 
-instance Pretty Core_type => Pretty Core_type_desc where
-  pretty = core_type_desc_PP
+instance Pretty CoreType => Pretty CoreTypeDesc where
+  pretty = coreTypedescPP

@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.SimpleExpr
-  ( simple_expr_P
+  ( simpleExprP
   ) where
 
 import Language.OCaml.Definitions.Parsing.ParseTree
@@ -15,36 +15,36 @@ import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Combinators
 import Language.OCaml.Parser.Utils.Types
 
-simple_expr_P :: Parser Expression -> Parser Expression -> Parser Expression
-simple_expr_P seq_expr_P expr_P = leftRecursive
+simpleExprP :: Parser Expression -> Parser Expression -> Parser Expression
+simpleExprP seqExprP exprP = leftRecursive
   [ do
-    i <- val_longident_P
-    return . mkexp $ Pexp_ident (mkRHS i 1)
-  , mkexp . Pexp_constant <$> constant_P
+    i <- valLongidentP
+    return . mkexp $ PexpIdent (mkRHS i 1)
+  , mkexp . PexpConstant <$> constantP
   , do
-    i <- constr_longident_P
-    return $ mkexp $ Pexp_construct (mkRHS i 1) Nothing
+    i <- constrLongidentP
+    return $ mkexp $ PexpConstruct (mkRHS i 1) Nothing
   , do
-    l_paren_T
-    e <- seq_expr_P
-    r_paren_T
-    return $ reloc_exp e
+    lParenT
+    e <- seqExprP
+    rParenT
+    return $ relocExp e
   , do
-    l_bracket_T
-    l <- expr_semi_list_P expr_P
-    opt_semi_P
-    r_bracket_T
-    return $ reloc_exp $ mktailexp (rhsLoc 4) (reverse l)
+    lBracketT
+    l <- exprSemiListP exprP
+    optSemiP
+    rBracketT
+    return $ relocExp $ mktailexp (rhsLoc 4) (reverse l)
   , do
-    l_brace_T
-    (exten, fields) <- record_expr_P expr_P simple_expr_P'
-    r_brace_T
-    return $ mkexp $ Pexp_record fields exten
+    lBraceT
+    (exten, fields) <- recordExprP exprP simpleExprP'
+    rBraceT
+    return $ mkexp $ PexpRecord fields exten
   ]
   [ do
-    dot_T
-    i <- label_longident_P
-    return $ \ x -> mkexp $ Pexp_field x (mkRHS i 3)
+    dotT
+    i <- labelLongidentP
+    return $ \ x -> mkexp $ PexpField x (mkRHS i 3)
   ]
   where
-    simple_expr_P' = simple_expr_P seq_expr_P expr_P
+    simpleExprP' = simpleExprP seqExprP exprP

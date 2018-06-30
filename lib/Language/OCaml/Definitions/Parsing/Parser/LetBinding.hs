@@ -1,7 +1,7 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Language.OCaml.Definitions.Parsing.Parser.LetBinding
-  ( Let_binding(..)
+  ( LetBinding(..)
   ) where
 
 import GHC.Generics
@@ -10,12 +10,12 @@ import Language.OCaml.Definitions.Parsing.Docstrings
 import Language.OCaml.Definitions.Parsing.Location
 import Language.OCaml.Definitions.Parsing.ParseTree
 
-data Let_binding = Let_binding
-  { lb_pattern    :: Pattern
-  , lb_expression :: Expression
-  , lb_attributes :: Attributes
-  , lb_docs       :: Docs
-  , lb_text       :: Text
-  , lb_loc        :: Location
+data LetBinding = LetBinding
+  { lbPattern    :: Pattern
+  , lbExpression :: Expression
+  , lbAttributes :: Attributes
+  , lbDocs       :: Docs
+  , lbText       :: Text
+  , lbLoc        :: Location
   }
   deriving (Eq, Generic, Show)

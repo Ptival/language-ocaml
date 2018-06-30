@@ -1,5 +1,5 @@
 module Language.OCaml.Parser.OpenStatement
-  ( open_statement_P
+  ( openStatementP
   ) where
 
 import Text.Megaparsec
@@ -7,18 +7,18 @@ import Text.Megaparsec
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ModLongident
-import Language.OCaml.Parser.Override_flag
+import Language.OCaml.Parser.OverrideFlag
 import Language.OCaml.Parser.PostItemAttributes
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
 
-open_statement_P :: Parser Structure -> Parser (Open_description, ())
-open_statement_P structure_P = do
-  try $ open_T
-  o <- override_flag_P
-  -- TODO: ext_attributes
-  i <- mod_longident_P
-  _a <- post_item_attributes_P structure_P
+openStatementP :: Parser Structure -> Parser (OpenDescription, ())
+openStatementP structureP = do
+  try $ openT
+  o <- overrideFlagP
+  -- TODO: extAttributes
+  i <- modLongidentP
+  _a <- postItemAttributesP structureP
   return $ (
     mkOpn
     Nothing -- FIXME

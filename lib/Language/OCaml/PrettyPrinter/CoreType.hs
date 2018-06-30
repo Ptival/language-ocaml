@@ -3,7 +3,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 
 module Language.OCaml.PrettyPrinter.CoreType
-  ( core_type_PP
+  ( coreTypePP
   ) where
 
 import Data.Text.Prettyprint.Doc
@@ -11,8 +11,8 @@ import Data.Text.Prettyprint.Doc
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.CoreTypeDesc ()
 
-core_type_PP :: Core_type -> Doc a
-core_type_PP = pretty . ptyp_desc
+coreTypePP :: CoreType -> Doc a
+coreTypePP = pretty . ptypDesc
 
-instance Pretty Core_type where
-  pretty = core_type_PP
+instance Pretty CoreType where
+  pretty = coreTypePP
