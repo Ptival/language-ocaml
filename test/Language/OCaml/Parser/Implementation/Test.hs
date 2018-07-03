@@ -2,6 +2,7 @@
 
 module Language.OCaml.Parser.Implementation.Test
   ( test
+  , testFiles
   , unitTests
   ) where
 
@@ -15,8 +16,8 @@ import Language.OCaml.Parser.TestUtils
 prefix :: FilePath
 prefix = "test/Language/OCaml/Parser/Implementation/"
 
-files :: [FilePath]
-files = map (prefix ++)
+testFiles :: [FilePath]
+testFiles = map (prefix ++)
   [ "test_00.ml"
   , "test_01.ml"
   , "test_02.ml"
@@ -32,22 +33,8 @@ files = map (prefix ++)
   ]
 
 unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.Implementation" $ []
-  ++ map (mkParsingTestFromFile implementationP) files
+unitTests = testGroup "Language.OCaml.Parser.Generator.Implementation" $ []
+  ++ map (mkParsingTestFromFile implementationP) testFiles
 
 test :: IO ()
 test = defaultMain unitTests
-
--- foo = debugParsing implementationP <$> readFile (prefix ++ "FaCT/tast-01.ml")
-
--- foo = debugParsing implementationP <$> readFile (prefix ++ "stdlib/arg.ml")
-
--- bar = debugParsing implementationP [s|
-
--- let update_fn venv { pos=p; data=tfdec } =
---   let args = List.map (fun { data={ lt } } -> lt) tfdec.t_params in
---   Hashtbl.add venv tfdec.t_name (Env.FunEntry { f_rty=tfdec.t_rty; f_rlbl=tfdec.t_rlbl; f_args=args })
-
---   |]
-
--- baz = debugParsing recordExprP "a = b"

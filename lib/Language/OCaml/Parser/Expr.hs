@@ -74,7 +74,7 @@ exprP structureP seqExprP = choice
             Just <$> exprP'
           , return Nothing
           ]
-        return $ mkexpAttrs (PexpIfthenelse c t e) (Nothing, []) -- FIXME
+        return $ mkexpAttrs (PexpIfThenElse c t e) (Nothing, []) -- FIXME
       , simpleExprP'
       ]
       -- FIXME: deal with associativity?

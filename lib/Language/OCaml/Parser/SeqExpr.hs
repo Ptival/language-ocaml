@@ -5,8 +5,8 @@ module Language.OCaml.Parser.SeqExpr
 import Data.Default
 import Text.Megaparsec
 
+import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Expr
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
@@ -17,7 +17,7 @@ seqExprP structureP = choice
     e <- exprP'
     semiT
     s <- seqExprP'
-    return $ mkExp def (PexpSequence e s)
+    return $ Exp.mk def (PexpSequence e s)
   , try $ do
     e <- exprP'
     semiT

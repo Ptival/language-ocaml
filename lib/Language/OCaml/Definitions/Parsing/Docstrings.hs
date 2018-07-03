@@ -9,6 +9,8 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , addInfoAttrs
   , addTextAttrs
   , docsAttr
+  , docstringBody
+  , docstringLoc
   , emptyDocs
   , emptyInfo
   , rhsText
@@ -133,3 +135,9 @@ type Info = Maybe Docstring
 
 emptyInfo :: Info
 emptyInfo = Nothing
+
+docstringBody :: Docstring -> String
+docstringBody = dsBody
+
+docstringLoc :: Docstring -> Location
+docstringLoc = dsLoc

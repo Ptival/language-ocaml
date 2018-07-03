@@ -4,6 +4,7 @@ module Language.OCaml.Definitions.Parsing.ASTTypes
   ( ArgLabel(..)
   , ClosedFlag(..)
   , Constant(..)
+  , DirectionFlag(..)
   , Label
   , Loc(..)
   , OverrideFlag(..)
@@ -62,3 +63,8 @@ data ClosedFlag
   deriving (Eq, Generic, Show)
 
 type Label = String
+
+data DirectionFlag
+  = UpTo
+  | DownTo
+  deriving (Eq, Generic, Show)

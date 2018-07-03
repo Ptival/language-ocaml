@@ -9,6 +9,7 @@ module Language.OCaml.Parser.AndTypeDeclaration
 import Data.Default
 import Text.Megaparsec
 
+import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Tokens
@@ -25,4 +26,4 @@ andTypeDeclarationP structureP = do
   (kind, priv, manifest) <- typeKindP structureP
   -- TODO: constraints
   attrs <- postItemAttributesP structureP -- FIXME: use me
-  return $ mkType (def { attrs, kind, priv }) manifest (mkRHS i 4) -- FIXME: [] and []
+  return $ Type.mk (def { attrs, kind, priv }) manifest (mkRHS i 4) -- FIXME: [] and []

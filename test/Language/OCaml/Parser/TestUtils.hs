@@ -1,10 +1,13 @@
 module Language.OCaml.Parser.TestUtils
   ( debugParsing
   , mkParsingTest
+  , mkParsingTestG
   , mkParsingTestFromFile
+  , mkParsingTestFromFileG
   , parse
   ) where
 
+import Data.Either
 import Data.Maybe
 import Data.Void
 import Text.Megaparsec
@@ -21,12 +24,28 @@ mkParsingTest name parser input =
   $ isJust (parseMaybe parser input)
   @? "Failed to parse:\n" ++ prefix ++ if length input > 20 then "..." else ""
 
+mkParsingTestG :: TestName -> (String -> Either String a) -> String -> TestTree
+mkParsingTestG name parser input =
+  let prefix = take 20 input in
+  testCase name
+  $ isRight (parser input)
+  @? "Failed to parse:\n" ++ prefix ++ if length input > 20 then "..." else ""
+
 mkParsingTestFromFile :: Parser a -> FilePath -> TestTree
 mkParsingTestFromFile parser fileName =
   testCase fileName
     $ (do
         input <- readFile fileName
         return $ isJust (parseMaybe parser input)
+      )
+    @? "Failed to parse " ++ fileName
+
+mkParsingTestFromFileG :: (String -> Either String a) -> FilePath -> TestTree
+mkParsingTestFromFileG parser fileName =
+  testCase fileName
+    $ (do
+        input <- readFile fileName
+        return $ isRight (parser input)
       )
     @? "Failed to parse " ++ fileName
 

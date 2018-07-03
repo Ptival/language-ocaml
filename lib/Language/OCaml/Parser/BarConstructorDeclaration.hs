@@ -8,6 +8,7 @@ module Language.OCaml.Parser.BarConstructorDeclaration
 import Data.Default
 import Text.Megaparsec
 
+import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Attributes
 import Language.OCaml.Parser.Common
@@ -23,4 +24,4 @@ barConstructorDeclarationP structureP coreTypeP = try $ do
   i <- constrIdentP
   (args, res) <- generalizedConstructorArgumentsP coreTypeP
   attrs <- attributesP structureP
-  return $ constructor (def { args, attrs }) res (mkRHS i (2 :: Int))
+  return $ Type.constructor (def { args, attrs }) res (mkRHS i (2 :: Int))

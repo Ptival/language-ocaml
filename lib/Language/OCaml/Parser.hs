@@ -9,6 +9,7 @@ import           Text.Megaparsec (parse)
 import           Text.Megaparsec.Error
 
 import           Language.OCaml.Definitions.Parsing.ParseTree
+-- import qualified Language.OCaml.Parser.Generator.Lexer as GL
 import qualified Language.OCaml.Parser.Generator.Parser as GP
 import           Language.OCaml.Parser.Implementation
 

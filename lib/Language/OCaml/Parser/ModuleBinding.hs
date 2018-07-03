@@ -2,8 +2,10 @@ module Language.OCaml.Parser.ModuleBinding
   ( moduleBindingP
   ) where
 
+import Data.Default
 import Text.Megaparsec
 
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mb as Mb
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ModuleBindingBody
@@ -18,6 +20,6 @@ moduleBindingP structureP = do
   i <- uIdentT
   b <- moduleBindingBodyP
   _a <- postItemAttributesP structureP
-  return $ (mkMb Nothing Nothing Nothing Nothing (mkRHS i 3) b -- FIXME
+  return $ (Mb.mk def (mkRHS i 3) b -- FIXME
            , () -- FIXME
            )

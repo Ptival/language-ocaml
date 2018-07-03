@@ -5,8 +5,8 @@ module Language.OCaml.Parser.MatchCase
 import Data.Default
 import Text.Megaparsec
 
+import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
@@ -19,7 +19,7 @@ matchCaseP seqExprP = choice
       minusGreaterT
       return p
     e <- seqExprP
-    return $ caseExp def p e
+    return $ Exp.case' def p e
   , do
     p <- try $ do
       p <- patternP
@@ -28,6 +28,6 @@ matchCaseP seqExprP = choice
     w <- seqExprP
     minusGreaterT
     e <- seqExprP
-    return $ caseExp (def { guard = Just w }) p e
+    return $ Exp.case' (def { guard = Just w }) p e
   -- TODO: others
   ]

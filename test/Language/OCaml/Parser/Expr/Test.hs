@@ -3,6 +3,7 @@
 
 module Language.OCaml.Parser.Expr.Test
   ( test
+  , testStrings
   , unitTests
   ) where
 
@@ -13,8 +14,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-exprTests :: [String]
-exprTests =
+testStrings :: [String]
+testStrings =
   [ "Foo.Bar"
   , "function a -> b"
   , "function a -> Foo.bar_baz"
@@ -37,7 +38,7 @@ exprTests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
-  ++ map (mkParsingTest "exprP" exprP) exprTests
+  ++ map (mkParsingTest "exprP" exprP) testStrings
 
 test :: IO ()
 test = defaultMain unitTests

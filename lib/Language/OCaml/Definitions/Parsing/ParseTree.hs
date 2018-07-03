@@ -168,7 +168,7 @@ data StructureItemDesc
   -- | PstrPrimitive valueDescription
   | PstrType RecFlag [TypeDeclaration]
   -- | PstrTypext type_extension
-  | PstrException TypeException
+  | PstrException ExtensionConstructor
   | PstrModule ModuleBinding
   -- | PstrRecmodule moduleBinding list
   -- | PstrModtype moduleTypeDeclaration
@@ -201,12 +201,12 @@ data ExpressionDesc
   -- | PexpVariant Asttypes.label * expression option
   | PexpRecord [(Loc Longident, Expression)] (Maybe Expression)
   | PexpField Expression (Loc Longident)
-  -- | Pexp_setfield expression * Longident.t Asttypes.loc * expression
+  | PexpSetField Expression (Loc Longident) Expression
   | PexpArray [Expression]
-  | PexpIfthenelse Expression Expression (Maybe Expression)
+  | PexpIfThenElse Expression Expression (Maybe Expression)
   | PexpSequence Expression Expression
   | PexpWhile Expression Expression
-  -- | Pexp_for pattern * expression * expression * Asttypes.directionFlag * expression
+  | PexpFor Pattern Expression Expression DirectionFlag Expression
   | PexpConstraint Expression CoreType
   | PexpCoerce Expression (Maybe CoreType) CoreType
   -- | Pexp_send expression * Asttypes.label Asttypes.loc

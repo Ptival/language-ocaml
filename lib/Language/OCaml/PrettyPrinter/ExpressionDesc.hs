@@ -46,7 +46,7 @@ expressionDescPP = \case
   PexpTuple l -> encloseSep "" "" comma (map pretty l)
   PexpConstruct i e -> fillSep [ pretty i, pretty e ]
   PexpField _e _i -> error "TODO"
-  PexpIfthenelse _e1 _e2 _e3 -> error "TODO"
+  PexpIfThenElse _e1 _e2 _e3 -> error "TODO"
   PexpSequence _e1 _e2 -> error "TODO"
   PexpExtension _e -> error "TODO"
   PexpTry _ _ -> error "TODO"
@@ -54,6 +54,8 @@ expressionDescPP = \case
   PexpWhile _ _ -> error "TODO"
   PexpUnreachable -> error "TODO"
   PexpRecord _ _ -> error "TODO"
+  PexpFor _ _ _ _ _ -> error "TODO"
+  PexpSetField _ _ _ -> error "TODO"
 
 instance Pretty Expression => Pretty ExpressionDesc where
   pretty = expressionDescPP
