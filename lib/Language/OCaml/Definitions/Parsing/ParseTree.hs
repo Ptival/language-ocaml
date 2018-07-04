@@ -38,7 +38,6 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , TypeKind(..)
   , ValueBinding(..)
   , ValueDescription(..)
-  , field
   , none
   ) where
 
@@ -90,7 +89,7 @@ data CoreTypeDesc
 
 data ConstructorArguments
   = PcstrTuple [CoreType]
-  -- | PcstrRecord [LabelDeclaration]
+  | PcstrRecord [LabelDeclaration]
   deriving (Eq, Generic, Show)
 
 data PrivateFlag
@@ -118,11 +117,11 @@ data TypeKind
   deriving (Eq, Generic, Show)
 
 data LabelDeclaration = LabelDeclaration
-  { pldName :: Loc String
-  , pldMutable :: MutableFlag
-  , pldType :: CoreType
-  -- , pldLoc :: Location.t
-  -- , pldAttributes :: attributes
+  { pldName       :: Loc String
+  , pldMutable    :: MutableFlag
+  , pldType       :: CoreType
+  , pldLoc        :: Location
+  , pldAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -140,20 +139,6 @@ data MutableFlag
   | Mutable
   deriving (Eq, Generic, Show)
 
-field ::
-  MutableFlag ->
-  Loc String ->
-  CoreType ->
-  LabelDeclaration
-field {- loc attrs info -} mut name typ =
-  LabelDeclaration
-  { pldName    = name
-  , pldMutable = mut
-  , pldType    = typ
-  --, pldLoc :: Location.t
-  --, pldAttributes :: attributes
-  }
-
 type Structure = [StructureItem]
 
 data StructureItem = StructureItem
@@ -165,7 +150,7 @@ data StructureItem = StructureItem
 data StructureItemDesc
   = PstrEval Expression Attributes
   | PstrValue RecFlag [ValueBinding]
-  -- | PstrPrimitive valueDescription
+  | PstrPrimitive ValueDescription
   | PstrType RecFlag [TypeDeclaration]
   -- | PstrTypext type_extension
   | PstrException ExtensionConstructor

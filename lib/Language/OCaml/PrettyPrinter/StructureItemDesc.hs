@@ -35,6 +35,7 @@ structureItemDescPP = \case
   PstrAttribute _a -> error "TODO"
   PstrExtension _e _a -> error "TODO"
   PstrException _e -> error "TODO"
+  PstrPrimitive _ -> error "TODO"
 
 instance (Pretty Payload) => Pretty StructureItemDesc where
   pretty = structureItemDescPP

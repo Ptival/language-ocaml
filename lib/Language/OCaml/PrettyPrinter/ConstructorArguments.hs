@@ -18,6 +18,7 @@ constructorArgumentsPP = \case
     []  -> ""
     [x] -> fillSep [ "of", pretty x ]
     _   -> fillSep [ "of", encloseSep "" "" " * " (map pretty l) ]
+  PcstrRecord _ -> error "TODO"
 
 instance Pretty ConstructorArguments where
   pretty = constructorArgumentsPP

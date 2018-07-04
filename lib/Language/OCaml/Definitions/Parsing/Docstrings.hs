@@ -14,6 +14,9 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , emptyDocs
   , emptyInfo
   , rhsText
+  , symbolInfo
+  , symbolText
+  , symbolTextLazy
   , textAttr
   ) where
 
@@ -141,3 +144,12 @@ docstringBody = dsBody
 
 docstringLoc :: Docstring -> Location
 docstringLoc = dsLoc
+
+symbolInfo :: () -> Info
+symbolInfo () = Nothing -- FIXME
+
+symbolText :: () -> Text
+symbolText () = [] -- FIXM
+
+symbolTextLazy :: () -> Text
+symbolTextLazy () = [] -- FIXMEE

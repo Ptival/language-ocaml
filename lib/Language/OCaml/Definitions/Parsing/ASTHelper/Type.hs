@@ -3,8 +3,10 @@
 
 module Language.OCaml.Definitions.Parsing.ASTHelper.Type
   ( ConstructorOpts(..)
+  , FieldOpts(..)
   , MkOpts(..)
   , constructor
+  , field
   , mk
   ) where
 
@@ -45,6 +47,31 @@ instance Default ConstructorOpts where
     , info  = emptyInfo
     }
 
+field :: FieldOpts -> Loc String -> CoreType -> LabelDeclaration
+field (FieldOpts {..}) name typ =
+  LabelDeclaration
+  { pldName       = name
+  , pldMutable    = mut
+  , pldType       = typ
+  , pldLoc        = loc
+  , pldAttributes = addInfoAttrs info attrs
+  }
+
+data FieldOpts = FieldOpts
+  { attrs  :: [Attribute]
+  , info   :: Info
+  , loc    :: Location
+  , mut    :: MutableFlag
+  }
+
+instance Default FieldOpts where
+  def = FieldOpts
+    { attrs  = []
+    , info   = emptyInfo
+    , loc    = defaultLoc
+    , mut    = Immutable
+    }
+
 mk :: MkOpts -> Maybe CoreType -> Loc String -> TypeDeclaration
 mk (MkOpts {..}) manifest name =
   TypeDeclaration
@@ -60,23 +87,23 @@ mk (MkOpts {..}) manifest name =
 
 data MkOpts = MkOpts
   { attrs  :: [Attribute]
-  , docs   :: ()
+  , docs   :: Docs
   , cstrs  :: [(CoreType, CoreType, Location)]
   , kind   :: TypeKind
   , loc    :: Location
   , params :: [(CoreType, Variance)]
   , priv   :: PrivateFlag
-  , text   :: ()
+  , text   :: Text
   }
 
 instance Default MkOpts where
   def = MkOpts
     { attrs  = []
     , cstrs  = []
-    , docs   = () -- FIXME
+    , docs   = emptyDocs
     , kind   = PtypeAbstract
     , loc    = defaultLoc
     , params = []
     , priv   = Public
-    , text   = () -- FIXME
+    , text   = []
     }
