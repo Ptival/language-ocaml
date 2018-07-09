@@ -18,6 +18,7 @@ import Text.Printf
 
 import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
 import Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
 import Language.OCaml.Definitions.Parsing.ASTHelper.Opn as Opn
 import Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
 import Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str
@@ -87,12 +88,14 @@ import Language.OCaml.Parser.Generator.Lexer
   ">"        { Located _  TokGreater }
   ">}"       { Located _  TokGreaterRBrace }
   ">]"       { Located _  TokGreaterRBracket }
+  "#"        { Located _  TokHash }
   if         { Located _  TokIf }
   in         { Located _  TokIn }
   include    { Located _  TokInclude }
   inherit    { Located _  TokInherit }
   initialier { Located _  TokInitializer }
   INT        { Located _ (TokInt $$) }
+  LABEL      { Located _ (TokLabel $$) }
   lazy       { Located _  TokLazy }
   "{"        { Located _  TokLBrace }
   "{<"       { Located _  TokLBraceLess }
@@ -122,12 +125,14 @@ import Language.OCaml.Parser.Generator.Lexer
   object     { Located _  TokObject }
   of         { Located _  TokOf }
   open       { Located _  TokOpen }
+  OPTLABEL  { Located _ (TokOptLabel $$) }
   or         { Located _  TokOr }
   "%"        { Located _  TokPercent }
   "+"        { Located _  TokPlus }
   "+."       { Located _  TokPlusDot }
   "+="       { Located _  TokPlusEq }
   private    { Located _  TokPrivate }
+  "?"        { Located _  TokQuestion }
   "'"        { Located _  TokQuote }
   "}"        { Located _  TokRBrace }
   "]"        { Located _  TokRBracket }
@@ -293,6 +298,9 @@ CoreType :: { CoreType }
 
 CoreType2 :: { CoreType }
   : SimpleCoreTypeOrTuple { $1 }
+--  | "?" LIDENT ":" CoreType2 "->" CoreType2 { let param = extraRHSCoreType (def { pos = 4 }) $4 in
+--                                              mktyp $ PtypArrow (Optional $2) param $6
+--                                            }
   -- TODO
 
 CoreTypeCommaList :: { [CoreType] }
@@ -364,6 +372,9 @@ ExprCommaList :: { [Expression] }
   : Expr "," Expr          { [$3, $1] }
   | ExprCommaList "," Expr { $3 : $1 }
 
+Extension :: { (Loc String, Payload) }
+  : "[%" AttrId Payload "]" { ($2, $3) }
+
 FunBinding :: { Expression }
   : StrictBinding { $1 }
   -- | TypeConstraint "=" SeqExpr { mkexpConstraint $3 $1 }
@@ -385,8 +396,8 @@ Ident :: { String }
   : UIDENT { $1 }
   | LIDENT { $1 }
 
-Implementation :: { () }
-  : Structure EOF { error "TODO" }
+Implementation :: { [StructureItem] }
+  : Structure EOF { extraStr 1 $1 }
 
 Label :: { String }
   : LIDENT { $1 }
@@ -423,6 +434,12 @@ LabelDeclarationSemi :: { LabelDeclaration }
                (mkRHS $2 2) $4
   }
 
+LabelLetPattern :: { (String, Pattern) }
+  : LabelVar              { $1 }
+  | LabelVar ":" CoreType { let (lab, pat) = $1 in
+                            (lab, mkpat $ PpatConstraint pat $3)
+                          }
+
 LabelLongident :: { Longident }
   : LIDENT                  { Lident $1 }
   | ModLongident "." LIDENT { Ldot $1 $3 }
@@ -432,8 +449,27 @@ LabeledSimpleExpr :: { (ArgLabel, Expression) }
   -- | LabelExpr                  { $1 }
 
 LabeledSimplePattern :: { (ArgLabel, Maybe Expression, Pattern) }
-  -- TODO
-  : SimplePattern { (Nolabel, Nothing, $1) }
+  : "?" "(" LabelLetPattern OptDefault ")" { (Optional (fst $3), $4,      snd $3) }
+  | "?" LabelVar                           { (Optional (fst $2), Nothing, snd $2) }
+  | OPTLABEL "(" LetPattern OptDefault ")" { (Optional $1,       $4,      $3) }
+  | OPTLABEL PatternVar                    { (Optional $1,       Nothing, $2) }
+  | "~" "(" LabelLetPattern ")"            { (Labelled (fst $3), Nothing, snd $3) }
+  | "~" LabelVar                           { (Labelled (fst $2), Nothing, snd $2) }
+  | LABEL SimplePattern                    { (Labelled $1,       Nothing, $2) }
+  | SimplePattern                          { (Nolabel,           Nothing, $1) }
+
+LabelVar :: { (String, Pattern) }
+  : LIDENT { ($1, mkpat $ PpatVar (mkRHS $1 1)) }
+
+LblPattern :: { (Loc Longident, Pattern) }
+  : LabelLongident OptPatternTypeConstraint "=" Pattern { (mkRHS $1 1, mkpatOptConstraint $4 $2) }
+  | LabelLongident OptPatternTypeConstraint             { (mkRHS $1 1, mkpatOptConstraint (patOfLabel $1 1) $2) }
+
+LblPatternList :: { ([(Loc Longident, Pattern)], ClosedFlag) }
+  : LblPattern                    { ([$1], Closed) }
+  | LblPattern ";"                { ([$1], Closed) }
+  | LblPattern ";" "_" OptSemi    { ([$1], Open) }
+  | LblPattern ";" LblPatternList { let (fields, closed) = $3 in ($1 : fields, closed) }
 
 LetBinding :: { LetBindings }
   : let ExtAttributes RecFlag LetBindingBody PostItemAttributes { let (ext, attr) = $2 in
@@ -441,17 +477,45 @@ LetBinding :: { LetBindings }
                                                                 }
 
 LetBindingBody :: { (Pattern, Expression) }
-  : ValIdent StrictBinding { (mkpatvar $1 1, $2) }
-  -- TODO
+  : ValIdent StrictBinding                                { (mkpatvar $1 1, $2) }
+  | ValIdent TypeConstraint "=" SeqExpr                   { let v = mkpatvar $1 1 in
+                                                            let t = case $2 of
+                                                                  (Just t, Nothing) -> t
+                                                                  (_,      Just t)  -> t
+                                                                  (_,      _)       -> error "This should not happen"
+                                                            in
+                                                            ( ghpat $ PpatConstraint v (ghtyp $ PtypPoly [] t)
+                                                            , mkexpConstraint $4 $2
+                                                            )
+                                                          }
+  | ValIdent ":" TypeVarList "." CoreType "=" SeqExpr     { ( ghpat $ PpatConstraint (mkpatvar $1 1) (ghtyp $ PtypPoly (reverse $3) $5)
+                                                            , $7
+                                                            )
+                                                          }
+  | ValIdent ":" type LidentList "." CoreType "=" SeqExpr { let (exp, poly) = wrapTypeAnnotation $4 $6 $8 in
+                                                            ( ghpat $ PpatConstraint (mkpatvar $1 1) poly
+                                                            , exp
+                                                            )
+                                                          }
+  | PatternNoExn "=" SeqExpr                              { ($1, $3) }
+  | SimplePatternNotIdent ":" CoreType "=" SeqExpr        { (ghpat $ PpatConstraint $1 $3, $5) }
 
 LetBindings :: { LetBindings }
   : LetBinding                { $1 }
-  -- | LetBindings AndLetBinding { addlb $1 $2 }
+  | LetBindings AndLetBinding { addlb $1 $2 }
+
+LetPattern :: { Pattern }
+  : Pattern              { $1 }
+  | Pattern ":" CoreType { mkpat $ PpatConstraint $1 $3 }
+
+LidentList :: { [Loc String] }
+  : LIDENT            { [mkRHS $1 1] }
+  | LIDENT LidentList { mkRHS $1 1 : $2 }
 
 MatchCase :: { Case }
   : Pattern "->" SeqExpr              { Exp.case' def $1 $3 }
   | Pattern when SeqExpr "->" SeqExpr { Exp.case' (def { guard = Just $3 }) $1 $5 }
-  -- TODO
+  | Pattern "->" "."                  { Exp.case' def $1 (Exp.unreachable (def { loc = rhsLoc 3 }) ())  }
 
 MatchCases :: { [Case] }
   : MatchCase                { [$1] }
@@ -466,9 +530,20 @@ ModLongident :: { Longident }
   : UIDENT                  { Lident $1 }
   | ModLongident "." UIDENT { Ldot $1 $3 }
 
+ModuleType :: { ModuleType }
+  : MtyLongident { mkmty def $ PmtyIdent (mkRHS $1 1) }
+  -- TODO
+
 MutableFlag :: { MutableFlag }
   : {- empty-} { Immutable }
   | mutable    { Mutable }
+
+MtyLongident :: { Longident }
+  : Ident                     { Lident $1 }
+  | ModExtLongident "." Ident { Ldot $1 $3 }
+
+NameTag :: { String }
+  : "`" Ident { $2 }
 
 NonRecFlag :: { RecFlag }
   : {- empty -} { Recursive }
@@ -477,10 +552,10 @@ NonRecFlag :: { RecFlag }
 OpenStatement :: { (OpenDescription, Maybe (Loc String)) }
   : open OverrideFlag ExtAttributes ModLongident PostItemAttributes
   { let (ext, attrs) = $3 in
-    (Opn.mk (def { override = $2
-                 , attrs    = attrs ++ $5
-                 , loc      = symbolRLoc ()
-                 , docs     = symbolDocs ()
+    (Opn.mk (def { Opn.override = $2
+                 , attrs        = attrs ++ $5
+                 , loc          = symbolRLoc ()
+                 , docs         = symbolDocs ()
                  })
           (mkRHS $4 4)
     , ext
@@ -491,6 +566,10 @@ OpenStatement :: { (OpenDescription, Maybe (Loc String)) }
 OptBar :: { () }
   : {- empty -} { () }
   | "|"         { () }
+
+OptDefault :: { Maybe Expression }
+  : {- empty-}  { Nothing }
+  | "=" SeqExpr { Just $2 }
 
 OptionalTypeParameter :: { (CoreType, Variance) }
   : TypeVariance OptionalTypeVariable { ($2, $1) }
@@ -508,9 +587,20 @@ OptionalTypeVariable :: { CoreType }
   : "'" Ident { mktyp $ PtypVar $2 }
   | "_"       { mktyp $ PtypAny }
 
+OptPatternTypeConstraint :: { Maybe CoreType }
+  : ":" CoreType { Just $2 }
+  | {- empty -}  { Nothing }
+
+OptSemi :: { () }
+  : {- empty -} { () }
+  | ";"         { () }
+
 OverrideFlag :: { OverrideFlag }
   : {- empty -} { Fresh }
   | "!"         { Override }
+
+PackageType :: { PackageType }
+  : ModuleType { packageTypeOfModuleType $1 }
 
 Pattern :: { Pattern }
   : Pattern as ValIdent                                  { mkpat $ PpatAlias $1 (mkRHS $3 3) }
@@ -535,8 +625,33 @@ PatternGen :: { Pattern }
   -- | NameTag Pattern %prec precConstrAppl         { mkpat $ PpatVariant $1 (Just $2) }
   -- | lazy ExtAttributes SimplePattern             { mkpatAttrs (PpatLazy $3) $2 }
 
+PatternNoExn :: { Pattern }
+  : PatternNoExn as ValIdent               { mkpat $ PpatAlias $1 (mkRHS $3 3) }
+  | PatternNoExn as                        {% alexError "PatternNoExn as <ERROR>" }
+  | PatternNoExnCommaList %prec belowComma { mkpat $ PpatTuple (reverse $1) }
+  | PatternNoExn "::" Pattern              { mkpatCons (rhsLoc 2) (ghpat $ PpatTuple [$1, $3]) (symbolRLoc ()) }
+  | PatternNoExn "::"                      {% alexError "PatternNoExn :: <ERROR>" }
+  | PatternNoExn "|" Pattern               { mkpat $ PpatOr $1 $3 }
+  | PatternNoExn "|"                       {% alexError "PatternNoExn | <ERROR>" }
+  | PatternNoExn Attribute                 { Pat.attr $1 $2 }
+  | PatternGen                             { $1 }
+
+PatternNoExnCommaList :: { [Pattern] }
+  : PatternNoExnCommaList "," Pattern { $3 : $1 }
+  | PatternNoExn "," Pattern          { [$3, $1] }
+  | PatternNoExn ","                  {% alexError "PatternNoExn , <ERROR>" }
+
+PatternSemiList :: { [Pattern] }
+  : Pattern                     { [$1] }
+  | PatternSemiList ";" Pattern { $3 : $1 }
+
+PatternVar :: { Pattern }
+  : LIDENT { mkpat $ PpatVar (mkRHS $1 1) }
+  | "_"    { mkpat $ PpatAny }
+
 Payload :: { Payload }
-  : Structure { PStr $1 }
+  : Structure     { PStr $1 }
+  -- | ":" Signature { PSig $2 }
   -- TODO
 
 PolyType :: { CoreType }
@@ -589,6 +704,22 @@ SeqExpr :: { Expression }
                                   mkexp $ PexpExtension ($4, payload)
                                 }
 
+-- Signature :: { [SignatureItem] }
+--   : {- empty-}              { [] }
+--   | ";;" Signature          { textSig 1 ++ $2 }
+--   | SignatureItem Signature { textSig 1 ++ $1 : $2 }
+--
+-- SignatureItem :: { SignatureItem }
+--   : ValueDescription { let (body, ext) = $1 in mksigExt (PsigValue body) ext }
+--   -- TODO
+
+SignedConstant :: { ParseTree.Constant }
+  : Constant { $1 }
+  | "-" INT   { let (n, m) = $2 in PconstInteger ("-" ++ n) m }
+  | "-" FLOAT { let (f, m) = $2 in PconstFloat   ("-" ++ f) m }
+  | "+" INT   { let (n, m) = $2 in PconstInteger n m }
+  | "+" FLOAT { let (f, m) = $2 in PconstFloat   f m }
+
 SimpleCoreType :: { CoreType }
   : SimpleCoreType2 %prec belowHash           { $1 }
   | "(" CoreTypeCommaList ")" %prec belowHash {% case $2 of
@@ -608,6 +739,15 @@ SimpleCoreType2 :: { CoreType }
 SimpleCoreTypeOrTuple :: { CoreType }
   : SimpleCoreType                  { $1 }
   | SimpleCoreType "*" CoreTypeList { mktyp $ PtypTuple ($1 : reverse $3) }
+
+SimpleDelimitedPattern :: { Pattern }
+  : "{" LblPatternList "}"            { let (fields, closed) = $2 in mkpat $ PpatRecord fields closed }
+  | "{" LblPatternList                {% alexError "{ LblPatternList <ERROR>" }
+  | "[" PatternSemiList OptSemi "]"   { relocPat $ mktailpat (rhsLoc 4) (reverse $2) }
+  | "[" PatternSemiList OptSemi       {% alexError "[ PatternSemiList OptSemi <ERROR>" }
+  | "[|" PatternSemiList OptSemi "|]" { mkpat $ PpatArray (reverse $2) }
+  | "[|" "|]"                         { mkpat $ PpatArray [] }
+  | "[|" PatternSemiList OptSemi      {% alexError "[| PatternSemiList OptSemi <ERROR>" }
 
 SimpleExpr :: { Expression }
   : ValLongident                                  { mkexp $ PexpIdent (mkRHS $1 1) }
@@ -633,8 +773,27 @@ SimplePattern :: { Pattern }
   | SimplePatternNotIdent     { $1 }
 
 SimplePatternNotIdent :: { Pattern }
-  : "_" { mkpat $ PpatAny }
-  -- TODO
+  : "_"                                                 { mkpat $ PpatAny }
+  | SignedConstant                                      { mkpat $ PpatConstant $1 }
+  | SignedConstant ".." SignedConstant                  { mkpat $ PpatInterval $1 $3 }
+  | ConstrLongident                                     { mkpat $ PpatConstruct (mkRHS $1 1) Nothing }
+  | NameTag                                             { mkpat $ PpatVariant $1 Nothing }
+  | "#" TypeLongident                                   { mkpat $ PpatType (mkRHS $2 2) }
+  | SimpleDelimitedPattern                              { $1 }
+  | ModLongident "." SimpleDelimitedPattern             { mkpat $ PpatOpen (mkRHS $1 1) $3 }
+  | ModLongident "." "{" "}"                            { mkpat $ PpatOpen (mkRHS $1 1) (mkpat $ PpatConstruct (mkRHS (Lident "[]") 4) Nothing) }
+  | ModLongident "." "(" ")"                            { mkpat $ PpatOpen (mkRHS $1 1) (mkpat $ PpatConstruct (mkRHS (Lident "()") 4) Nothing) }
+  | ModLongident "." "(" Pattern ")"                    { mkpat $ PpatOpen (mkRHS $1 1) $4 }
+  | ModLongident "." "("                                {% alexError "ModLongident . ( <ERROR>" }
+  | "(" Pattern ")"                                     { relocPat $2 }
+  | "(" Pattern                                         {% alexError "( Pattern <ERROR>" }
+  | "(" Pattern ":" CoreType ")"                        { mkpat $ PpatConstraint $2 $4 }
+  | "(" Pattern ":" CoreType                            {% alexError "( Pattern : CoreType <ERROR>" }
+  | "(" Pattern ":"                                     {% alexError "( Pattern : <ERROR>" }
+  | "(" module ExtAttributes UIDENT ")"                 { mkpatAttrs (PpatUnpack (mkRHS $4 4)) $3 }
+  | "(" module ExtAttributes UIDENT ":" PackageType ")" { mkpatAttrs (PpatConstraint (mkpat $ PpatUnpack (mkRHS $4 4)) (ghtyp $ PtypPackage $6)) $3 }
+  | "(" module ExtAttributes UIDENT ":" PackageType     {% alexError "( module ExtAttributes UIDENT : PackageType <ERROR>" }
+  | Extension                                           { mkpat $ PpatExtension $1 }
 
 SingleAttrId :: { String }
   : LIDENT { $1 }
@@ -773,7 +932,7 @@ parseExpr = safeParse unsafeParseExpr
 parseExprCommaList :: Parser [Expression]
 parseExprCommaList = safeParse unsafeParseExprCommaList
 
-parseImplementation :: Parser ()
+parseImplementation :: Parser [StructureItem]
 parseImplementation = safeParse unsafeParseImplementation
 
 parseSeqExpr :: Parser Expression

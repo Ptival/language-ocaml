@@ -28,6 +28,9 @@ coreTypedescPP = \case
   PtypTuple l -> fillSep $ map pretty l
   PtypVar s -> fillCat [ squote, pretty s ]
   PtypVariant _ _ _ -> error "TODO"
+  PtypObject _ _ -> error "TODO"
+  PtypExtension _ -> error "TODO"
+  PtypPackage _ -> error "TODO"
 
 instance Pretty CoreType => Pretty CoreTypeDesc where
   pretty = coreTypedescPP

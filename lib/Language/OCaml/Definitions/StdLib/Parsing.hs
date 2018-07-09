@@ -1,9 +1,18 @@
 module Language.OCaml.Definitions.StdLib.Parsing
-  ( rhsStart
+  ( rhsEndPos
+  , rhsStart
   , rhsStartPos
   ) where
 
 import Language.OCaml.Definitions.StdLib.Lexing
+
+rhsEndPos :: a -> Position
+rhsEndPos _ = Position
+  { posFName = "FIXME"
+  , posLNum  = 0
+  , posBOL   = 0
+  , posCNum  = 0
+  }
 
 rhsStartPos :: a -> Position
 rhsStartPos _ = Position

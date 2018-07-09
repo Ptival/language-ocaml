@@ -1,4 +1,6 @@
 {-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE RecordWildCards #-}
 
 module Language.OCaml.Definitions.Parsing.Docstrings
   ( Docs
@@ -13,6 +15,10 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , docstringLoc
   , emptyDocs
   , emptyInfo
+  , rhsPostText
+  , rhsPreText
+  , rhsPostExtraText
+  , rhsPreExtraText
   , rhsText
   , symbolInfo
   , symbolText
@@ -20,13 +26,15 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , textAttr
   ) where
 
-import GHC.Generics
-import Prelude hiding (exp)
+import           GHC.Generics
+import qualified Data.Map.Strict as M
+import           Prelude hiding (exp)
 
-import Language.OCaml.Definitions.Parsing.ASTTypes
-import Language.OCaml.Definitions.Parsing.Location
-import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.Definitions.StdLib.Parsing
+import           Language.OCaml.Definitions.StdLib.Lexing
+import           Language.OCaml.Definitions.StdLib.Parsing as Parsing
+import           Language.OCaml.Definitions.Parsing.ASTTypes
+import           Language.OCaml.Definitions.Parsing.Location
+import           Language.OCaml.Definitions.Parsing.ParseTree
 
 data DsAttached
    = Unattached   {- Not yet attached anything. -}
@@ -153,3 +161,47 @@ symbolText () = [] -- FIXM
 
 symbolTextLazy :: () -> Text
 symbolTextLazy () = [] -- FIXMEE
+
+preTable :: M.Map Position Text
+preTable = M.empty
+
+postTable :: M.Map Position Text
+postTable = M.empty
+
+preExtraTable :: M.Map Position Text
+preExtraTable = M.empty
+
+postExtraTable :: M.Map Position Text
+postExtraTable = M.empty
+
+getDocstrings :: [Docstring] -> [Docstring]
+getDocstrings dsl = loop [] dsl
+  where
+    loop acc = \case
+      []                                           -> reverse acc
+      (Docstring {..}) : rest | dsAttached == Info -> loop acc rest
+      ds : rest                                    -> loop (ds { dsAttached = Docs } : acc) rest
+
+getPreText :: Position -> Text
+getPreText pos = getDocstrings $ M.findWithDefault [] pos preTable
+
+rhsPreText :: a -> Text
+rhsPreText pos = getPreText (Parsing.rhsStartPos pos)
+
+getPostText :: Position -> Text
+getPostText pos = getDocstrings $ M.findWithDefault [] pos postTable
+
+rhsPostText :: a -> Text
+rhsPostText pos = getPostText (Parsing.rhsEndPos pos)
+
+getPreExtraText :: Position -> Text
+getPreExtraText pos = getDocstrings $ M.findWithDefault [] pos preExtraTable
+
+rhsPreExtraText :: a -> Text
+rhsPreExtraText pos = getPreExtraText (Parsing.rhsStartPos pos)
+
+getPostExtraText :: Position -> Text
+getPostExtraText pos = getDocstrings $ M.findWithDefault [] pos postExtraTable
+
+rhsPostExtraText :: a -> Text
+rhsPostExtraText pos = getPostExtraText (Parsing.rhsEndPos pos)

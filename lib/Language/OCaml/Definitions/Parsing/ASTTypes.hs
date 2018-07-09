@@ -10,6 +10,7 @@ module Language.OCaml.Definitions.Parsing.ASTTypes
   , OverrideFlag(..)
   , RecFlag(..)
   , Variance(..)
+  , VirtualFlag(..)
   ) where
 
 import GHC.Generics
@@ -67,4 +68,9 @@ type Label = String
 data DirectionFlag
   = UpTo
   | DownTo
+  deriving (Eq, Generic, Show)
+
+data VirtualFlag
+  = Virtual
+  | Concrete
   deriving (Eq, Generic, Show)

@@ -16,5 +16,5 @@ import           Language.OCaml.Parser.Implementation
 parseImplementationC :: String -> Either (ParseError Char Void) Structure
 parseImplementationC = parse implementationP "Language.OCaml.Parser"
 
-parseImplementationG :: GP.Parser ()
+parseImplementationG :: GP.Parser [StructureItem]
 parseImplementationG = GP.parseImplementation

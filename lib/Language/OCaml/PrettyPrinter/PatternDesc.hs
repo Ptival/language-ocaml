@@ -30,6 +30,14 @@ patternDescPP = \case
   PpatOr p1 p2 -> vcat [ pretty p1, fillSep [ pipe, pretty p2 ] ]
   PpatRecord _ _ -> error "TODO"
   PpatArray _ -> error "TODO"
+  PpatInterval _ _ -> error "TODO"
+  PpatVariant _ _ -> error "TODO"
+  PpatType _ -> error "TODO"
+  PpatLazy _ -> error "TODO"
+  PpatUnpack _ -> error "TODO"
+  PpatException _ -> error "TODO"
+  PpatExtension _ -> error "TODO"
+  PpatOpen _ _ -> error "TODO"
 
 instance Pretty Pattern => Pretty PatternDesc where
   pretty = patternDescPP

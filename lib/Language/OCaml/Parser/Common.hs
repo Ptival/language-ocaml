@@ -8,6 +8,8 @@ module Language.OCaml.Parser.Common
   ( addlb
   , exprOfLetBindings
   , extraRHSCoreType
+  , extraStr
+  , extraText
   , ghexp
   , ghtyp
   , ghpat
@@ -22,8 +24,9 @@ module Language.OCaml.Parser.Common
   , mklb
   , mklbs
   , mkmod
-  , Pat.mk
+  , mkmty
   , mkpat
+  , mkpatAttrs
   , mkpatCons
   , mkpatvar
   , mkRHS
@@ -33,6 +36,7 @@ module Language.OCaml.Parser.Common
   , mktailexp
   , mktailpat
   , mktyp
+  , packageTypeOfModuleType
   , patOfLabel
   , relocExp
   , relocPat
@@ -41,28 +45,34 @@ module Language.OCaml.Parser.Common
   , symbolRLoc
   , textStr
   , valOfLetBindings
+  , wrapTypeAnnotation
   ) where
 
-import Data.Default
-import Data.Maybe
-import Text.Megaparsec
+import           Control.Eff
+import           Control.Eff.Exception
+import           Data.Default
+import           Data.Maybe
+import           Prelude hiding (exp)
+import           Text.Megaparsec
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
-import Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
-import Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
-import Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str
-import Language.OCaml.Definitions.Parsing.ASTHelper.Typ as Typ
-import Language.OCaml.Definitions.Parsing.ASTHelper.Vb as Vb
-import Language.OCaml.Definitions.Parsing.ASTTypes
-import Language.OCaml.Definitions.Parsing.Docstrings
-import Language.OCaml.Definitions.Parsing.Location
-import Language.OCaml.Definitions.Parsing.Longident as Longident
-import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.Definitions.Parsing.Parser.LetBinding
-import Language.OCaml.Definitions.Parsing.Parser.LetBindings
-import Language.OCaml.Parser.Tokens
-import Language.OCaml.Parser.Utils.Utils
-import Language.OCaml.Parser.Utils.Types
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp hiding (newType)
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str hiding (text)
+import qualified Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str (text)
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Typ as Typ
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Vb as Vb
+import           Language.OCaml.Definitions.Parsing.ASTTypes
+import           Language.OCaml.Definitions.Parsing.Docstrings
+import           Language.OCaml.Definitions.Parsing.Location
+import           Language.OCaml.Definitions.Parsing.Longident as Longident
+import           Language.OCaml.Definitions.Parsing.ParseTree
+import           Language.OCaml.Definitions.Parsing.Parser.LetBinding
+import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
+import           Language.OCaml.Parser.Tokens
+import           Language.OCaml.Parser.Utils.Utils
+import           Language.OCaml.Parser.Utils.Types
 
 identP :: Parser String
 identP = lexeme $ choice [ uIdentT, lIdentT ]
@@ -255,7 +265,7 @@ mkexpCons consloc args loc = Exp.mk (def { loc }) $ PexpConstruct (mkLoc (Lident
 mkexpOptConstraint :: Expression -> Maybe (Maybe CoreType, Maybe CoreType) -> Expression
 mkexpOptConstraint e = \case
   Nothing -> e
-  Just constraint -> mkexpConstraint e constraint
+  Just constraint' -> mkexpConstraint e constraint'
 
 mkpatOptConstraint :: Pattern -> Maybe CoreType -> Pattern
 mkpatOptConstraint p = \case
@@ -287,3 +297,67 @@ symbolDocs () = emptyDocs -- FIXME
 
 textStr :: Int -> [StructureItem]
 textStr pos = Str.text (rhsText pos)
+
+extraText :: (Text -> [a]) -> p -> [a] -> [a]
+extraText text pos []    = let post = rhsPostText pos in
+                           let postExtras = rhsPostExtraText pos in
+                           text post ++ text postExtras
+extraText text pos items = let preExtras = rhsPreExtraText pos in
+                           let postExtras = rhsPostExtraText pos in
+                           text preExtras ++ items ++ text postExtras
+
+extraStr :: p -> [StructureItem] -> [StructureItem]
+extraStr pos items = extraText Str.text pos items
+
+mkNewTypes :: [Loc String] -> Expression -> Expression
+mkNewTypes =
+  flip $ foldr (\ newType exp -> mkexp $ PexpNewType newType exp)
+
+wrapTypeAnnotation :: [Loc String] -> CoreType -> Expression -> (Expression, CoreType)
+wrapTypeAnnotation newTypes coreType body =
+  let exp1 = mkexp $ PexpConstraint body coreType in
+  let exp2 = mkNewTypes newTypes exp1 in
+  -- handling side-effects locally for now
+  let varC = case run . runError $ Typ.varifyConstructors newTypes coreType of
+        Left  e -> error e
+        Right r -> r
+  in
+  (exp2, ghtyp $ PtypPoly newTypes varC)
+
+mkmty :: AttrsOpts -> ModuleTypeDesc -> ModuleType
+mkmty (AttrsOpts {..}) d = Mty.mk (def { Mty.attrs = attrs, loc = symbolRLoc () }) d
+
+data AttrsOpts = AttrsOpts { attrs :: Attributes }
+
+instance Default AttrsOpts where
+  def = AttrsOpts []
+
+packageTypeOfModuleType :: ModuleType -> PackageType
+packageTypeOfModuleType (ModuleType { pmtyDesc = PmtyIdent lid }) = (lid, [])
+packageTypeOfModuleType (ModuleType { pmtyDesc = PmtyWith (ModuleType { pmtyDesc = PmtyIdent lid }) cstrs}) =
+  (lid, map mapCstr cstrs)
+  where
+    mapCstr :: WithConstraint -> (Loc Longident, CoreType)
+    mapCstr = \case
+      PwithType lid' ptyp ->
+        case ptyp of
+          TypeDeclaration { ptypeParams = [] } -> error "TODO"
+          TypeDeclaration { ptypeCstrs = [] } -> error "TODO"
+          TypeDeclaration { ptypePrivate }    | ptypePrivate    /= Public        -> error "TODO"
+          TypeDeclaration { ptypeKind }       | ptypeKind       /= PtypeAbstract -> error "TODO"
+          TypeDeclaration { ptypeAttributes } | ptypeAttributes /= []            -> error "TODO"
+          TypeDeclaration { ptypeManifest } -> case ptypeManifest of
+            Just ty -> (lid', ty)
+            Nothing -> error "This should not happen"
+      _ -> error "Only 'with type t =' constraints are supported"
+packageTypeOfModuleType _ = error "TODO"
+
+mkpatAttrs :: PatternDesc -> (Maybe (Loc String), [Attribute]) -> Pattern
+mkpatAttrs d attrs = wrapPatAttrs (mkpat d) attrs
+
+wrapPatAttrs :: Pattern -> (Maybe (Loc String), [Attribute]) -> Pattern
+wrapPatAttrs pat0 (ext, attrs) =
+  let pat = pat0 { ppatAttributes = attrs ++ ppatAttributes pat0 } in
+  case ext of
+  Nothing -> pat
+  Just id' -> ghpat $ PpatExtension (id', PPat pat Nothing)

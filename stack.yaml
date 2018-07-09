@@ -1,6 +1,7 @@
 flags: {}
 
 extra-deps:
+  - extensible-effects-3.0.0.0
   - prettyprinter-1.2.0.1
 
 resolver: lts-11.11

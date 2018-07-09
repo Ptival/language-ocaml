@@ -4,6 +4,12 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   ( Attribute
   , Attributes
   , Case(..)
+  , ClassExpr(..)
+  , ClassField(..)
+  , ClassSignature(..)
+  , ClassStructure(..)
+  , ClassType(..)
+  , ClassTypeField(..)
   , Constant(..)
   , ConstructorArguments(..)
   , ConstructorDeclaration(..)
@@ -19,8 +25,12 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , ModuleBinding(..)
   , ModuleExpr(..)
   , ModuleExprDesc(..)
+  , ModuleType(..)
+  , ModuleTypeDesc(..)
   , MutableFlag(..)
+  , ObjectField(..)
   , OpenDescription(..)
+  , PackageType
   , Pattern(..)
   , PatternDesc(..)
   , Payload(..)
@@ -38,6 +48,7 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , TypeKind(..)
   , ValueBinding(..)
   , ValueDescription(..)
+  , WithConstraint(..)
   , none
   ) where
 
@@ -78,13 +89,13 @@ data CoreTypeDesc
   | PtypArrow ArgLabel CoreType CoreType
   | PtypTuple [CoreType]
   | PtypConstr (Loc Longident) [CoreType]
-  -- | PtypObject of object_field list * Asttypes.closedFlag
+  | PtypObject [ObjectField] ClosedFlag
   | PtypClass (Loc Longident) [CoreType]
   | PtypAlias CoreType String
   | PtypVariant [RowField] ClosedFlag (Maybe [Label])
   | PtypPoly [Loc String] CoreType
-  -- | PtypPackage of packageType
-  -- | Ptyp_extension of extension
+  | PtypPackage PackageType
+  | PtypExtension Extension
   deriving (Eq, Generic, Show)
 
 data ConstructorArguments
@@ -183,7 +194,7 @@ data ExpressionDesc
   | PexpTry Expression [Case]
   | PexpTuple [Expression]
   | PexpConstruct (Loc Longident) (Maybe Expression)
-  -- | PexpVariant Asttypes.label * expression option
+  | PexpVariant Label (Maybe Expression)
   | PexpRecord [(Loc Longident, Expression)] (Maybe Expression)
   | PexpField Expression (Loc Longident)
   | PexpSetField Expression (Loc Longident) Expression
@@ -194,19 +205,19 @@ data ExpressionDesc
   | PexpFor Pattern Expression Expression DirectionFlag Expression
   | PexpConstraint Expression CoreType
   | PexpCoerce Expression (Maybe CoreType) CoreType
-  -- | Pexp_send expression * Asttypes.label Asttypes.loc
-  -- | Pexp_new Longident.t Asttypes.loc
-  -- | Pexp_setinstvar Asttypes.label Asttypes.loc * expression
-  -- | Pexp_override (Asttypes.label Asttypes.loc * expression) list
-  -- | PexpLetmodule string Asttypes.loc * moduleExpr * expression
-  -- | PexpLetexception extensionConstructor * expression
-  -- | PexpAssert expression
-  -- | Pexp_lazy expression
-  -- | PexpPoly expression * coreType option
-  -- | PexpObject classStructure
-  -- | Pexp_newtype string Asttypes.loc * expression
-  -- | PexpPack moduleExpr
-  -- | Pexp_open Asttypes.overrideFlag * Longident.t Asttypes.loc * expression
+  | PexpSend Expression (Loc Label)
+  | PexpNew (Loc Longident)
+  | PexpSetInstVar (Loc Label) Expression
+  | PexpOverride [(Loc Label, Expression)]
+  | PexpLetModule (Loc String) ModuleExpr Expression
+  | PexpLetException ExtensionConstructor (Loc Expression)
+  | PexpAssert Expression
+  | PexpLazy Expression
+  | PexpPoly Expression (Maybe CoreType)
+  | PexpObject ClassStructure
+  | PexpNewType (Loc String) Expression
+  | PexpPack ModuleExpr
+  | PexpOpen OverrideFlag (Loc Longident) Expression
   | PexpExtension Extension
   | PexpUnreachable
   deriving (Eq, Generic, Show)
@@ -256,20 +267,20 @@ data PatternDesc
   | PpatVar (Loc String)
   | PpatAlias Pattern (Loc String)
   | PpatConstant Constant
-  -- | PpatInterval constant * constant
+  | PpatInterval Constant Constant
   | PpatTuple [Pattern]
   | PpatConstruct (Loc Longident) (Maybe Pattern)
-  -- | PpatVariant Asttypes.label * pattern option
+  | PpatVariant Label (Maybe Pattern)
   | PpatRecord [(Loc Longident, Pattern)] ClosedFlag
   | PpatArray [Pattern]
   | PpatOr Pattern Pattern
   | PpatConstraint Pattern CoreType
-  -- | PpatType Longident.t Asttypes.loc
-  -- | PpatLazy pattern
-  -- | PpatUnpack string Asttypes.loc
-  -- | PpatException pattern
-  -- | PpatExtension extension
-  -- | PpatOpen Longident.t Asttypes.loc * pattern
+  | PpatType (Loc Longident)
+  | PpatLazy Pattern
+  | PpatUnpack (Loc String)
+  | PpatException Pattern
+  | PpatExtension Extension
+  | PpatOpen (Loc Longident) Pattern
   deriving (Eq, Generic, Show)
 
 data OpenDescription = OpenDescription
@@ -349,6 +360,120 @@ data TypeException = TypeException
   deriving (Eq, Generic, Show)
 
 data RowField
-  = Rtag (Loc Label) Attributes Bool
+  = Rtag (Loc Label) Attributes Bool [CoreType]
   | Rinherit CoreType
   deriving (Eq, Generic, Show)
+
+data ClassStructure = ClassStructure
+  { pcstrSelf   :: Pattern
+  , pcstrFields :: [ClassField]
+  }
+  deriving (Eq, Generic, Show)
+
+data ClassField = ClassField
+  { pcfDesc       :: ClassFieldDesc
+  , pcfLoc        :: Location
+  , pcfAttributes :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+data ClassFieldDesc
+  = PcfInherit OverrideFlag ClassExpr (Maybe (Loc String))
+  | PcfVal (Loc Label) MutableFlag ClassFieldKind
+  | PcfMethod (Loc Label) PrivateFlag ClassFieldKind
+  | PcfConstraint CoreType CoreType
+  | PcfInitializer Expression
+  | PcfAttribute Attribute
+  | PcfExtension Extension
+  deriving (Eq, Generic, Show)
+
+data ClassExpr = ClassExpr
+  { pclDesc       :: ClassExprDesc
+  , pclLoc        :: Location
+  , pclAttributes :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+data ClassExprDesc
+  = PclConstr (Loc Longident) [CoreType]
+  | PclStructure ClassStructure
+  | PclFun ArgLabel (Maybe Expression) Pattern ClassExpr
+  | PclApply ClassExpr [(ArgLabel, Expression)]
+  | PclLet RecFlag [ValueBinding] ClassExpr
+  | PclConstraint ClassExpr ClassType
+  | PclExtension Extension
+  | PclOpen OverrideFlag (Loc Longident) ClassExpr
+  deriving (Eq, Generic, Show)
+
+data ClassType = ClassType
+  { pctyDesc       :: ClassTypeDesc
+  , pctyLoc        :: Location
+  , pctyAttributes :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+data ClassTypeDesc
+  = PctyConstr (Loc Longident) [CoreType]
+  | PctySignature ClassSignature
+  | PctyArrow ArgLabel CoreType ClassType
+  | PctyExtension Extension
+  | PctyOpen OverrideFlag (Loc Longident) ClassType
+  deriving (Eq, Generic, Show)
+
+data ClassSignature = ClassSignature
+  { pcsigSelf :: CoreType
+  , pcsigFields :: [ClassTypeField]
+  }
+  deriving (Eq, Generic, Show)
+
+data ClassTypeField = ClassTypeField
+  { pctfDesc       :: ClassTypeFieldDesc
+  , pctfLoc        :: Location
+  , pctfAttributes :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+data ClassTypeFieldDesc
+  = PctfInherit ClassType
+  | PctfVal (Loc Label) MutableFlag VirtualFlag CoreType
+  | PtfMethod (Loc Label) PrivateFlag VirtualFlag CoreType
+  | PctfConstraint CoreType CoreType
+  | PctfAttribute Attribute
+  | PctfExtension Extension
+  deriving (Eq, Generic, Show)
+
+data ClassFieldKind
+  = CfkVirtual CoreType
+  | CfkConcrete OverrideFlag Expression
+  deriving (Eq, Generic, Show)
+
+data ObjectField
+  = Otag (Loc Label) Attributes CoreType
+  | Oinherit CoreType
+  deriving (Eq, Generic, Show)
+
+data ModuleType = ModuleType
+  { pmtyDesc       :: ModuleTypeDesc
+  , pmtyLoc        :: Location
+  , pmtyAttributes :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+data ModuleTypeDesc
+  = PmtyIdent (Loc Longident)
+  | PmtySignature Signature
+  | PmtyFunctor (Loc String) (Maybe ModuleType) ModuleType
+  | PmtyWith ModuleType [WithConstraint]
+  | PmtyTypeOf ModuleExpr
+  | PmtyExtension Extension
+  | PmtyAlias (Loc Longident)
+  deriving (Eq, Generic, Show)
+
+data WithConstraint
+  = PwithType (Loc Longident) TypeDeclaration
+  | PwithModule (Loc Longident) (Loc Longident)
+  | PwithTypeSubst (Loc Longident) TypeDeclaration
+  | PwithModSubst (Loc Longident) (Loc Longident)
+  deriving (Eq, Generic, Show)
+
+type PackageType = (Loc Longident, [(Loc Longident, CoreType)])

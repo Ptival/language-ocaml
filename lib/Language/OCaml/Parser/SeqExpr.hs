@@ -5,7 +5,7 @@ module Language.OCaml.Parser.SeqExpr
 import Data.Default
 import Text.Megaparsec
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
+import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp hiding (try)
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Expr
 import Language.OCaml.Parser.Tokens

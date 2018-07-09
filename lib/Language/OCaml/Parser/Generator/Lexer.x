@@ -59,9 +59,9 @@ tokens :-
   -- TODO: blank +
   <0> "_"                                                 { tok  TokUnderscore }
   <0> "~"                                                 { tok  TokTilde }
-  -- TODO: LABEL
-  -- TODO: QUESTION
-  -- TODO: OPTLABEL
+  <0> "~" lowerCase identChar* ":"                        { tokS $ TokLabel . getLabelName }
+  <0> "?"                                                 { tok  TokQuestion }
+  <0> "?" lowerCase identChar* ":"                        { tokS $ TokOptLabel . getLabelName }
   <0> $lowerCase $identChar*                              { keywordLIdent }
   <0> $upperCase $identChar*                              { tokS TokUIdent }
   <0> @intLiteral                                         { tokS $ \s -> TokInt (s, Nothing) }
@@ -77,6 +77,7 @@ tokens :-
                                                             TokFloat (lit, (Just mod))
                                                           }
   -- TODO
+  <0> "#"    { tok TokHash {- TODO: directives -} }
   <0> "&"    { tok TokAmpersand }
   <0> "&&"   { tok TokAmperAmper }
   <0> "`"    { tok TokBackQuote }
@@ -182,6 +183,7 @@ data Token
   | TokGreater
   | TokGreaterRBrace
   | TokGreaterRBracket
+  | TokHash
   | TokIf
   | TokIn
   | TokInclude
@@ -192,6 +194,7 @@ data Token
   | TokInherit
   | TokInitializer
   | TokInt (String, (Maybe Char))
+  | TokLabel String
   | TokLazy
   | TokLBrace
   | TokLBraceLess
@@ -221,12 +224,14 @@ data Token
   | TokObject
   | TokOf
   | TokOpen
+  | TokOptLabel String
   | TokOr
   | TokPercent
   | TokPlus
   | TokPlusDot
   | TokPlusEq
   | TokPrivate
+  | TokQuestion
   | TokQuote
   | TokRBrace
   | TokRBracket
@@ -509,5 +514,23 @@ alexInitUserState = AlexUserState
   , _stringBuffer    = ""
   , _stringStartPosn = (0, 0)
   }
+
+getLabelName :: String -> String
+getLabelName s =
+  let name = slice 1 (- 2) s in
+  if M.member name keywordTable
+  then error $ "You cannot use this keyword as a label: " ++ name
+  else name
+
+-- inclusive on both ends
+slice :: Int -> Int -> [a] -> [a]
+slice from to l | from > 0 && to > 0 = slicePositive from to l
+                | from > 0 && to < 0 = slicePositive from (length l - 1 - to) l
+                | from < 0 && to > 0 = error "TODO"
+                | otherwise          = error "TODO"
+
+slicePositive :: Int -> Int -> [a] -> [a]
+slicePositive from to | from >= 0 && to >= 0 = take (to - from) . drop from
+                      | otherwise            = error "slicePositive: negative indices"
 
 }

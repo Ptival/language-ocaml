@@ -5,7 +5,7 @@ module Language.OCaml.Parser.MatchCase
 import Data.Default
 import Text.Megaparsec
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
+import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp hiding (try)
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.Tokens

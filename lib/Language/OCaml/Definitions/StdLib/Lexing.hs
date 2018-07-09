@@ -13,3 +13,6 @@ data Position = Position
   , posCNum  :: Int
   }
   deriving (Eq, Generic, Show)
+
+instance Ord Position where
+  p1 <= p2 = posLNum p1 <= posLNum p2 || (posLNum p1 == posLNum p2 && posCNum p1 <= posCNum p2)

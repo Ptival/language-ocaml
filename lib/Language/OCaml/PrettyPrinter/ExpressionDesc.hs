@@ -56,6 +56,20 @@ expressionDescPP = \case
   PexpRecord _ _ -> error "TODO"
   PexpFor _ _ _ _ _ -> error "TODO"
   PexpSetField _ _ _ -> error "TODO"
+  PexpVariant _ _ -> error "TODO"
+  PexpSend _ _ -> error "TODO"
+  PexpNew _ -> error "TODO"
+  PexpSetInstVar _ _ -> error "TODO"
+  PexpOverride _ -> error "TODO"
+  PexpLetModule _ _ _ -> error "TODO"
+  PexpLetException _ _ -> error "TODO"
+  PexpAssert _ -> error "TODO"
+  PexpLazy _ -> error "TODO"
+  PexpPoly _ _ -> error "TODO"
+  PexpObject _ -> error "TODO"
+  PexpNewType _ _ -> error "TODO"
+  PexpPack _ -> error "TODO"
+  PexpOpen _ _ _ -> error "TODO"
 
 instance Pretty Expression => Pretty ExpressionDesc where
   pretty = expressionDescPP
