@@ -11,6 +11,7 @@ import Data.String.QQ
 import Test.Tasty
 -- import Text.Megaparsec
 
+import Language.OCaml.Parser.Generator.Parser
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
@@ -39,6 +40,7 @@ testStrings =
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Expr" $ []
   ++ map (mkParsingTest "exprP" exprP) testStrings
+  ++ map (compareParses "Expr" exprP parseExpr) testStrings
 
 test :: IO ()
 test = defaultMain unitTests

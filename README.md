@@ -9,10 +9,11 @@ This is work-in-progress.
 `Language.OCaml.Parser` provides:
 
 - `parseImplementationC`, written using parser combinators, i.e. Megaparsec
-  (slow?)
+  (slow?) (IMPORTANT: currently most precedences are wrong, DO NOT USE)
 
 - `parseImplementationG`, written using parser generators, i.e. Alex and Happy
-  (fast?)
+  (fast?), more likely to be correct as it follows the OCaml parser very
+  closely, though at the moment locations and documentation might be missing.
 
 Note that the current parser only supports productions I have needed so far, and
 is not complete in any way!

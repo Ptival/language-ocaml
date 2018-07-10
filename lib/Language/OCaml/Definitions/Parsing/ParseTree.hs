@@ -300,12 +300,12 @@ data ModuleExpr = ModuleExpr
 
 data ModuleExprDesc
   = PmodIdent (Loc Longident)
-  -- | PmodStructure of structure
-  -- | PmodFunctor of string Asttypes.loc * moduleType option * moduleExpr
-  -- | PmodApply of moduleExpr * moduleExpr
-  -- | PmodConstraint of moduleExpr * moduleType
-  -- | Pmod_unpack of expression
-  -- | Pmod_extension of extension
+  | PmodStructure Structure
+  | PmodFunctor (Loc String) (Maybe ModuleType) ModuleExpr
+  | PmodApply ModuleExpr ModuleExpr
+  | PmodConstraint ModuleExpr ModuleType
+  | PmodUnpack Expression
+  | PmodExtension Extension
   deriving (Eq, Generic, Show)
 
 data ModuleBinding = ModuleBinding

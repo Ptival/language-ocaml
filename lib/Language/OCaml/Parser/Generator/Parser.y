@@ -10,6 +10,8 @@ module Language.OCaml.Parser.Generator.Parser
   , parseExpr
   , parseExprCommaList
   , parseImplementation
+  , parseModLongident
+  , parseOpenStatement
   , parseSeqExpr
   ) where
 
@@ -17,6 +19,7 @@ import Data.Default
 import Text.Printf
 
 import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mb as Mb
 import Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
 import Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
 import Language.OCaml.Definitions.Parsing.ASTHelper.Opn as Opn
@@ -37,10 +40,13 @@ import Language.OCaml.Parser.Generator.Lexer
 
 }
 
-%name unsafeParseExpr           Expr
-%name unsafeParseExprCommaList  ExprCommaList
-%name unsafeParseImplementation Implementation
-%name unsafeParseSeqExpr        SeqExpr
+%name rawParseExpr           Expr
+%name rawParseExprCommaList  ExprCommaList
+%name rawParseImplementation Implementation
+%name rawParseModLongident   ModLongident
+%name rawParseOpenStatement  OpenStatement
+%name rawParseSeqExpr        SeqExpr
+%name rawParseStructureItem  StructureItem
 
 %tokentype { ResultToken }
 %lexer { lexWrap } { Located _ TokEOF }
@@ -335,12 +341,12 @@ Expr :: { Expression }
   | ConstrLongident SimpleExpr %prec belowHash         { mkexp $ PexpConstruct (mkRHS $1 1) (Just $2) }
   -- TODO: name tag
   | if ExtAttributes SeqExpr then Expr else Expr       { mkexpAttrs (PexpIfThenElse $3 $5 (Just $7)) $2 }
-  -- | if ExtAttributes SeqExpr then Expr                 { mkexpAttrs (PexpIfThenElse $3 $5 Nothing) $2 }
+  | if ExtAttributes SeqExpr then Expr                 { mkexpAttrs (PexpIfThenElse $3 $5 Nothing) $2 }
   | while ExtAttributes SeqExpr do SeqExpr done        { mkexpAttrs (PexpWhile $3 $5) $2 }
   | for ExtAttributes Pattern
     "=" SeqExpr DirectionFlag SeqExpr
     do SeqExpr done                                    { mkexpAttrs (PexpFor $3 $5 $7 $6 $9) $2 }
-  -- | Expr "::" Expr                                     { mkexpCons (rhsLoc 2) (ghexp $ PexpTuple [$1, $3]) (symbolRLoc ()) }
+  | Expr "::" Expr                                     { mkexpCons (rhsLoc 2) (ghexp $ PexpTuple [$1, $3]) (symbolRLoc ()) }
   -- TODO: infixops
   | Expr "+"  Expr                                     { mkinfix $1 "+"  $3 }
   | Expr "+." Expr                                     { mkinfix $1 "+." $3 }
@@ -397,7 +403,8 @@ Ident :: { String }
   | LIDENT { $1 }
 
 Implementation :: { [StructureItem] }
-  : Structure EOF { extraStr 1 $1 }
+  : Structure { extraStr 1 $1 }
+  -- : Structure EOF { extraStr 1 $1 } -- FIXME
 
 Label :: { String }
   : LIDENT { $1 }
@@ -530,6 +537,37 @@ ModLongident :: { Longident }
   : UIDENT                  { Lident $1 }
   | ModLongident "." UIDENT { Ldot $1 $3 }
 
+ModuleBinding :: { (ModuleBinding, Maybe (Loc String)) }
+  : module ExtAttributes UIDENT ModuleBindingBody PostItemAttributes
+  { let (ext, attrs) = $2 in
+    ( Mb.mk (def { attrs = attrs ++ $5
+               , loc   = symbolRLoc ()
+               , docs  = symbolDocs ()
+               }
+          )
+          (mkRHS $3 3) $4
+    , ext
+    )
+  }
+
+ModuleBindingBody :: { ModuleExpr }
+  : "=" ModuleExpr                { $2 }
+  | ":" ModuleType "=" ModuleExpr { mkmod def $ PmodConstraint $4 $2 }
+  -- | FunctorArg ModuleBindingBody  { mkmod def $ PmodFunctor (fst $1) (snd $1) $2 }
+
+ModuleExpr :: { ModuleExpr }
+  : ModLongident                    { mkmod def $ PmodIdent (mkRHS $1 1) }
+--   | struct Attributes Structure end { mkmod (def { attrs = $2 }) $ PmodStructure (extraStr 3 $3) }
+--   | struct Attributes Structure     {% alexError "struct Attributes Structure <ERROR>" }
+--   | functor Attributes FunctorArg "->" ModuleExpr { let modExp = foldl (\ acc (n, t) -> mkmod def $ PmodFunctor n t acc) $5 $3
+--                                                     in wrapModAttrs modExp $2
+--                                                   }
+  | ModuleExpr ParenModuleExpr      { mkmod def $ PmodApply $1 $2 }
+  | ModuleExpr "(" ")"              { mkmod def $ PmodApply $1 (mkmod def $ PmodStructure []) }
+  | ParenModuleExpr                 { $1 }
+  | ModuleExpr Attribute            { Mod.attr $1 $2 }
+  | Extension                       { mkmod def $ PmodExtension $1 }
+
 ModuleType :: { ModuleType }
   : MtyLongident { mkmty def $ PmtyIdent (mkRHS $1 1) }
   -- TODO
@@ -601,6 +639,11 @@ OverrideFlag :: { OverrideFlag }
 
 PackageType :: { PackageType }
   : ModuleType { packageTypeOfModuleType $1 }
+
+ParenModuleExpr :: { ModuleExpr }
+  : "(" ModuleExpr ":" ModuleType ")" { mkmod def $ PmodConstraint $2 $4 }
+  | "(" ModuleExpr ":" ModuleType     {% alexError "( ModuleExpr : ModuleType <ERROR>" }
+  -- TODO
 
 Pattern :: { Pattern }
   : Pattern as ValIdent                                  { mkpat $ PpatAlias $1 (mkRHS $3 3) }
@@ -820,17 +863,20 @@ Structure :: { Structure }
   | StructureTail                            { $1 }
 
 StructureItem :: { StructureItem }
-  : LetBindings          { valOfLetBindings $1 }
-  | PrimitiveDeclaration { let (body, ext) = $1 in
-                           mkstrExt (PstrPrimitive body) ext
-                         }
-  | ValueDescription     { let (body, ext) = $1 in
-                           mkstrExt (PstrPrimitive body) ext
-                         }
-  | TypeDeclarations     { let (nr, l, ext) = $1 in
-                           mkstrExt (PstrType nr (reverse l)) ext
-                         }
-  -- TODO
+  : LetBindings             { valOfLetBindings $1 }
+  | PrimitiveDeclaration    { let (body, ext) = $1 in mkstrExt (PstrPrimitive body) ext }
+  | ValueDescription        { let (body, ext) = $1 in mkstrExt (PstrPrimitive body) ext }
+  | TypeDeclarations        { let (nr, l, ext) = $1 in mkstrExt (PstrType nr (reverse l)) ext }
+--   | StrTypeExtension        { let (l, ext) = $1 in mkstrExt (PstrTypExt l) ext }
+--   | StrExceptionDeclaration { let (l, ext) = $1 in mkstrExt (PstrException l) ext }
+  | ModuleBinding           { let (body, ext) = $1 in mkstrExt (PstrModule body) ext }
+  -- TODO: RecModuleBindings
+  | OpenStatement           { let (body, ext) = $1 in mkstrExt (PstrOpen body) ext }
+  -- TODO: ClassDeclarations
+  -- TODO: ClassTypeDeclarations
+  -- TODO: StrIncludeStatement
+  -- TODO: ItemExtension PostItemAttributes
+  -- TODO: FloatingAttribute
 
 StructureTail :: { Structure }
   : {- empty -}                 { [] }
@@ -927,18 +973,27 @@ parseError (Located (SrcSpan {..}) tok) = do
 type Parser a = String -> Either String a
 
 parseExpr :: Parser Expression
-parseExpr = safeParse unsafeParseExpr
+parseExpr = myParse rawParseExpr
 
 parseExprCommaList :: Parser [Expression]
-parseExprCommaList = safeParse unsafeParseExprCommaList
+parseExprCommaList = myParse rawParseExprCommaList
 
 parseImplementation :: Parser [StructureItem]
-parseImplementation = safeParse unsafeParseImplementation
+parseImplementation = myParse rawParseImplementation
+
+parseModLongident :: Parser Longident
+parseModLongident = myParse rawParseModLongident
+
+parseOpenStatement :: Parser (OpenDescription, Maybe (Loc String))
+parseOpenStatement = myParse rawParseOpenStatement
 
 parseSeqExpr :: Parser Expression
-parseSeqExpr = safeParse unsafeParseSeqExpr
+parseSeqExpr = myParse rawParseSeqExpr
 
-safeParse :: Alex a -> String -> Either String a
-safeParse = flip runAlex
+parseStructureItem :: Parser StructureItem
+parseStructureItem = myParse rawParseStructureItem
+
+myParse :: Alex a -> String -> Either String a
+myParse = flip runAlex
 
 }

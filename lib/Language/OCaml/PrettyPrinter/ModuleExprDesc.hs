@@ -16,6 +16,12 @@ import Language.OCaml.PrettyPrinter.Longident ()
 moduleExprDescPP :: ModuleExprDesc -> Doc a
 moduleExprDescPP = \case
   PmodIdent i -> pretty i
+  PmodStructure _ -> error "TODO"
+  PmodFunctor _ _ _ -> error "TODO"
+  PmodApply _ _ -> error "TODO"
+  PmodConstraint _ _ -> error "TODO"
+  PmodUnpack _ -> error "TODO"
+  PmodExtension _ -> error "TODO"
 
 instance Pretty ModuleExprDesc where
   pretty = moduleExprDescPP

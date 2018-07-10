@@ -1,5 +1,6 @@
 module Language.OCaml.Parser.TestUtils
-  ( debugParsing
+  ( compareParses
+  , debugParsing
   , mkParsingTest
   , mkParsingTestG
   , mkParsingTestFromFile
@@ -52,3 +53,18 @@ mkParsingTestFromFileG parser fileName =
 debugParsing :: Parser a -> String -> Either (ParseError (Token String) Void) a
 debugParsing parser input =
   parse (ocamlSpace *> parser <* eof) "DEBUG" input
+
+compareParses ::
+  (Eq a, Show a) =>
+  TestName -> Parser a -> (String -> Either String a) -> String -> TestTree
+compareParses name parserC parserG input =
+  testCase name $ do
+  case (parseMaybe parserC input, parserG input) of
+    (Just outputC, Right outputG) -> (outputC == outputG)
+                                     @? ("Results differ:\n"
+                                         ++ "Combinator: " ++ show outputC ++ "\n"
+                                         ++ "Generator:  " ++ show outputG ++ "\n"
+                                        )
+    (Just _,       Left _)        -> False @? "Parser generator failed"
+    (Nothing,      Right _)       -> False @? "Parser combinator failed"
+    (Nothing,      Left _)        -> False @? "Both parsers failed"

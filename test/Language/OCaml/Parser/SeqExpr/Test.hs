@@ -2,6 +2,7 @@
 
 module Language.OCaml.Parser.SeqExpr.Test
   ( test
+  , testStrings
   , unitTests
   ) where
 
@@ -10,8 +11,8 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-seqExprTests :: [String]
-seqExprTests =
+testStrings :: [String]
+testStrings =
   [ "b"
   , "Foo.bar"
   , "Foo.bar_baz"
@@ -20,7 +21,7 @@ seqExprTests =
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.SeqExpr" $ []
-  ++ map (mkParsingTest "seqExprP" seqExprP) seqExprTests
+  ++ map (mkParsingTest "seqExprP" seqExprP) testStrings
 
 test :: IO ()
 test = defaultMain unitTests

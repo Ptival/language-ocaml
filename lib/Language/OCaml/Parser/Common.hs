@@ -16,6 +16,7 @@ module Language.OCaml.Parser.Common
   , identP
   , mkexp
   , mkexpAttrs
+  , mkexpCons
   , mkexpConstraint
   , mkexpOptConstraint
   , mkpatOptConstraint
@@ -259,9 +260,6 @@ mktailexp nilloc = \case
     let arg = Exp.mk (def { loc }) $ PexpTuple [e1, expEl] in
     mkexpCons (loc {locGhost = True}) arg loc
 
-mkexpCons :: Location -> Expression -> Location -> Expression
-mkexpCons consloc args loc = Exp.mk (def { loc }) $ PexpConstruct (mkLoc (Lident "::") consloc) (Just args)
-
 mkexpOptConstraint :: Expression -> Maybe (Maybe CoreType, Maybe CoreType) -> Expression
 mkexpOptConstraint e = \case
   Nothing -> e
@@ -361,3 +359,7 @@ wrapPatAttrs pat0 (ext, attrs) =
   case ext of
   Nothing -> pat
   Just id' -> ghpat $ PpatExtension (id', PPat pat Nothing)
+
+mkexpCons :: Location -> Expression -> Location -> Expression
+mkexpCons consLoc args loc =
+  Exp.mk (def { loc }) $ PexpConstruct (mkLoc (Lident "::") consLoc) (Just args)

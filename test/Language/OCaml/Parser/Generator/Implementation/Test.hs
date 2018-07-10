@@ -5,8 +5,10 @@ module Language.OCaml.Parser.Generator.Implementation.Test
   , unitTests
   ) where
 
+-- import Data.String.QQ
 import Test.Tasty
 
+-- import Language.OCaml.Parser.Generator.Lexer
 import Language.OCaml.Parser.Generator.Parser
 import Language.OCaml.Parser.TestUtils
 import Language.OCaml.Parser.Implementation.Test (testFiles)

@@ -17,6 +17,7 @@ import Language.OCaml.Definitions.Parsing.ASTHelper.Common
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.Definitions.Parsing.Location
 import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Utils
 
 mk :: MkOpts -> CoreTypeDesc -> CoreType
 mk (MkOpts {..}) desc =
@@ -72,13 +73,13 @@ varifyConstructors varNames0 = loop
         PtypTuple lst -> PtypTuple <$> traverse loop lst
         PtypConstr (Loc { txt = Lident s }) [] | s `elem` varNames -> return $ PtypVar s
         PtypConstr longident lst -> PtypConstr longident <$> traverse loop lst
-        PtypObject lst o -> PtypObject <$> traverse loopObjectField lst <*> pure o
+        PtypObject lst o -> PtypObject <$> traverse loopObjectField lst <*^> o
         PtypClass longident lst -> PtypClass longident <$> traverse loop lst
         PtypAlias coreType string -> do
           checkVariable varNames (ptypLoc t) string
-          PtypAlias <$> loop coreType <*> pure string
+          PtypAlias <$> loop coreType <*^> string
         PtypVariant rowFieldList flag lblLstOption ->
-          PtypVariant <$> traverse loopRowField rowFieldList <*> pure flag <*> pure lblLstOption
+          PtypVariant <$> traverse loopRowField rowFieldList <*^> flag <*^> lblLstOption
         PtypPoly _stringLst _coreType -> error "TODO"
         PtypPackage (_longident, _lst) -> error "TODO"
         PtypExtension (s, arg) -> return $ PtypExtension (s, arg)
