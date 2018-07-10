@@ -1,5 +1,5 @@
 Name:          language-ocaml
-Version:       0.1.25
+Version:       0.1.26
 Synopsis:      Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 Description:   Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 License:       MIT
@@ -35,6 +35,24 @@ Library
                  tasty-hunit               >= 0.9   && < 0.11
   exposed-modules:
                   Language.OCaml.Parser.Common
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Exception
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Exp
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Mb
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Mod
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Mty
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Opn
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Pat
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Str
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Te
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Typ
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Type
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Val
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Vb
+                  Language.OCaml.Definitions.Parsing.Docstrings
+                  Language.OCaml.Definitions.Parsing.Location
+                  Language.OCaml.Definitions.Parsing.Longident
+                  Language.OCaml.Definitions.Parsing.Parser.LetBinding
+                  Language.OCaml.Definitions.Parsing.Parser.LetBindings
                   Language.OCaml.Definitions.Parsing.ASTTypes
                   Language.OCaml.Definitions.Parsing.ParseTree
                   Language.OCaml.Parser
@@ -46,24 +64,6 @@ Library
                   Language.OCaml.PrettyPrinter.Internal
   other-modules:
                 Language.OCaml.Definitions.Parsing.ASTHelper.Common
-                Language.OCaml.Definitions.Parsing.ASTHelper.Exception
-                Language.OCaml.Definitions.Parsing.ASTHelper.Exp
-                Language.OCaml.Definitions.Parsing.ASTHelper.Mb
-                Language.OCaml.Definitions.Parsing.ASTHelper.Mod
-                Language.OCaml.Definitions.Parsing.ASTHelper.Mty
-                Language.OCaml.Definitions.Parsing.ASTHelper.Opn
-                Language.OCaml.Definitions.Parsing.ASTHelper.Pat
-                Language.OCaml.Definitions.Parsing.ASTHelper.Str
-                Language.OCaml.Definitions.Parsing.ASTHelper.Te
-                Language.OCaml.Definitions.Parsing.ASTHelper.Typ
-                Language.OCaml.Definitions.Parsing.ASTHelper.Type
-                Language.OCaml.Definitions.Parsing.ASTHelper.Val
-                Language.OCaml.Definitions.Parsing.ASTHelper.Vb
-                Language.OCaml.Definitions.Parsing.Docstrings
-                Language.OCaml.Definitions.Parsing.Location
-                Language.OCaml.Definitions.Parsing.Longident
-                Language.OCaml.Definitions.Parsing.Parser.LetBinding
-                Language.OCaml.Definitions.Parsing.Parser.LetBindings
                 Language.OCaml.Definitions.StdLib.Lexing
                 Language.OCaml.Definitions.StdLib.Parsing
                 Language.OCaml.Utils
