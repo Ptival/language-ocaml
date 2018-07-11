@@ -10,7 +10,7 @@ import Data.String.QQ
 import Data.Text.Prettyprint.Doc
 import Test.Tasty
 
-import Language.OCaml.Parser.Internal
+import Language.OCaml.Parser.Generator.Parser (parseStructure)
 import Language.OCaml.PrettyPrinter.Internal
 import Language.OCaml.PrettyPrinter.TestUtils
 
@@ -32,7 +32,7 @@ unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.PrettyPrinter.Structure" $ []
   ++ map (mkPrettyPrinterTest
           "structurePP"
-          structureP
+          parseStructure
           (vcat . map structureItemPP)
          ) structureTests
 

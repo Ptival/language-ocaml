@@ -25,7 +25,7 @@ coreTypedescPP = \case
   PtypConstr i [x] -> fillSep $ [ pretty x, pretty i ]
   PtypConstr _ _ -> error "TODO"
   PtypPoly _ _ -> error "TODO"
-  PtypTuple l -> fillSep $ map pretty l
+  PtypTuple l -> encloseSep "" "" " * " $ map pretty l
   PtypVar s -> fillCat [ squote, pretty s ]
   PtypVariant _ _ _ -> error "TODO"
   PtypObject _ _ -> error "TODO"

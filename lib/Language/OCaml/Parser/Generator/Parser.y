@@ -13,6 +13,8 @@ module Language.OCaml.Parser.Generator.Parser
   , parseModLongident
   , parseOpenStatement
   , parseSeqExpr
+  , parseStructure
+  , parseStructureItem
   ) where
 
 import Data.Default
@@ -48,6 +50,7 @@ import Language.OCaml.Parser.Generator.Lexer
 %name rawParseOpenStatement  OpenStatement
 %name rawParseSeqExpr        SeqExpr
 %name rawParseStructureItem  StructureItem
+%name rawParseStructure      Structure
 
 %tokentype { ResultToken }
 %lexer { lexWrap } { Located _ TokEOF }
@@ -1041,6 +1044,9 @@ parseOpenStatement = myParse rawParseOpenStatement
 
 parseSeqExpr :: Parser Expression
 parseSeqExpr = myParse rawParseSeqExpr
+
+parseStructure :: Parser Structure
+parseStructure = myParse rawParseStructure
 
 parseStructureItem :: Parser StructureItem
 parseStructureItem = myParse rawParseStructureItem
