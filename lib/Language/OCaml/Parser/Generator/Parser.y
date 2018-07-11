@@ -25,6 +25,7 @@ import Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
 import Language.OCaml.Definitions.Parsing.ASTHelper.Opn as Opn
 import Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
 import Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str
+import Language.OCaml.Definitions.Parsing.ASTHelper.Te as Te
 import Language.OCaml.Definitions.Parsing.ASTHelper.Typ as Typ
 import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
 import Language.OCaml.Definitions.Parsing.ASTHelper.Val as Val
@@ -207,6 +208,10 @@ import Language.OCaml.Parser.Generator.Lexer
 
 %%
 
+AmperTypeList :: { [CoreType] }
+  : CoreTypeNoAttr                   { [$1] }
+  | AmperTypeList "&" CoreTypeNoAttr { $3 : $1 }
+
 AndLetBinding :: { LetBinding }
   : and Attributes LetBindingBody PostItemAttributes { mklb False $3 ($2 ++ $4) }
 
@@ -246,6 +251,10 @@ BarConstructorDeclaration :: { ConstructorDeclaration }
                           })
                       res (mkRHS $2 2)
   }
+
+ClassLongident :: { Longident }
+  : LIDENT                  { Lident $1 }
+  | ModLongident "." LIDENT { Ldot $1 $3 }
 
 Constant :: { ParseTree.Constant }
   : INT    { uncurry PconstInteger $1 }
@@ -326,48 +335,51 @@ DirectionFlag :: { DirectionFlag }
   | downto { DownTo }
 
 Expr :: { Expression }
-  : SimpleExpr %prec belowHash                         { $1 }
-  | SimpleExpr SimpleLabeledExprList                   { mkexp $ PexpApply $1 (reverse $2) }
-  | LetBindings in SeqExpr                             { exprOfLetBindings $1 $3 }
-  -- TODO
-  | function ExtAttributes OptBar MatchCases           { mkexpAttrs (PexpFunction (reverse $4)) $2 }
-  | fun ExtAttributes LabeledSimplePattern FunDef      { let (l, o, p) = $3 in
-                                                         mkexpAttrs (PexpFun l o p $4) $2
-                                                       }
-  -- | fun ExtAttributes "(" type LidentList ")" FunDef   { mkexpAttrs (pexpDesc $ mkNewtypes $5 $7) $2 }
-  | match ExtAttributes SeqExpr with OptBar MatchCases { mkexpAttrs (PexpMatch $3 (reverse $6)) $2 }
-  -- TODO: try...
-  | ExprCommaList %prec belowComma                     { mkexp $ PexpTuple (reverse $1) }
-  | ConstrLongident SimpleExpr %prec belowHash         { mkexp $ PexpConstruct (mkRHS $1 1) (Just $2) }
-  -- TODO: name tag
-  | if ExtAttributes SeqExpr then Expr else Expr       { mkexpAttrs (PexpIfThenElse $3 $5 (Just $7)) $2 }
-  | if ExtAttributes SeqExpr then Expr                 { mkexpAttrs (PexpIfThenElse $3 $5 Nothing) $2 }
-  | while ExtAttributes SeqExpr do SeqExpr done        { mkexpAttrs (PexpWhile $3 $5) $2 }
+  : SimpleExpr %prec belowHash                                     { $1 }
+  | SimpleExpr SimpleLabeledExprList                               { mkexp $ PexpApply $1 (reverse $2) }
+  | LetBindings in SeqExpr                                         { exprOfLetBindings $1 $3 }
+  | let module ExtAttributes UIDENT ModuleBindingBody in SeqExpr   { mkexpAttrs (PexpLetModule (mkRHS $4 4) $5 $7) $3 }
+  | let exception ExtAttributes LetExceptionDeclaration in SeqExpr { mkexpAttrs (PexpLetException $4 $6) $3 }
+  | let open OverrideFlag ExtAttributes ModLongident in SeqExpr    { mkexpAttrs (PexpOpen $3 (mkRHS $5 5) $7) $4 }
+  | function ExtAttributes OptBar MatchCases                       { mkexpAttrs (PexpFunction (reverse $4)) $2 }
+  | fun ExtAttributes LabeledSimplePattern FunDef                  { let (l, o, p) = $3 in
+                                                                     mkexpAttrs (PexpFun l o p $4) $2
+                                                                   }
+  | fun ExtAttributes "(" type LidentList ")" FunDef               { mkexpAttrs (pexpDesc $ mkNewTypes $5 $7) $2 }
+  | match ExtAttributes SeqExpr with OptBar MatchCases             { mkexpAttrs (PexpMatch $3 (reverse $6)) $2 }
+  | try ExtAttributes SeqExpr with OptBar MatchCases               { mkexpAttrs (PexpTry $3 (reverse $6)) $2 }
+  | try ExtAttributes SeqExpr with                                 {% alexError "try ExtAttributes SeqExpr with <ERROR>" }
+  | ExprCommaList %prec belowComma                                 { mkexp $ PexpTuple (reverse $1) }
+  | ConstrLongident SimpleExpr %prec belowHash                     { mkexp $ PexpConstruct (mkRHS $1 1) (Just $2) }
+  | NameTag SimpleExpr %prec belowHash                             { mkexp $ PexpVariant $1 (Just $2) }
+  | if ExtAttributes SeqExpr then Expr else Expr                   { mkexpAttrs (PexpIfThenElse $3 $5 (Just $7)) $2 }
+  | if ExtAttributes SeqExpr then Expr                             { mkexpAttrs (PexpIfThenElse $3 $5 Nothing) $2 }
+  | while ExtAttributes SeqExpr do SeqExpr done                    { mkexpAttrs (PexpWhile $3 $5) $2 }
   | for ExtAttributes Pattern
     "=" SeqExpr DirectionFlag SeqExpr
-    do SeqExpr done                                    { mkexpAttrs (PexpFor $3 $5 $7 $6 $9) $2 }
-  | Expr "::" Expr                                     { mkexpCons (rhsLoc 2) (ghexp $ PexpTuple [$1, $3]) (symbolRLoc ()) }
+    do SeqExpr done                                                { mkexpAttrs (PexpFor $3 $5 $7 $6 $9) $2 }
+  | Expr "::" Expr                                                 { mkexpCons (rhsLoc 2) (ghexp $ PexpTuple [$1, $3]) (symbolRLoc ()) }
   -- TODO: infixops
-  | Expr "+"  Expr                                     { mkinfix $1 "+"  $3 }
-  | Expr "+." Expr                                     { mkinfix $1 "+." $3 }
-  | Expr "+=" Expr                                     { mkinfix $1 "+=" $3 }
-  | Expr "-"  Expr                                     { mkinfix $1 "-"  $3 }
-  | Expr "-." Expr                                     { mkinfix $1 "-." $3 }
-  | Expr "*"  Expr                                     { mkinfix $1 "*"  $3 }
-  | Expr "%"  Expr                                     { mkinfix $1 "%"  $3 }
-  | Expr "="  Expr                                     { mkinfix $1 "="  $3 }
-  | Expr "<"  Expr                                     { mkinfix $1 "<"  $3 }
-  | Expr ">"  Expr                                     { mkinfix $1 ">"  $3 }
-  | Expr or   Expr                                     { mkinfix $1 "or" $3 }
-  | Expr "||" Expr                                     { mkinfix $1 "||" $3 }
-  | Expr "&"  Expr                                     { mkinfix $1 "&"  $3 }
-  | Expr "&&" Expr                                     { mkinfix $1 "&&" $3 }
-  | Expr ":=" Expr                                     { mkinfix $1 ":=" $3 }
+  | Expr "+"  Expr                                                 { mkinfix $1 "+"  $3 }
+  | Expr "+." Expr                                                 { mkinfix $1 "+." $3 }
+  | Expr "+=" Expr                                                 { mkinfix $1 "+=" $3 }
+  | Expr "-"  Expr                                                 { mkinfix $1 "-"  $3 }
+  | Expr "-." Expr                                                 { mkinfix $1 "-." $3 }
+  | Expr "*"  Expr                                                 { mkinfix $1 "*"  $3 }
+  | Expr "%"  Expr                                                 { mkinfix $1 "%"  $3 }
+  | Expr "="  Expr                                                 { mkinfix $1 "="  $3 }
+  | Expr "<"  Expr                                                 { mkinfix $1 "<"  $3 }
+  | Expr ">"  Expr                                                 { mkinfix $1 ">"  $3 }
+  | Expr or   Expr                                                 { mkinfix $1 "or" $3 }
+  | Expr "||" Expr                                                 { mkinfix $1 "||" $3 }
+  | Expr "&"  Expr                                                 { mkinfix $1 "&"  $3 }
+  | Expr "&&" Expr                                                 { mkinfix $1 "&&" $3 }
+  | Expr ":=" Expr                                                 { mkinfix $1 ":=" $3 }
   -- TODO
-  | SimpleExpr "." LabelLongident "<-" Expr            { mkexp $ PexpSetField $1 (mkRHS $3 3) $5 }
+  | SimpleExpr "." LabelLongident "<-" Expr                        { mkexp $ PexpSetField $1 (mkRHS $3 3) $5 }
   -- TODO
-  -- | Expr Attribute                                     { attrExp $1 $2 }
-  | "_"                                                {% alexError "Wildcard not expected" }
+  -- | Expr Attribute                                                 { attrExp $1 $2 }
+  | "_"                                                            {% alexError "Wildcard not expected" }
 
 ExtAttributes :: { (Maybe (Loc String), [(Loc String, Payload)]) }
   : {- empty -}           { (Nothing, []) }
@@ -380,6 +392,16 @@ ExprCommaList :: { [Expression] }
 
 Extension :: { (Loc String, Payload) }
   : "[%" AttrId Payload "]" { ($2, $3) }
+
+FieldSemi :: { ObjectField }
+  : Label ":" PolyTypeNoAttr Attributes ";" Attributes
+  { let info = case rhsInfo 4 of
+  -- Somehow the next line needs to be indented real right for the generater .hs file to parse correctly
+                       infoBeforeSemi@(Just _) -> infoBeforeSemi
+                       Nothing                 -> symbolInfo ()
+    in
+    Otag (mkRHS $1 1) (addInfoAttrs info ($4 ++ $6)) $3
+  }
 
 FunBinding :: { Expression }
   : StrictBinding { $1 }
@@ -511,6 +533,17 @@ LetBindings :: { LetBindings }
   : LetBinding                { $1 }
   | LetBindings AndLetBinding { addlb $1 $2 }
 
+LetExceptionDeclaration :: { ExtensionConstructor }
+  : ConstrIdent GeneralizedConstructorArguments Attributes
+  { let (args, res) = $2 in
+    Te.decl (def { args
+                 , attrs = $3
+                 , loc   = symbolRLoc ()
+                 }
+            )
+            res (mkRHS $1 1)
+  }
+
 LetPattern :: { Pattern }
   : Pattern              { $1 }
   | Pattern ":" CoreType { mkpat $ PpatConstraint $1 $3 }
@@ -527,6 +560,11 @@ MatchCase :: { Case }
 MatchCases :: { [Case] }
   : MatchCase                { [$1] }
   | MatchCases "|" MatchCase { $3 : $1 }
+
+MethList :: { ([ObjectField], ClosedFlag) }
+  : FieldSemi MethList { let (f, c) = $2 in ($1 : f, c) }
+  -- TODO
+  | ".."               { ([], Open) }
 
 ModExtLongident :: { Longident }
   : UIDENT                                  { Lident $1 }
@@ -600,6 +638,9 @@ OpenStatement :: { (OpenDescription, Maybe (Loc String)) }
     )
   }
 
+OptAmpersand :: { Bool }
+  : "&"         { True }
+  | {- empty -} { False }
 
 OptBar :: { () }
   : {- empty -} { () }
@@ -771,13 +812,20 @@ SimpleCoreType :: { CoreType }
                                               }
 
 SimpleCoreType2 :: { CoreType }
-  : "'" Ident                               { mktyp $ PtypVar $2 }
-  | "_"                                     { mktyp $ PtypAny }
-  | TypeLongident                           { mktyp $ PtypConstr (mkRHS $1 1) [] }
-  | SimpleCoreType2 TypeLongident           { mktyp $ PtypConstr (mkRHS $2 2) [$1] }
-  | "(" CoreTypeCommaList ")" TypeLongident { mktyp $ PtypConstr (mkRHS $4 4) (reverse $2) }
+  : "'" Ident                                    { mktyp $ PtypVar $2 }
+  | "_"                                          { mktyp $ PtypAny }
+  | TypeLongident                                { mktyp $ PtypConstr (mkRHS $1 1) [] }
+  | SimpleCoreType2 TypeLongident                { mktyp $ PtypConstr (mkRHS $2 2) [$1] }
+  | "(" CoreTypeCommaList ")" TypeLongident      { mktyp $ PtypConstr (mkRHS $4 4) (reverse $2) }
+  | "<" MethList ">"                             { let (f, c) = $2 in
+                                                   mktyp $ PtypObject f c
+                                                 }
+  | "<" ">"                                      { mktyp $ PtypObject [] Closed }
+  | "#" ClassLongident                           { mktyp $ PtypClass (mkRHS $2 2) [] }
+  | "(" CoreTypeCommaList ")" "#" ClassLongident { mktyp $ PtypClass (mkRHS $5 5) (reverse $2) }
+  | "[" TagField "]"                             { mktyp $ PtypVariant [$2] Closed Nothing }
   -- TODO
-  | "[>" "]"                                { mktyp $ PtypVariant [] Open Nothing }
+  | "[>" "]"                                     { mktyp $ PtypVariant [] Open Nothing }
 
 SimpleCoreTypeOrTuple :: { CoreType }
   : SimpleCoreType                  { $1 }
@@ -882,6 +930,10 @@ StructureTail :: { Structure }
   : {- empty -}                 { [] }
   | "::" Structure              { (textStr 1) ++ $2 }
   | StructureItem StructureTail { (textStr 1) ++ $1 : $2 }
+
+TagField :: { RowField }
+  : NameTag of OptAmpersand AmperTypeList Attributes { Rtag (mkRHS $1 1) (addInfoAttrs (symbolInfo ()) $5) $3 (reverse $4) }
+  -- TODO
 
 TypeConstraint :: { (Maybe CoreType, Maybe CoreType) }
   : ":" CoreType               { (Just $2, Nothing) }

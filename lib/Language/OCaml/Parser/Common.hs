@@ -26,6 +26,7 @@ module Language.OCaml.Parser.Common
   , mklbs
   , mkmod
   , mkmty
+  , mkNewTypes
   , mkpat
   , mkpatAttrs
   , mkpatCons

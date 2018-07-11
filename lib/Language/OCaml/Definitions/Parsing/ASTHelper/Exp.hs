@@ -171,7 +171,7 @@ override (MkOpts {..}) a = mk (def { loc, attrs }) $ PexpOverride a
 letModule :: MkOpts -> Loc String -> ModuleExpr -> Expression -> Expression
 letModule (MkOpts {..}) a b c = mk (def { loc, attrs }) $ PexpLetModule a b c
 
-letException :: MkOpts -> ExtensionConstructor -> Loc Expression -> Expression
+letException :: MkOpts -> ExtensionConstructor -> Expression -> Expression
 letException (MkOpts {..}) a b = mk (def { loc, attrs }) $ PexpLetException a b
 
 assert :: MkOpts -> Expression -> Expression

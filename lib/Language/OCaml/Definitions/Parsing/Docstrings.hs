@@ -15,6 +15,7 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   , docstringLoc
   , emptyDocs
   , emptyInfo
+  , rhsInfo
   , rhsPostText
   , rhsPreText
   , rhsPostExtraText
@@ -205,3 +206,17 @@ getPostExtraText pos = getDocstrings $ M.findWithDefault [] pos postExtraTable
 
 rhsPostExtraText :: a -> Text
 rhsPostExtraText pos = getPostExtraText (Parsing.rhsEndPos pos)
+
+rhsInfo :: Int -> Info
+rhsInfo pos = getInfo (Parsing.rhsEndPos pos)
+
+getInfo :: Position -> Maybe Docstring
+getInfo pos = M.lookup pos postTable >>= getDocstring True
+
+getDocstring :: Bool -> [Docstring] -> Maybe Docstring
+getDocstring info dsl = loop dsl
+  where
+    loop = \case
+      [] -> Nothing
+      (Docstring { dsAttached = Info }) : rest -> loop rest
+      ds : _ -> Just $ ds { dsAttached = if info then Info else Docs }

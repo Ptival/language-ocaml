@@ -210,7 +210,7 @@ data ExpressionDesc
   | PexpSetInstVar (Loc Label) Expression
   | PexpOverride [(Loc Label, Expression)]
   | PexpLetModule (Loc String) ModuleExpr Expression
-  | PexpLetException ExtensionConstructor (Loc Expression)
+  | PexpLetException ExtensionConstructor Expression
   | PexpAssert Expression
   | PexpLazy Expression
   | PexpPoly Expression (Maybe CoreType)
