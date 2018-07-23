@@ -2,6 +2,7 @@
 
 module Language.OCaml.Parser.ModLongident.Test
   ( test
+  , testStrings
   , unitTests
   ) where
 
@@ -10,16 +11,15 @@ import Test.Tasty
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
 
-modLongidentTests :: [String]
-modLongidentTests =
-  [ "Foo"
-  , "Foo.Bar"
-  , "Foo_foo.Bar_bar"
+testStrings :: [String]
+testStrings =
+  [ "Mod"
+  , "Mod.Mod"
   ]
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.ModLongident" $ []
-  ++ map (mkParsingTest "modLongidentP" modLongidentP) modLongidentTests
+  ++ map (mkParsingTest "modLongidentP" modLongidentP) testStrings
 
 test :: IO ()
 test = defaultMain unitTests

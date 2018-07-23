@@ -8,47 +8,41 @@ module Language.OCaml.Parser.TestUtils
   , parse
   ) where
 
-import Data.Either
-import Data.Maybe
 import Data.Void
 import Text.Megaparsec
 import Test.Tasty
 import Test.Tasty.HUnit
 
+import Language.OCaml.Parser
 import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.Utils.Utils
 
-mkParsingTest :: TestName -> Parser a -> String -> TestTree
-mkParsingTest name parser input =
-  let prefix = take 20 input in
-  testCase name
-  $ isJust (parseMaybe parser input)
-  @? "Failed to parse:\n" ++ prefix ++ if length input > 20 then "..." else ""
+assertParsesC :: ParserC a -> String -> Assertion
+assertParsesC parser input = do
+  case parseMaybe parser input of
+    Nothing -> assertFailure $ "Failed to parse: " ++ take 60 input
+    Just _  -> return ()
 
-mkParsingTestG :: TestName -> (String -> Either String a) -> String -> TestTree
-mkParsingTestG name parser input =
-  let prefix = take 20 input in
-  testCase name
-  $ isRight (parser input)
-  @? "Failed to parse:\n" ++ prefix ++ if length input > 20 then "..." else ""
+assertParsesG :: ParserG a -> String -> Assertion
+assertParsesG parser input = do
+  case parser input of
+    Left msg -> assertFailure msg
+    Right _  -> return ()
+
+mkParsingTest :: TestName -> Parser a -> String -> TestTree
+mkParsingTest name parser input = testCase name $ assertParsesC parser input
+
+mkParsingTestG :: (String -> Either String a) -> String -> TestTree
+mkParsingTestG parser input = testCase shortInput $ assertParsesG parser input
+  where
+    shortInput | length input <= 40 = input
+               | otherwise          = take 40 input ++ "..."
 
 mkParsingTestFromFile :: Parser a -> FilePath -> TestTree
-mkParsingTestFromFile parser fileName =
-  testCase fileName
-    $ (do
-        input <- readFile fileName
-        return $ isJust (parseMaybe parser input)
-      )
-    @? "Failed to parse " ++ fileName
+mkParsingTestFromFile parser fileName = testCase fileName $ readFile fileName >>= assertParsesC parser
 
 mkParsingTestFromFileG :: (String -> Either String a) -> FilePath -> TestTree
-mkParsingTestFromFileG parser fileName =
-  testCase fileName
-    $ (do
-        input <- readFile fileName
-        return $ isRight (parser input)
-      )
-    @? "Failed to parse " ++ fileName
+mkParsingTestFromFileG parser fileName = testCase fileName $ readFile fileName >>= assertParsesG parser
 
 debugParsing :: Parser a -> String -> Either (ParseError (Token String) Void) a
 debugParsing parser input =

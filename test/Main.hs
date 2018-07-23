@@ -16,13 +16,13 @@ import qualified Language.OCaml.Parser.Generator.Implementation.Test
 -- import qualified Language.OCaml.Parser.Generator.OpenStatement.Test
 -- import qualified Language.OCaml.Parser.Generator.Pattern.Test
 import qualified Language.OCaml.Parser.Generator.SeqExpr.Test
--- import qualified Language.OCaml.Parser.Generator.SimpleExpr.Test
+import qualified Language.OCaml.Parser.Generator.SimpleExpr.Test
 -- import qualified Language.OCaml.Parser.Generator.SimplePattern.Test
 -- import qualified Language.OCaml.Parser.Generator.Structure.Test
 -- import qualified Language.OCaml.Parser.Generator.StructureItem.Test
 -- import qualified Language.OCaml.Parser.Generator.Tokens.Test
 -- import qualified Language.OCaml.Parser.Generator.ValIdent.Test
--- import qualified Language.OCaml.Parser.Generator.ValLongident.Test
+import qualified Language.OCaml.Parser.Generator.ValLongident.Test
 -- import qualified Language.OCaml.Parser.Implementation.Test
 -- import qualified Language.OCaml.Parser.MatchCase.Test
 -- import qualified Language.OCaml.Parser.ModLongident.Test
@@ -73,13 +73,13 @@ tests = testGroup "Tests" $ []
        -- , Language.OCaml.Parser.Generator.OpenStatement.Test.unitTests
        -- , Language.OCaml.Parser.Generator.Pattern.Test.unitTests
        , Language.OCaml.Parser.Generator.SeqExpr.Test.unitTests
-       -- , Language.OCaml.Parser.Generator.SimpleExpr.Test.unitTests
+       , Language.OCaml.Parser.Generator.SimpleExpr.Test.unitTests
        -- , Language.OCaml.Parser.Generator.SimplePattern.Test.unitTests
        -- , Language.OCaml.Parser.Generator.Structure.Test.unitTests
        -- , Language.OCaml.Parser.Generator.StructureItem.Test.unitTests
        -- , Language.OCaml.Parser.Generator.Tokens.Test.unitTests
        -- , Language.OCaml.Parser.Generator.ValIdent.Test.unitTests
-       -- , Language.OCaml.Parser.Generator.ValLongident.Test.unitTests
+       , Language.OCaml.Parser.Generator.ValLongident.Test.unitTests
        ]
      ]
   ++ [ testGroup "PrettyPrinter" $

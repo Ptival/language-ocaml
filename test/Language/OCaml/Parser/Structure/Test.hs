@@ -1,76 +1,41 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.Structure.Test
   ( test
+  , testStrings
   , unitTests
   ) where
 
-import Data.String.QQ
-import Test.Tasty
+import           Data.String.Interpolate
+import           Test.Tasty
 
-import Language.OCaml.Parser.Internal
-import Language.OCaml.Parser.TestUtils
+import           Language.OCaml.Parser.Internal
+import qualified Language.OCaml.Parser.Payload.Test as Payload
+import qualified Language.OCaml.Parser.PostItemAttributes.Test as PostItemAttributes
+import qualified Language.OCaml.Parser.SeqExpr.Test as SeqExpr
+import qualified Language.OCaml.Parser.StructureTail.Test as StructureTail
+import           Language.OCaml.Parser.TestUtils
 
-structureTests :: [String]
-structureTests =
-  [ " "
-  , "(* A *) type a = A"
-  , "type a = A (* A *)"
-  , "type a = A"
-  , "type a = _"
-  , "type a = b"
-  , "type a = 'b"
-  , "type a = _ ;; type a = b ;; type a = 'b"
-  , [s|
-type a = _
-type a = 'b
-type a = b
-type a = |
-type a = A
-type a = A of t
-type a = A of t | B of t
-type a = A | B
-type a = A | B | C
-type a = | A | B | C
-  |]
---   , [s|
--- let string_of_expr expr : string =
--- 	let rec f is_simple = function
--- 		| Var name -> name
--- 		| Call(fn_expr, arg_list) ->
--- 				f true fn_expr ^ "(" ^ String.concat ", " (List.map (f false) arg_list) ^ ")"
--- 		| Fun(param_list, body_expr) ->
--- 				let fun_str =
--- 					"fun " ^ String.concat " " param_list ^ " -> " ^ f false body_expr
--- 				in
--- 				if is_simple then "(" ^ fun_str ^ ")" else fun_str
---   |]
-  , [s|
-open Lexing
-open Ast
-open Env
+limit :: Int
+limit = 2
 
-type tconstantc_module = TCModule of tfdec list
-[@@deriving show, eq]
-and tfdec' = { t_name:string; t_params:param list; t_rty:ctype; t_rlbl:label; t_body:tblock }
-[@@deriving show, eq]
-and tfdec = tfdec' pos_ast [@@deriving show, eq]
-and tstm' =
-  | TVarDec of string * labeled_type * texpr
-  | TAssign of string * texpr
-  | TArrAssign of string * texpr * texpr
-  | TIf of texpr * tblock * tblock
-  | TFor of string * ctype * texpr * texpr * tblock
-  | TReturn of texpr
-[@@deriving show, eq]
-and tstm = tstm' pos_ast [@@deriving show, eq]
-  |]
-  ]
+testStrings :: [String]
+testStrings = []
+  ++ [ [i|#{se} #{pia} #{st}|]
+       | se <- seqExpr
+       , pia <- postItemAttributes
+       , st <- structureTail
+       ]
+  where
+    payload            = take limit $ Payload.testStrings structure
+    postItemAttributes = take limit $ PostItemAttributes.testStrings payload
+    seqExpr            = take limit $ SeqExpr.testStrings
+    structure          = take limit $ testStrings
+    structureTail      = take limit $ StructureTail.testStrings structure
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Structure" $ []
-  ++ map (mkParsingTest "structureP" structureP) structureTests
+  ++ map (mkParsingTest "structureP" structureP) testStrings
 
 test :: IO ()
 test = defaultMain unitTests

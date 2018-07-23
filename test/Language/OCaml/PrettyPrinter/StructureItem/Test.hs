@@ -16,31 +16,49 @@ import Language.OCaml.PrettyPrinter.TestUtils
 
 structureItemTests :: [String]
 structureItemTests =
+
   [ "type a = _"
+
   , "type a = 'b"
+
   , "type a = b"
+
   , "type a = |"
+
   , "type a = A"
+
   , "type a = A of t"
+
   , "type a = A of t | B of t"
+
   , "type a = A | B"
+
   , "type a = A | B | C"
+
   , "type a = | A | B | C"
+
   , [s|
 type a =
   | B
   | C
   |]
+
   , "type a_b = {c: float; d: float}"
+
   , "type a_b = C of D.e_f"
+
   , [s|
 type a =
   | B of C.d_e
   | F
   |]
+
   , "open A"
+
   , "open !A"
+
   , "open !A (* A *)"
+
   , "module F = Format"
 
   , [s|
@@ -48,8 +66,11 @@ type a_b =
   { foo_bar: float
   ; bar: float }
   |]
+
   , "type c_d = {a: b; c: d}"
+
   , "type e_f = G of A.b * C.d_f | H | I"
+
   , "let a = b"
 
   , [s|

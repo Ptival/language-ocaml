@@ -1,73 +1,16 @@
-{-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.StructureItem.Test
-  ( test
-  , unitTests
+  ( testStrings
   ) where
 
-import Data.String.QQ
-import Test.Tasty
+import qualified Language.OCaml.Parser.LetBindings.Test as LetBindings
 
-import Language.OCaml.Parser.Internal
-import Language.OCaml.Parser.TestUtils
+limit :: Int
+limit = 10
 
-structureItemTests :: [String]
-structureItemTests =
-  [ "type a = _"
-  , "type a = 'b"
-  , "type a = b"
-  , "type a = |"
-  , "type a = A"
-  , "type a = A of t"
-  , "let a = b, c"
-  , "type a = A of b c d [@@ derivinq eq, show]"
-  , "type a = A of t | B of t"
-  , "type a = A | B"
-  , "type a = A | B | C"
-  , "type a = | A | B | C"
-  , [s|
-type a =
-  | B
-  | C
-  |]
-  , "type a_b = {c: float; d: float}"
-  , "type a_b = C of D.e_f"
-  , [s|
-type a =
-  | B of C.d_e
-  | F
-  |]
-  , "open A"
-  , "open !A"
-  , "open !A (* A *)"
-  -- , "let f a : t = b"
-  , "let f : t = b"
-  , "let a = let b = c in d"
-
-  , [s|
-type tconstantc_module =
-  | TCModule of tfdec list
-[@@ deriving (eq,show) ]
-  |]
-
-  , [s|
-type 'a binary_tree =
-    | Leaf of 'a
-    | Tree of 'a binary_tree * 'a binary_tree
-  |]
-
-  ,  [s|
-type 'a list =
-  | Nil
-  | Cons of ('a * 'a list)
-  |]
-
-  ]
-
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.StructureItem" $ []
-  ++ map (mkParsingTest "structureItemP" structureItemP) structureItemTests
-
-test :: IO ()
-test = defaultMain unitTests
+testStrings :: [String] -> [String]
+testStrings structure = []
+  ++ letBindings
+  where
+    letBindings = take limit $ LetBindings.testStrings structure

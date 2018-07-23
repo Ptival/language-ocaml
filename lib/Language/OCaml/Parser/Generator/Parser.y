@@ -13,8 +13,11 @@ module Language.OCaml.Parser.Generator.Parser
   , parseModLongident
   , parseOpenStatement
   , parseSeqExpr
+  , parseSimpleExpr
   , parseStructure
   , parseStructureItem
+  , parseValIdent
+  , parseValLongident
   ) where
 
 import Data.Default
@@ -23,6 +26,7 @@ import Text.Printf
 import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
 import Language.OCaml.Definitions.Parsing.ASTHelper.Mb as Mb
 import Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mtd as Mtd
 import Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
 import Language.OCaml.Definitions.Parsing.ASTHelper.Opn as Opn
 import Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
@@ -49,8 +53,11 @@ import Language.OCaml.Parser.Generator.Lexer
 %name rawParseModLongident   ModLongident
 %name rawParseOpenStatement  OpenStatement
 %name rawParseSeqExpr        SeqExpr
+%name rawParseSimpleExpr     SimpleExpr
 %name rawParseStructureItem  StructureItem
 %name rawParseStructure      Structure
+%name rawParseValIdent       ValIdent
+%name rawParseValLongident   ValLongident
 
 %tokentype { ResultToken }
 %lexer { lexWrap } { Located _ TokEOF }
@@ -99,11 +106,17 @@ import Language.OCaml.Parser.Generator.Lexer
   ">}"       { Located _  TokGreaterRBrace }
   ">]"       { Located _  TokGreaterRBracket }
   "#"        { Located _  TokHash }
+  HASHOP     { Located _ (TokHashOp $$) }
   if         { Located _  TokIf }
   in         { Located _  TokIn }
   include    { Located _  TokInclude }
   inherit    { Located _  TokInherit }
   initialier { Located _  TokInitializer }
+  INFIXOP0   { Located _ (TokInfixOp0 $$) }
+  INFIXOP1   { Located _ (TokInfixOp1 $$) }
+  INFIXOP2   { Located _ (TokInfixOp2 $$) }
+  INFIXOP3   { Located _ (TokInfixOp3 $$) }
+  INFIXOP4   { Located _ (TokInfixOp4 $$) }
   INT        { Located _ (TokInt $$) }
   LABEL      { Located _ (TokLabel $$) }
   lazy       { Located _  TokLazy }
@@ -141,6 +154,7 @@ import Language.OCaml.Parser.Generator.Lexer
   "+"        { Located _  TokPlus }
   "+."       { Located _  TokPlusDot }
   "+="       { Located _  TokPlusEq }
+  PREFIXOP   { Located _ (TokPrefixOp $$) }
   private    { Located _  TokPrivate }
   "?"        { Located _  TokQuestion }
   "'"        { Located _  TokQuote }
@@ -384,17 +398,29 @@ Expr :: { Expression }
   -- | Expr Attribute                                                 { attrExp $1 $2 }
   | "_"                                                            {% alexError "Wildcard not expected" }
 
+ExprCommaList :: { [Expression] }
+  : Expr "," Expr          { [$3, $1] }
+  | ExprCommaList "," Expr { $3 : $1 }
+
+ExprSemiList :: { [Expression] }
+  : Expr                  { [$1] }
+  | ExprSemiList ";" Expr { $3 : $1 }
+
 ExtAttributes :: { (Maybe (Loc String), [(Loc String, Payload)]) }
   : {- empty -}           { (Nothing, []) }
   | Attribute Attributes  { (Nothing, $1 : $2) }
   | "%" AttrId Attributes { (Just $2, $3) }
 
-ExprCommaList :: { [Expression] }
-  : Expr "," Expr          { [$3, $1] }
-  | ExprCommaList "," Expr { $3 : $1 }
-
 Extension :: { (Loc String, Payload) }
   : "[%" AttrId Payload "]" { ($2, $3) }
+
+FieldExpr :: { (Loc String, Expression) }
+  : Label "=" Expr { (mkRHS $1 1, $3) }
+  | Label          { (mkRHS $1 1, expOfLabel (Lident $1) 1) }
+
+FieldExprList :: { [(Loc String, Expression)] }
+  : FieldExpr OptSemi           { [$1] }
+  | FieldExpr ";" FieldExprList { $1 : $3 }
 
 FieldSemi :: { ObjectField }
   : Label ":" PolyTypeNoAttr Attributes ";" Attributes
@@ -492,6 +518,15 @@ LabeledSimplePattern :: { (ArgLabel, Maybe Expression, Pattern) }
 
 LabelVar :: { (String, Pattern) }
   : LIDENT { ($1, mkpat $ PpatVar (mkRHS $1 1)) }
+
+LblExpr :: { (Loc Longident, Expression) }
+  : LabelLongident OptTypeConstraint "=" Expr { (mkRHS $1 1, mkexpOptConstraint $4 $2) }
+  | LabelLongident OptTypeConstraint          { (mkRHS $1 1, mkexpOptConstraint (expOfLabel $1 1) $2) }
+
+LblExprList :: { [(Loc Longident, Expression)] }
+  : LblExpr                 { [$1] }
+  | LblExpr ";" LblExprList { $1 : $3 }
+  | LblExpr ";"             { [$1] }
 
 LblPattern :: { (Loc Longident, Pattern) }
   : LabelLongident OptPatternTypeConstraint "=" Pattern { (mkRHS $1 1, mkpatOptConstraint $4 $2) }
@@ -598,8 +633,8 @@ ModuleBindingBody :: { ModuleExpr }
 
 ModuleExpr :: { ModuleExpr }
   : ModLongident                    { mkmod def $ PmodIdent (mkRHS $1 1) }
---   | struct Attributes Structure end { mkmod (def { attrs = $2 }) $ PmodStructure (extraStr 3 $3) }
---   | struct Attributes Structure     {% alexError "struct Attributes Structure <ERROR>" }
+  | struct Attributes Structure end { mkmod (Just $2) $ PmodStructure (extraStr 3 $3) }
+  | struct Attributes Structure     {% alexError "struct Attributes Structure <ERROR>" }
 --   | functor Attributes FunctorArg "->" ModuleExpr { let modExp = foldl (\ acc (n, t) -> mkmod def $ PmodFunctor n t acc) $5 $3
 --                                                     in wrapModAttrs modExp $2
 --                                                   }
@@ -612,6 +647,22 @@ ModuleExpr :: { ModuleExpr }
 ModuleType :: { ModuleType }
   : MtyLongident { mkmty def $ PmtyIdent (mkRHS $1 1) }
   -- TODO
+
+ModuleTypeDeclaration :: { (ModuleTypeDeclaration, Maybe (Loc String)) }
+  : module type ExtAttributes Ident ModuleTypeDeclarationBody PostItemAttributes
+  { let (ext, attrs) = $3 in
+    ( Mtd.mk (def { attrs = attrs ++ $6
+                  , loc   = symbolRLoc ()
+                  , docs  = symbolDocs ()
+                  }
+             ) $5 (mkRHS $4 4)
+    , ext
+    )
+  }
+
+ModuleTypeDeclarationBody :: { Maybe ModuleType }
+  : {- empty -}    { Nothing }
+  | "=" ModuleType { Just $2 }
 
 MutableFlag :: { MutableFlag }
   : {- empty-} { Immutable }
@@ -640,6 +691,37 @@ OpenStatement :: { (OpenDescription, Maybe (Loc String)) }
     , ext
     )
   }
+
+Operator :: { String }
+  : PREFIXOP           { $1 }
+  | INFIXOP0           { $1 }
+  | INFIXOP1           { $1 }
+  | INFIXOP2           { $1 }
+  | INFIXOP3           { $1 }
+  | INFIXOP4           { $1 }
+  | DOTOP "(" ")"      { "." ++ $1 ++ "()" }
+  | DOTOP "(" ")" "<-" { "." ++ $1 ++ "()<-" }
+  | DOTOP "[" "]"      { "." ++ $1 ++ "[]" }
+  | DOTOP "[" "]" "<-" { "." ++ $1 ++ "[]<-" }
+  | DOTOP "{" "}"      { "." ++ $1 ++ "{}" }
+  | DOTOP "{" "}" "<-" { "." ++ $1 ++ "{}<-" }
+  | HASHOP             { $1 }
+  | "!"                { "!" }
+  | "+"                { "+" }
+  | "+."               { "+." }
+  | "-"                { "-" }
+  | "-."               { "-." }
+  | "*"                { "*" }
+  | "="                { "=" }
+  | "<"                { "<" }
+  | ">"                { ">" }
+  | or                 { "or" }
+  | "||"               { "||" }
+  | "&"                { "&" }
+  | "&&"               { "&&" }
+  | ":="               { ":=" }
+  | "+="               { "+=" }
+  | "%"                { "%" }
 
 OptAmpersand :: { Bool }
   : "&"         { True }
@@ -677,6 +759,10 @@ OptSemi :: { () }
   : {- empty -} { () }
   | ";"         { () }
 
+OptTypeConstraint :: { Maybe (Maybe CoreType, Maybe CoreType) }
+  : TypeConstraint { Just $1 }
+  | {- empty -}    { Nothing }
+
 OverrideFlag :: { OverrideFlag }
   : {- empty -} { Fresh }
   | "!"         { Override }
@@ -709,8 +795,8 @@ PatternCommaList :: { [Pattern] }
 PatternGen :: { Pattern }
   : SimplePattern                                { $1 }
   | ConstrLongident Pattern %prec precConstrAppl { mkpat $ PpatConstruct (mkRHS $1 1) (Just $2) }
-  -- | NameTag Pattern %prec precConstrAppl         { mkpat $ PpatVariant $1 (Just $2) }
-  -- | lazy ExtAttributes SimplePattern             { mkpatAttrs (PpatLazy $3) $2 }
+  | NameTag Pattern %prec precConstrAppl         { mkpat $ PpatVariant $1 (Just $2) }
+  | lazy ExtAttributes SimplePattern             { mkpatAttrs (PpatLazy $3) $2 }
 
 PatternNoExn :: { Pattern }
   : PatternNoExn as ValIdent               { mkpat $ PpatAlias $1 (mkRHS $3 3) }
@@ -782,6 +868,10 @@ RecFlag :: { RecFlag }
   : {- empty -} { NonRecursive }
   | rec         { Recursive }
 
+RecordExpr :: { (Maybe Expression, [(Loc Longident, Expression)]) }
+  : SimpleExpr with LblExprList { (Just $1, $3) }
+  | LblExprList                 { (Nothing, $1) }
+
 SeqExpr :: { Expression }
   : Expr %prec belowSemi        { $1 }
   | Expr ";"                    { $1 }
@@ -790,6 +880,21 @@ SeqExpr :: { Expression }
                                   let payload = PStr [mkstrexp seq []] in
                                   mkexp $ PexpExtension ($4, payload)
                                 }
+
+SigExceptionDeclaration :: { (ExtensionConstructor, Maybe (Loc String)) }
+  : exception ExtAttributes ConstrIdent GeneralizedConstructorArguments Attributes PostItemAttributes
+  { let (args, res) = $4 in
+    let (ext, attrs) = $2 in
+    ( Te.decl (def { args
+                   , attrs = attrs ++ $5 ++ $6
+                   , loc   = symbolRLoc ()
+                   , docs  = symbolDocs ()
+                   }
+              )
+              res (mkRHS $3 3)
+    , ext
+    )
+  }
 
 -- Signature :: { [SignatureItem] }
 --   : {- empty-}              { [] }
@@ -844,18 +949,60 @@ SimpleDelimitedPattern :: { Pattern }
   | "[|" PatternSemiList OptSemi      {% alexError "[| PatternSemiList OptSemi <ERROR>" }
 
 SimpleExpr :: { Expression }
-  : ValLongident                                  { mkexp $ PexpIdent (mkRHS $1 1) }
-  | Constant                                      { mkexp $ PexpConstant $1 }
-  | ConstrLongident %prec precConstantConstructor { mkexp $ PexpConstruct (mkRHS $1 1) Nothing }
-  -- TODO
-  | "(" SeqExpr ")"                               { relocExp $2 }
-  | "(" SeqExpr                                   {% alexError "( SeqExpr <ERROR>" }
-  -- | begin ExtAttributes SeqExpr end               { wrapExtAttrs (relocExp $3) $2 }
-  -- | begin ExtAttributes end                       { Exp.mkAttrs (PexpConstruct (mkLoc (Lident "()") (symbolRLoc ())) Nothing) $2 }
-  -- | begin ExtAttributes                           {% alexError "begin ExtAttributes <ERROR>" }
-  -- | "(" SeqExpr TypeConstraint ")"                { Exp.mkConstraint $2 $3 }
-  | SimpleExpr "." LabelLongident                 { mkexp $ PexpField $1 (mkRHS $3 3) }
-  -- | ModLongident "." "(" SeqExpr ")"              { mkexp $ PexpOpen Fresh (mkRHS $1 1) $4 }
+  : ValLongident                                    { mkexp $ PexpIdent (mkRHS $1 1) }
+  | Constant                                        { mkexp $ PexpConstant $1 }
+  | ConstrLongident %prec precConstantConstructor   { mkexp $ PexpConstruct (mkRHS $1 1) Nothing }
+  | NameTag %prec precConstantConstructor           { mkexp $ PexpVariant $1 Nothing }
+  | "(" SeqExpr ")"                                 { relocExp $2 }
+  | "(" SeqExpr                                     {% alexError "( SeqExpr <ERROR>" }
+  | begin ExtAttributes SeqExpr end                 { wrapExpAttrs (relocExp $3) $2 }
+  | begin ExtAttributes end                         { mkexpAttrs (PexpConstruct (mkLoc (Lident "()") (symbolRLoc ())) Nothing) $2 }
+  | begin ExtAttributes                             {% alexError "begin ExtAttributes <ERROR>" }
+  | "(" SeqExpr TypeConstraint ")"                  { mkexpConstraint $2 $3 }
+  | SimpleExpr "." LabelLongident                   { mkexp $ PexpField $1 (mkRHS $3 3) }
+  | ModLongident "." "(" SeqExpr ")"                { mkexp $ PexpOpen Fresh (mkRHS $1 1) $4 }
+  | ModLongident "." "(" ")"                        { mkexp $ PexpOpen Fresh (mkRHS $1 1) (mkexp $ PexpConstruct (mkRHS (Lident "()") 1) Nothing) }
+  | ModLongident "." "(" SeqExpr                    {% alexError "TODO" }
+  | SimpleExpr "." "(" SeqExpr ")"                  { error "TODO 1" }
+  | SimpleExpr "." "(" SeqExpr                      { error "TODO 2" }
+  | SimpleExpr "." "[" SeqExpr "]"                  { error "TODO 3" }
+  | SimpleExpr "." "[" SeqExpr                      { error "TODO 4" }
+  | SimpleExpr DOTOP "[" SeqExpr "]"                { error "TODO 5" }
+  | SimpleExpr DOTOP "[" SeqExpr                    { error "TODO 6" }
+  | SimpleExpr DOTOP "(" Expr ")"                   { error "TODO 7" }
+  | SimpleExpr DOTOP "(" Expr                       { error "TODO 8" }
+  | SimpleExpr DOTOP "{" Expr "}"                   { error "TODO 9" }
+  | SimpleExpr DOTOP "{" Expr                       { error "TODO 11" }
+  | SimpleExpr "." ModLongident DOTOP "[" Expr "]"  { error "TODO 12" }
+  | SimpleExpr "." ModLongident DOTOP "[" Expr      { error "TODO 13" }
+  | SimpleExpr "." ModLongident DOTOP "(" Expr ")"  { error "TODO 14" }
+  | SimpleExpr "." ModLongident DOTOP "(" Expr      { error "TODO 15" }
+  | SimpleExpr "." ModLongident DOTOP "{" Expr "}"  { error "TODO 16" }
+  | SimpleExpr "." ModLongident DOTOP "{" Expr      { error "TODO 17" }
+  | SimpleExpr "." "{" Expr "}"                     { error "TODO 18" }
+  | SimpleExpr "." "{" ExprCommaList                { error "TODO 19" }
+  | "{" RecordExpr "}"                              { error "TODO 20" }
+  | "{" RecordExpr                                  { error "TODO 21" }
+  | ModLongident "." "{" RecordExpr "}"             { error "TODO 22" }
+  | ModLongident "." "{" RecordExpr                 { error "TODO 23" }
+  | "[|" ExprSemiList OptSemi "|]"                  { error "TODO 24" }
+  | "[|" ExprSemiList OptSemi                       { error "TODO 25" }
+  | "[|" "|]"                                       { error "TODO 26" }
+  | ModLongident "." "[|" ExprSemiList OptSemi "|]" { error "TODO 27" }
+  | ModLongident "." "[|" "|]"                      { error "TODO 28" }
+  | ModLongident "." "[|" ExprSemiList OptSemi      { error "TODO 29" }
+  | "[" ExprSemiList OptSemi "]"                    { relocExp $ mktailexp (rhsLoc 4) (reverse $2) }
+  | "[" ExprSemiList OptSemi                        {% alexError "TODO" }
+  | ModLongident "." "[" ExprSemiList OptSemi "]"   { error "TODO 30" }
+  | ModLongident "." "["  "]"                       { error "TODO 31" }
+  | ModLongident "." "[" ExprSemiList OptSemi       { error "TODO 32" }
+  | PREFIXOP SimpleExpr                             { error "TODO 33" }
+  | "!" SimpleExpr                                  { mkexp $ PexpApply (mkOperator "!" 1) [(Nolabel, $2)] }
+  | new ExtAttributes ClassLongident                { mkexpAttrs (PexpNew (mkRHS $3 3)) $2 }
+  | "{<" FieldExprList ">}"                         { mkexp $ PexpOverride $2 }
+  | "{<" FieldExprList                              {% alexError "TODO" }
+  | "{<" ">}"                                       { mkexp $ PexpOverride [] }
+  | ModLongident "." "{<" FieldExprList ">}"        { mkexp $ PexpOpen Fresh (mkRHS $1 1) (mkexp $ PexpOverride $4) }
   -- TODO
 
 SimpleLabeledExprList :: { [(ArgLabel, Expression)] }
@@ -899,6 +1046,19 @@ SingleAttrId :: { String }
   -- | class  { "class" }
   -- TODO
 
+StrExceptionDeclaration :: { (ExtensionConstructor, Maybe (Loc String)) }
+  : SigExceptionDeclaration                           { $1 }
+  | exception ExtAttributes ConstrIdent
+    "=" ConstrLongident Attributes PostItemAttributes { let (ext, attrs) = $2 in
+                                                        ( Te.rebind (def { attrs = attrs ++ $6 ++ $7
+                                                                         , loc   = symbolRLoc ()
+                                                                         , docs  = symbolDocs ()
+                                                                         })
+                                                          (mkRHS $3 3) (mkRHS $5 5)
+                                                        , ext
+                                                        )
+                                                      }
+
 StrictBinding :: { Expression }
   : "=" SeqExpr { $2 }
   | LabeledSimplePattern FunBinding { let (l, o, p) = $1 in
@@ -918,10 +1078,11 @@ StructureItem :: { StructureItem }
   | PrimitiveDeclaration    { let (body, ext) = $1 in mkstrExt (PstrPrimitive body) ext }
   | ValueDescription        { let (body, ext) = $1 in mkstrExt (PstrPrimitive body) ext }
   | TypeDeclarations        { let (nr, l, ext) = $1 in mkstrExt (PstrType nr (reverse l)) ext }
---   | StrTypeExtension        { let (l, ext) = $1 in mkstrExt (PstrTypExt l) ext }
---   | StrExceptionDeclaration { let (l, ext) = $1 in mkstrExt (PstrException l) ext }
+  -- | StrTypeExtension        { let (l, ext) = $1 in mkstrExt (PstrTypExt l) ext }
+  | StrExceptionDeclaration { let (l, ext) = $1 in mkstrExt (PstrException l) ext }
   | ModuleBinding           { let (body, ext) = $1 in mkstrExt (PstrModule body) ext }
   -- TODO: RecModuleBindings
+  | ModuleTypeDeclaration   { let (body, ext) = $1 in mkstrExt (PstrModType body) ext }
   | OpenStatement           { let (body, ext) = $1 in mkstrExt (PstrOpen body) ext }
   -- TODO: ClassDeclarations
   -- TODO: ClassTypeDeclarations
@@ -997,12 +1158,12 @@ TypeVarList :: { [Loc String] }
   : "'" Ident             { [mkRHS $2 2] }
   | TypeVarList "'" Ident { mkRHS $3 3 : $1 }
 
-ValIdent :: { r }
-  : LIDENT { $1 }
-  -- | "(" Operator ")" { TODO }
+ValIdent :: { String }
+  : LIDENT           { $1 }
+  | "(" Operator ")" { error "TODO ValIdent" }
   -- TODO
 
-ValLongident :: { s }
+ValLongident :: { Longident }
   : ValIdent                  { Lident $1 }
   | ModLongident "." ValIdent { Ldot $1 $3 }
 
@@ -1045,11 +1206,20 @@ parseOpenStatement = myParse rawParseOpenStatement
 parseSeqExpr :: Parser Expression
 parseSeqExpr = myParse rawParseSeqExpr
 
+parseSimpleExpr :: Parser Expression
+parseSimpleExpr = myParse rawParseSimpleExpr
+
 parseStructure :: Parser Structure
 parseStructure = myParse rawParseStructure
 
 parseStructureItem :: Parser StructureItem
 parseStructureItem = myParse rawParseStructureItem
+
+parseValIdent :: Parser String
+parseValIdent = myParse rawParseValIdent
+
+parseValLongident :: Parser Longident
+parseValLongident = myParse rawParseValLongident
 
 myParse :: Alex a -> String -> Either String a
 myParse = flip runAlex

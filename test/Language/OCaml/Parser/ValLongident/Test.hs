@@ -1,23 +1,18 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.ValLongident.Test
-  ( test
-  , unitTests
+  ( testStrings
   ) where
 
-import Test.Tasty
+import Data.String.Interpolate
 
-import Language.OCaml.Parser.Internal
-import Language.OCaml.Parser.TestUtils
+import qualified Language.OCaml.Parser.ModLongident.Test as ModLongident
+import qualified Language.OCaml.Parser.ValIdent.Test as ValIdent
 
-valLongidentTests :: [String]
-valLongidentTests =
-  [ "Foo.bar"
-  ]
-
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.ValLongident" $ []
-  ++ map (mkParsingTest "valLongIdentP" valLongidentP) valLongidentTests
-
-test :: IO ()
-test = defaultMain unitTests
+testStrings :: [String]
+testStrings = []
+  ++ ValIdent.testStrings
+  ++ [ [i| #{m}.#{v} |]
+         | m <- ModLongident.testStrings
+         , v <- ValIdent.testStrings
+     ]

@@ -12,11 +12,11 @@ import Test.Tasty
 import Language.OCaml.Parser.Generator.Parser
 -- import Language.OCaml.Parser.Internal
 import Language.OCaml.Parser.TestUtils
-import Language.OCaml.Parser.SeqExpr.Test (testStrings)
+import qualified Language.OCaml.Parser.TestStrings as TestStrings
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Generator.SeqExpr" $ []
-  ++ map (mkParsingTestG "parseSeqExpr" parseSeqExpr) testStrings
+  ++ map (mkParsingTestG parseSeqExpr) TestStrings.seqExpr
   -- ++ map (compareParses "SeqExpr" seqExprP parseSeqExpr) testStrings
 
 test :: IO ()

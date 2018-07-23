@@ -4,8 +4,10 @@
 module Language.OCaml.Definitions.Parsing.ASTHelper.Te
   ( DeclOpts(..)
   , MkOpts(..)
+  , RebindOpts(..)
   , decl
   , mk
+  , rebind
   ) where
 
 import Data.Default
@@ -63,4 +65,27 @@ instance Default MkOpts where
     , docs   = emptyDocs
     , params = []
     , priv   = Public
+    }
+
+rebind :: RebindOpts -> Loc String -> Loc Longident -> ExtensionConstructor
+rebind (RebindOpts {..}) name lid = ExtensionConstructor
+  { pextName       = name
+  , pextKind       = PextRebind lid
+  , pextLoc        = loc
+  , pextAttributes = addDocsAttrs docs $ addInfoAttrs info $ attrs
+  }
+
+data RebindOpts = RebindOpts
+  { attrs  :: [Attribute]
+  , docs   :: Docs
+  , loc    :: Location
+  , info   :: Info
+  }
+
+instance Default RebindOpts where
+  def = RebindOpts
+    { attrs  = []
+    , docs   = emptyDocs
+    , loc    = defaultLoc
+    , info   = emptyInfo
     }

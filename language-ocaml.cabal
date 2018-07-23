@@ -1,5 +1,5 @@
 Name:          language-ocaml
-Version:       0.1.28
+Version:       0.1.29
 Synopsis:      Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 Description:   Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 License:       MIT
@@ -26,6 +26,7 @@ Library
                  containers                >= 0.5   && < 0.7,
                  data-default              >= 0.7   && < 0.8,
                  extensible-effects        >= 3.0   && < 3.1,
+                 interpolate               >= 0.2   && < 0.3,
                  lens                      >= 4.16  && < 4.17,
                  megaparsec                >= 6.0   && < 6.5,
                  mtl                       >= 2.2   && < 2.3,
@@ -39,6 +40,7 @@ Library
                   Language.OCaml.Definitions.Parsing.ASTHelper.Exp
                   Language.OCaml.Definitions.Parsing.ASTHelper.Mb
                   Language.OCaml.Definitions.Parsing.ASTHelper.Mod
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Mtd
                   Language.OCaml.Definitions.Parsing.ASTHelper.Mty
                   Language.OCaml.Definitions.Parsing.ASTHelper.Opn
                   Language.OCaml.Definitions.Parsing.ASTHelper.Pat
@@ -197,28 +199,50 @@ Test-suite Test
   main-is:          Main.hs
   build-depends: language-ocaml,
                  base,
+                 interpolate,
                  megaparsec,
                  prettyprinter,
                  string-qq,
                  tasty,
                  tasty-hunit
   other-modules:
+                Language.OCaml.Parser.AndLetBinding.Test
+                Language.OCaml.Parser.Attribute.Test
+                Language.OCaml.Parser.Attributes.Test
+                Language.OCaml.Parser.AttrId.Test
                 Language.OCaml.Parser.Common.Test
+                Language.OCaml.Parser.Constant.Test
                 Language.OCaml.Parser.ConstrLongident.Test
                 Language.OCaml.Parser.Expr.Test
+                Language.OCaml.Parser.ExtAttributes.Test
                 Language.OCaml.Parser.Generator.Expr.Test
                 Language.OCaml.Parser.Generator.Implementation.Test
                 Language.OCaml.Parser.Generator.SeqExpr.Test
+                Language.OCaml.Parser.Generator.SimpleExpr.Test
+                Language.OCaml.Parser.Generator.ValLongident.Test
                 Language.OCaml.Parser.Implementation.Test
+                Language.OCaml.Parser.Int.Test
+                Language.OCaml.Parser.LetBinding.Test
+                Language.OCaml.Parser.LetBindingBody.Test
+                Language.OCaml.Parser.LetBindings.Test
                 Language.OCaml.Parser.MatchCase.Test
                 Language.OCaml.Parser.ModLongident.Test
                 Language.OCaml.Parser.OpenStatement.Test
+                Language.OCaml.Parser.Operator.Test
                 Language.OCaml.Parser.Pattern.Test
+                Language.OCaml.Parser.Payload.Test
+                Language.OCaml.Parser.PostItemAttribute.Test
+                Language.OCaml.Parser.PostItemAttributes.Test
+                Language.OCaml.Parser.RecFlag.Test
                 Language.OCaml.Parser.SeqExpr.Test
                 Language.OCaml.Parser.SimpleExpr.Test
                 Language.OCaml.Parser.SimplePattern.Test
+                Language.OCaml.Parser.SingleAttrId.Test
+                Language.OCaml.Parser.StrictBinding.Test
                 Language.OCaml.Parser.Structure.Test
                 Language.OCaml.Parser.StructureItem.Test
+                Language.OCaml.Parser.StructureTail.Test
+                Language.OCaml.Parser.TestStrings
                 Language.OCaml.Parser.TestUtils
                 Language.OCaml.Parser.Tokens.Test
                 Language.OCaml.Parser.ValIdent.Test

@@ -1,27 +1,22 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.SeqExpr.Test
-  ( test
-  , testStrings
-  , unitTests
+  ( testStrings
   ) where
 
-import Test.Tasty
+import Data.String.Interpolate
 
-import Language.OCaml.Parser.Internal
-import Language.OCaml.Parser.TestUtils
+import qualified Language.OCaml.Parser.Expr.Test as Expr
+
+limit :: Int
+limit = 5
 
 testStrings :: [String]
-testStrings =
-  [ "b"
-  , "Foo.bar"
-  , "Foo.bar_baz"
-  , "M.f x > 0"
-  ]
-
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.SeqExpr" $ []
-  ++ map (mkParsingTest "seqExprP" seqExprP) testStrings
-
-test :: IO ()
-test = defaultMain unitTests
+testStrings = []
+  ++ expr
+  ++ [ [i|#{e};|] | e <- expr ]
+  ++ [ [i|#{e};#{se}|] | e <- expr
+                       , se <- seqExpr ]
+  where
+    expr    = Expr.testStrings seqExpr
+    seqExpr = take limit testStrings

@@ -3,6 +3,7 @@
 module Language.OCaml.Parser.Implementation.Test
   ( test
   , testFiles
+  , testStrings
   , unitTests
   ) where
 
@@ -10,11 +11,15 @@ module Language.OCaml.Parser.Implementation.Test
 import Test.Tasty
 
 import Language.OCaml.Parser.Internal
+import qualified Language.OCaml.Parser.Structure.Test as Structure
 -- import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.TestUtils
 
 prefix :: FilePath
 prefix = "test/Language/OCaml/Parser/Implementation/"
+
+testStrings :: [String]
+testStrings = Structure.testStrings
 
 testFiles :: [FilePath]
 testFiles = map (prefix ++)

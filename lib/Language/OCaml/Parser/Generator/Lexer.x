@@ -22,12 +22,15 @@ module Language.OCaml.Parser.Generator.Lexer
   , runAlex
   ) where
 
-import           Control.Lens
+import           Control.Lens hiding (none)
 import           Control.Lens.TH
 import           Control.Monad.State
 import qualified Data.Map.Strict as M
 import           GHC.Generics
 import           Text.Printf
+
+import           Language.OCaml.Definitions.Parsing.Location
+import           Language.OCaml.Utils
 
 }
 
@@ -76,66 +79,82 @@ tokens :-
                                                             let (lit, mod) = extractModifier s in
                                                             TokFloat (lit, (Just mod))
                                                           }
-  -- TODO
-  <0> "#"    { tok TokHash {- TODO: directives -} }
-  <0> "&"    { tok TokAmpersand }
-  <0> "&&"   { tok TokAmperAmper }
-  <0> "`"    { tok TokBackQuote }
-  <0> "'"    { tok TokQuote }
-  <0> "("    { tok TokLParen }
-  <0> ")"    { tok TokRParen }
-  <0> "*"    { tok TokStar }
-  <0> ","    { tok TokComma }
-  <0> "->"   { tok TokMinusGreater }
-  <0> "."    { tok TokDot }
-  <0> ".."   { tok TokDotDot }
-  -- TODO
-  <0> ":"    { tok TokColon }
-  <0> "::"   { tok TokColonColon }
-  <0> ":="   { tok TokColonEqual }
-  <0> ":>"   { tok TokColonGreater }
-  <0> ";"    { tok TokSemi }
-  <0> ";;"   { tok TokSemiSemi }
-  <0> "<"    { tok TokLess }
-  <0> "<-"   { tok TokLessMinus }
-  <0> "="    { tok TokEqual }
-  <0> "["    { tok TokLBracket }
-  <0> "[|"   { tok TokLBracketBar }
-  <0> "[<"   { tok TokLBracketLess }
-  <0> "[>"   { tok TokLBracketGreater }
-  <0> "]"    { tok TokRBracket }
-  <0> "{"    { tok TokLBrace }
-  <0> "{<"   { tok TokLBraceLess }
-  <0> "|"    { tok TokBar }
-  <0> "||"   { tok TokBarBar }
-  <0> "|]"   { tok TokBarRBracket }
-  <0> ">"    { tok TokGreater }
-  <0> ">]"   { tok TokGreaterRBracket }
-  <0> "}"    { tok TokRBrace }
-  <0> ">}"   { tok TokGreaterRBrace }
-  <0> "[@"   { tok TokLBracketAt }
-  <0> "[@@"  { tok TokLBracketAtAt }
-  <0> "[@@@" { tok TokLBracketAtAtAt }
-  <0> "[%"   { tok TokLBracketPercent }
-  <0> "[%%"  { tok TokLBracketPercentPercent }
-  <0> "!"    { tok TokBang }
-  -- TODO: !=
-  <0> "+"    { tok TokPlus }
-  <0> "+."   { tok TokPlusDot }
-  <0> "+="   { tok TokPlusEq }
-  <0> "-"    { tok TokMinus }
-  <0> "-."   { tok TokMinusDot }
-  -- TODO: pre/in fix ops
-  <0> [= \< > \| & \$] $symbolChar* { tokS TokInfixOp0 }
+  <0> \"                                                  { beginString }
+  <0> "(*"                                                { beginCommentBuffer False "" }
+  <0> "(**"                                               { beginCommentBuffer True "*"}
+  <0> "(**" "*"+                                          { \ alexInput lexemeLength ->
+                                                            let nbDropped = length "(**" in
+                                                            beginCommentBuffer False (drop nbDropped (getLexeme alexInput lexemeLength)) alexInput lexemeLength
+                                                          }
+  <0> "(*" "*"* "*)"                                      { \ alexInput lexemeLength -> do
+                                                            ss <- getLexemeSpan alexInput lexemeLength
+                                                            case getLexeme alexInput lexemeLength of
+                                                              "(**)" -> return $ Just $ Located ss $ TokDocstring "(**)"
+                                                              lexeme -> return $ Just $ Located ss $ TokComment lexeme
+                                                          }
+  <0> "*)"                                                { tokStarHack }
 
-  -- Now let's deal with strings and comments
-  <0>    \"       { beginString }
-  <s>    \"       { endString }
-  <s>    .        { appendString }
-  <s>    \\[nt\"] { escapeString }
-  <0, c> "(*"     { beginComment }
-  <c>    "*)"     { endComment }
-  <c>    [.\n]    ;
+  <0> "#"                                                 { tok TokHash {- TODO: directives -} }
+  <0> "&"                                                 { tok TokAmpersand }
+  <0> "&&"                                                { tok TokAmperAmper }
+  <0> "`"                                                 { tok TokBackQuote }
+  <0> "'"                                                 { tok TokQuote }
+  <0> "("                                                 { tok TokLParen }
+  <0> ")"                                                 { tok TokRParen }
+  <0> "*"                                                 { tok TokStar }
+  <0> ","                                                 { tok TokComma }
+  <0> "->"                                                { tok TokMinusGreater }
+  <0> "."                                                 { tok TokDot }
+  <0> ".."                                                { tok TokDotDot }
+  -- TODO
+  <0> ":"                                                 { tok TokColon }
+  <0> "::"                                                { tok TokColonColon }
+  <0> ":="                                                { tok TokColonEqual }
+  <0> ":>"                                                { tok TokColonGreater }
+  <0> ";"                                                 { tok TokSemi }
+  <0> ";;"                                                { tok TokSemiSemi }
+  <0> "<"                                                 { tok TokLess }
+  <0> "<-"                                                { tok TokLessMinus }
+  <0> "="                                                 { tok TokEqual }
+  <0> "["                                                 { tok TokLBracket }
+  <0> "[|"                                                { tok TokLBracketBar }
+  <0> "[<"                                                { tok TokLBracketLess }
+  <0> "[>"                                                { tok TokLBracketGreater }
+  <0> "]"                                                 { tok TokRBracket }
+  <0> "{"                                                 { tok TokLBrace }
+  <0> "{<"                                                { tok TokLBraceLess }
+  <0> "|"                                                 { tok TokBar }
+  <0> "||"                                                { tok TokBarBar }
+  <0> "|]"                                                { tok TokBarRBracket }
+  <0> ">"                                                 { tok TokGreater }
+  <0> ">]"                                                { tok TokGreaterRBracket }
+  <0> "}"                                                 { tok TokRBrace }
+  <0> ">}"                                                { tok TokGreaterRBrace }
+  <0> "[@"                                                { tok TokLBracketAt }
+  <0> "[@@"                                               { tok TokLBracketAtAt }
+  <0> "[@@@"                                              { tok TokLBracketAtAtAt }
+  <0> "[%"                                                { tok TokLBracketPercent }
+  <0> "[%%"                                               { tok TokLBracketPercentPercent }
+  <0> "!"                                                 { tok TokBang }
+  <0> "!="                                                { tok (TokInfixOp0 "!=") }
+  <0> "+"                                                 { tok TokPlus }
+  <0> "+."                                                { tok TokPlusDot }
+  <0> "+="                                                { tok TokPlusEq }
+  <0> "-"                                                 { tok TokMinus }
+  <0> "-."                                                { tok TokMinusDot }
+  <0> "!" $symbolChar+                                    { tokS TokPrefixOp }
+  -- TODO
+  <0> [= \< > \| & \$] $symbolChar*                       { tokS TokInfixOp0 }
+
+  -- while inside a string
+  <s> \"                                                  { endString }
+  <s> .                                                   { appendString }
+  <s> \\[nt\"]                                            { escapeString }
+
+  -- while inside a comment
+  <c> "(*"                                                { beginInnerComment False }
+  <c> "*)"                                                { endComment }
+  <c> [.\n]                                               { storeLexeme }
 
 {
 
@@ -161,8 +180,10 @@ data Token
   | TokColonEqual
   | TokColonGreater
   | TokComma
+  | TokComment String
   | TokConstraint
   | TokDo
+  | TokDocstring String
   | TokDone
   | TokDot
   | TokDotDot
@@ -184,6 +205,7 @@ data Token
   | TokGreaterRBrace
   | TokGreaterRBracket
   | TokHash
+  | TokHashOp String
   | TokIf
   | TokIn
   | TokInclude
@@ -191,6 +213,7 @@ data Token
   | TokInfixOp1 String
   | TokInfixOp2 String
   | TokInfixOp3 String
+  | TokInfixOp4 String
   | TokInherit
   | TokInitializer
   | TokInt (String, (Maybe Char))
@@ -230,6 +253,7 @@ data Token
   | TokPlus
   | TokPlusDot
   | TokPlusEq
+  | TokPrefixOp String
   | TokPrivate
   | TokQuestion
   | TokQuote
@@ -276,14 +300,18 @@ type MyAlexAction      = AlexAction IntermediateToken
 
 alexEOF :: Alex IntermediateToken
 alexEOF = do
-  (l, c) <- getPosition
+  (l, c) <- getPositionAfterLexeme
   let ss = SrcSpan l c l c
   return $ Just $ Located ss TokEOF
 
 myAlexMonadScan :: Alex ResultToken
 myAlexMonadScan = alexMonadScan >>= \case
-  Just t  -> return t
   Nothing -> myAlexMonadScan
+  Just t -> case t of
+    -- TODO: instead of dropping comments, integrate them
+    Located _ (TokComment _)   -> myAlexMonadScan
+    Located _ (TokDocstring _) -> myAlexMonadScan
+    _                          -> return t
 
 lexWrap :: (ResultToken -> Alex a) -> Alex a
 lexWrap cont = myAlexMonadScan >>= cont
@@ -294,15 +322,15 @@ alexScanTokens input = runAlex input gather
     gather :: Alex [ResultToken]
     gather = do
       myAlexMonadScan >>= \case
-        t@(Located _ TokEOF) -> return [t]
-        t                    -> return . (t :) =<< gather
+        t@(Located _ TokEOF)           -> return [t]
+        t                              -> return . (t :) =<< gather
 
-getPos :: AlexPosn -> MyPosition
+alexPosnToMyPosition :: AlexPosn -> MyPosition
 -- NOTE: OCaml starts at column 0, but Alex starts at column 1
-getPos (AlexPn _ line col) = (adjustLine line, adjustCol col)
+alexPosnToMyPosition (AlexPn _ line col) = (adjustLine line, adjustCol col)
 
-getPosition :: Alex MyPosition
-getPosition = Alex $ \ s -> Right (s, getPos . alex_pos $ s)
+getPositionAfterLexeme :: Alex MyPosition
+getPositionAfterLexeme = Alex $ \ s -> Right (s, alexPosnToMyPosition . alex_pos $ s)
 
 keywordLIdent :: MyAlexAction
 keywordLIdent = tokS (\ s -> M.findWithDefault (TokLIdent s) s keywordTable)
@@ -372,10 +400,14 @@ commentStartCode = c
 stringStartCode :: Int
 stringStartCode = s
 
+getLexemeSpan :: AlexInput -> Int -> Alex SrcSpan
+getLexemeSpan alexInput lexemeLength = do
+  let (l, c) = getMyPosition alexInput
+  return $ SrcSpan l c l (c + lexemeLength)
+
 tok :: Token -> MyAlexAction
-tok t (p, _, _, _) len = do
-  let (l, c) = getPos p
-  let ss = SrcSpan l c l (c + len)
+tok t alexInput lexemeLength = do
+  ss <- getLexemeSpan alexInput lexemeLength
   return $ Just $ Located ss t
 
 tokS :: (String -> Token) -> MyAlexAction
@@ -386,41 +418,53 @@ extractModifier s = case reverse s of
   mod : lit -> (lit, mod)
   _         -> error "This should not happen"
 
-getState :: Alex AlexState
-getState = Alex $ \ s -> return (s, s)
+getAlexState :: Alex AlexState
+getAlexState = Alex $ \ s -> return (s, s)
 
-getUserState :: Alex AlexUserState
-getUserState = Alex $ \ s -> return (s, alex_ust s)
+getAlexUserState :: Alex AlexUserState
+getAlexUserState = Alex $ \ s -> return (s, alex_ust s)
 
-setUserState :: AlexUserState -> Alex ()
-setUserState us = Alex $ \ s -> return (s { alex_ust = us }, ())
+setAlexState :: AlexState -> Alex ()
+setAlexState s = Alex $ const $ Right (s, ())
+
+setAlexUserState :: AlexUserState -> Alex ()
+setAlexUserState us = Alex $ \ s -> return (s { alex_ust = us }, ())
 
 modifyUserState :: (AlexUserState -> AlexUserState) -> Alex ()
-modifyUserState f = getUserState >>= (setUserState . f)
+modifyUserState f = getAlexUserState >>= (setAlexUserState . f)
 
-getCommentDepth :: Alex Int
-getCommentDepth = view commentDepth <$> getUserState
+getCommentStartLoc :: Alex [MyPosition]
+getCommentStartLoc = view commentStartLoc <$> getAlexUserState
 
-setCommentDepth :: Int -> Alex ()
-setCommentDepth d = modifyUserState (over commentDepth $ const d)
+setCommentStartLoc :: [MyPosition] -> Alex ()
+setCommentStartLoc l = modifyUserState (over commentStartLoc $ const l)
 
-incrCommentDepth :: Alex ()
-incrCommentDepth = getCommentDepth >>= (setCommentDepth . (+) 1)
+modifyCommentStartLoc :: ([MyPosition] -> [MyPosition]) -> Alex ()
+modifyCommentStartLoc f = getCommentStartLoc >>= (setCommentStartLoc . f)
 
-decrCommentDepth :: Alex ()
-decrCommentDepth = getCommentDepth >>= (setCommentDepth . subtract 1)
+pushCommentStartLoc :: MyPosition -> Alex ()
+pushCommentStartLoc l = modifyCommentStartLoc ((:) l)
+
+popCommentStartLoc :: Alex ()
+popCommentStartLoc = modifyCommentStartLoc tail
 
 getStringBuffer :: Alex String
-getStringBuffer = view stringBuffer <$> getUserState
+getStringBuffer = view stringBuffer <$> getAlexUserState
 
 setStringBuffer :: String -> Alex ()
 setStringBuffer s = modifyUserState (over stringBuffer $ const s)
 
+resetStringBuffer :: Alex ()
+resetStringBuffer = setStringBuffer ""
+
 modifyStringBuffer :: (String -> String) -> Alex ()
 modifyStringBuffer f = getStringBuffer >>= (setStringBuffer . f)
 
+appendToStringBuffer :: String -> Alex ()
+appendToStringBuffer s = modifyStringBuffer (++ s)
+
 getStringStartPosn :: Alex MyPosition
-getStringStartPosn = view stringStartPosn <$> getUserState
+getStringStartPosn = view stringStartPosn <$> getAlexUserState
 
 setStringStartPosn :: MyPosition -> Alex ()
 setStringStartPosn p = modifyUserState (over stringStartPosn $ const p)
@@ -446,12 +490,11 @@ mkSpan :: MyPosition -> MyPosition -> SrcSpan
 mkSpan (sL, sC) (eL, eC) = SrcSpan sL sC eL eC
 
 alexGetPosn :: Alex AlexPosn
-alexGetPosn = alex_pos <$> getState
+alexGetPosn = alex_pos <$> getAlexState
 
 beginString :: MyAlexAction
-beginString _ _ = do
-  p <- getPos <$> alexGetPosn
-  setStringStartPosn p
+beginString alexInput _ = do
+  setStringStartPosn $ getMyPosition alexInput
   alexSetStartCode stringStartCode
   return Nothing
 
@@ -461,32 +504,70 @@ appendString (_, _, _, (c : _)) _ = do
   return Nothing
 
 endString :: MyAlexAction
-endString _ _ = do
+endString alexInput _ = do
   str <- getStringBuffer
   startPos <- getStringStartPosn
-  endPos <- getPos <$> alexGetPosn
+  let endPos = getMyPosition alexInput
   let span = mkSpan startPos endPos
-  setUserState alexInitUserState
+  setAlexUserState alexInitUserState
   alexSetStartCode codeStartCode
   return $ Just $ Located span (TokString (reverse str, Nothing))
 
-beginComment :: MyAlexAction
-beginComment _ _ = do
-  incrCommentDepth
+handleDocstrings :: Bool
+handleDocstrings = True
+
+beginCommentBuffer :: Bool -> String -> MyAlexAction
+beginCommentBuffer isDocstring stringBuffer alexInput lexemeLength = do
+  let lexeme = getLexeme alexInput lexemeLength
+  setIsDocstringTo isDocstring
+  setCommentStartLoc [getMyPosition alexInput]
+  setStringBuffer stringBuffer
   alexSetStartCode commentStartCode
   return Nothing
 
+beginInnerComment :: Bool -> MyAlexAction
+beginInnerComment isDocstring alexInput _ = do
+  pushCommentStartLoc $ getMyPosition alexInput
+  return Nothing
+
 endComment :: MyAlexAction
-endComment _ _ = do
-  decrCommentDepth
-  cd <- getCommentDepth
-  alexSetStartCode $ if cd == 0 then codeStartCode else commentStartCode
+endComment alexInput lexemeLength = do
+  l <- getCommentStartLoc
+  case l of
+    []  -> error "This should not happen"
+    [(startLine, startCol)] -> do
+      popCommentStartLoc
+      commentString <- getStringBuffer
+      let (endLine, endCol) = getMyPosition alexInput
+      let ss = SrcSpan startLine startCol endLine endCol
+      return $ Just $ Located ss $ TokComment commentString
+    _ -> do
+      popCommentStartLoc
+      appendToStringBuffer $ getLexeme alexInput lexemeLength
+      return Nothing
+
+-- getInputAfterLexeme :: Alex String
+-- getInputAfterLexeme = alex_inp <$> getAlexState
+
+getPosition :: AlexInput -> AlexPosn
+getPosition (pos, _, _, _) = pos
+
+getMyPosition :: AlexInput -> MyPosition
+getMyPosition = alexPosnToMyPosition . getPosition
+
+getLexeme :: AlexInput -> Int -> String
+getLexeme (_, _, _, str) len = take len str
+
+storeLexeme :: MyAlexAction
+storeLexeme inp len = do
+  appendToStringBuffer $ getLexeme inp len
   return Nothing
 
 type MyPosition = (Int, Int)
 
 data AlexUserState = AlexUserState
-  { _commentDepth    :: !Int
+  { _commentStartLoc :: ![MyPosition]
+  , _isDocstring     :: Bool
   , _stringBuffer    :: String
   , _stringStartPosn :: !MyPosition
   }
@@ -496,9 +577,22 @@ data AlexUserState = AlexUserState
 -- https://github.com/simonmar/alex/issues/125
 -- makeLenses ''AlexUserState
 -- Writing lenses manually instead:
-commentDepth :: Lens' AlexUserState Int
-commentDepth f s@(AlexUserState { _commentDepth }) =
-  (\ d -> s { _commentDepth = d }) <$> f _commentDepth
+commentStartLoc :: Lens' AlexUserState [MyPosition]
+commentStartLoc f s@(AlexUserState { _commentStartLoc }) =
+  (\ l -> s { _commentStartLoc = l }) <$> f _commentStartLoc
+
+isDocstring :: Lens' AlexUserState Bool
+isDocstring f s@(AlexUserState { _isDocstring }) =
+  (\ b -> s { _isDocstring = b }) <$> f _isDocstring
+
+setIsDocstringTo :: Bool -> Alex ()
+setIsDocstringTo b = modifyUserState $ over isDocstring $ const b
+
+setDocstring :: Alex ()
+setDocstring = setIsDocstringTo True
+
+unsetDocstring :: Alex ()
+unsetDocstring = setIsDocstringTo False
 
 stringBuffer :: Lens' AlexUserState String
 stringBuffer f s@(AlexUserState { _stringBuffer }) =
@@ -510,7 +604,7 @@ stringStartPosn f s@(AlexUserState { _stringStartPosn }) =
 
 alexInitUserState :: AlexUserState
 alexInitUserState = AlexUserState
-  { _commentDepth    = 0
+  { _commentStartLoc = []
   , _stringBuffer    = ""
   , _stringStartPosn = (0, 0)
   }
@@ -532,5 +626,28 @@ slice from to l | from > 0 && to > 0 = slicePositive from to l
 slicePositive :: Int -> Int -> [a] -> [a]
 slicePositive from to | from >= 0 && to >= 0 = take (to - from) . drop from
                       | otherwise            = error "slicePositive: negative indices"
+
+{- OCaml parses input like "( *)" as a multiplication. The way it does it, is
+that it treats the open parenthesis as LPAREN, then upon seeing "*)" in a
+non-comment context, it outputs the token STAR after having rewound the lexer
+state to before the closing parenthesis, so that the lexer then outputs a RPAREN
+token too.  Emulating this hack...
+-}
+tokStarHack :: MyAlexAction
+tokStarHack alexInput _ = do
+  s <- getAlexState
+  setAlexState $ AlexState
+    { alex_pos   = rewind $ alex_pos s
+    , alex_inp   = ')' : alex_inp s
+    , alex_chr   = '*'
+    , alex_bytes = []
+    , alex_scd   = alex_scd s
+    }
+  -- the lexeme length should be 2, but we just want the '*'
+  ss <- getLexemeSpan alexInput 1
+  return $ Just $ Located ss TokStar
+  where
+    -- rewinds a normal character (not \t or \n)
+    rewind (AlexPn a l c) = AlexPn (a - 1) l (c - 1)
 
 }

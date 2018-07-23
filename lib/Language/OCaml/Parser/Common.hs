@@ -6,6 +6,7 @@
 
 module Language.OCaml.Parser.Common
   ( addlb
+  , expOfLabel
   , exprOfLetBindings
   , extraRHSCoreType
   , extraStr
@@ -19,6 +20,7 @@ module Language.OCaml.Parser.Common
   , mkexpCons
   , mkexpConstraint
   , mkexpOptConstraint
+  , mkOperator
   , mkpatOptConstraint
   , mkinfix
   , mkLoc
@@ -47,6 +49,7 @@ module Language.OCaml.Parser.Common
   , symbolRLoc
   , textStr
   , valOfLetBindings
+  , wrapExpAttrs
   , wrapTypeAnnotation
   ) where
 
@@ -112,12 +115,11 @@ mkRHS :: a -> Int -> Loc a
 mkRHS rhs pos = mkLoc rhs (rhsLoc pos)
 
 mkmod :: Maybe [Attribute] -> ModuleExprDesc -> ModuleExpr
-mkmod attrs' d = Mod.mk
-  (def { loc = symbolRLoc ()
-       , attrs = fromMaybe (Mod.attrs def) attrs'
-       }
-  )
-  d
+mkmod attrs' d =
+  Mod.mk (def { loc   = symbolRLoc ()
+              , attrs = fromMaybe (Mod.attrs def) attrs'
+              }
+         ) d
 
 mkpat :: PatternDesc -> Pattern
 mkpat d = Pat.mk def d -- FIXME
@@ -364,3 +366,11 @@ wrapPatAttrs pat0 (ext, attrs) =
 mkexpCons :: Location -> Expression -> Location -> Expression
 mkexpCons consLoc args loc =
   Exp.mk (def { loc }) $ PexpConstruct (mkLoc (Lident "::") consLoc) (Just args)
+
+expOfLabel :: Longident -> Int -> Expression
+expOfLabel lbl pos = mkexp $ PexpIdent (mkRHS (Lident (Longident.last lbl)) pos)
+
+mkOperator :: String -> Int -> Expression
+mkOperator name pos =
+  let loc = rhsLoc pos in
+  Exp.mk (def { loc }) $ PexpIdent (mkLoc (Lident name) loc)

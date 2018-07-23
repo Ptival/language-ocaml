@@ -4,11 +4,14 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   ( Attribute
   , Attributes
   , Case(..)
+  , ClassDeclaration
   , ClassExpr(..)
   , ClassField(..)
+  , ClassInfos(..)
   , ClassSignature(..)
   , ClassStructure(..)
   , ClassType(..)
+  , ClassTypeDeclaration
   , ClassTypeField(..)
   , Constant(..)
   , ConstructorArguments(..)
@@ -20,12 +23,15 @@ module Language.OCaml.Definitions.Parsing.ParseTree
   , Extension
   , ExtensionConstructor(..)
   , ExtensionConstructorKind(..)
+  , IncludeDeclaration
+  , IncludeInfos(..)
   , LabelDeclaration(..)
   , Longident(..)
   , ModuleBinding(..)
   , ModuleExpr(..)
   , ModuleExprDesc(..)
   , ModuleType(..)
+  , ModuleTypeDeclaration(..)
   , ModuleTypeDesc(..)
   , MutableFlag(..)
   , ObjectField(..)
@@ -163,15 +169,15 @@ data StructureItemDesc
   | PstrValue RecFlag [ValueBinding]
   | PstrPrimitive ValueDescription
   | PstrType RecFlag [TypeDeclaration]
-  -- | PstrTypext type_extension
+  | PstrTypExt TypeExtension
   | PstrException ExtensionConstructor
   | PstrModule ModuleBinding
-  -- | PstrRecmodule moduleBinding list
-  -- | PstrModtype moduleTypeDeclaration
+  | PstrRecModule [ModuleBinding]
+  | PstrModType ModuleTypeDeclaration
   | PstrOpen OpenDescription
-  -- | PstrClass classDeclaration list
-  -- | PstrClassType classTypeDeclaration list
-  -- | PstrInclude includeDeclaration
+  | PstrClass [ClassDeclaration]
+  | PstrClassType [ClassTypeDeclaration]
+  | PstrInclude IncludeDeclaration
   | PstrAttribute Attribute
   | PstrExtension Extension Attributes
   deriving (Eq, Generic, Show)
@@ -469,6 +475,14 @@ data ModuleTypeDesc
   | PmtyAlias (Loc Longident)
   deriving (Eq, Generic, Show)
 
+data ModuleTypeDeclaration = ModuleTypeDeclaration
+  { pmtdName       :: Loc String
+  , pmtdType       :: Maybe ModuleType
+  , pmtdAttributes :: Attributes
+  , pmtdLoc        :: Location
+  }
+  deriving (Eq, Generic, Show)
+
 data WithConstraint
   = PwithType (Loc Longident) TypeDeclaration
   | PwithModule (Loc Longident) (Loc Longident)
@@ -477,3 +491,25 @@ data WithConstraint
   deriving (Eq, Generic, Show)
 
 type PackageType = (Loc Longident, [(Loc Longident, CoreType)])
+
+data ClassInfos a = ClassInfos
+  { pciVirt   :: VirtualFlag
+  , pciParams :: [(CoreType, Variance)]
+  , pciName   :: Loc String
+  , pciExpr   :: a
+  , pciLoc    :: Location
+  }
+  deriving (Eq, Generic, Show)
+
+type ClassDeclaration = ClassInfos ClassExpr
+
+type ClassTypeDeclaration = ClassInfos ClassType
+
+data IncludeInfos a = IncludeInfos
+  { pinclMod        :: a
+  , pinclLoc        :: Location
+  , pinclAttributes :: Attributes
+  }
+  deriving (Eq, Generic, Show)
+
+type IncludeDeclaration = IncludeInfos ModuleExpr

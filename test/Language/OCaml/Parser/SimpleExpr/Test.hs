@@ -1,31 +1,21 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.SimpleExpr.Test
-  ( test
-  , unitTests
+  ( testStrings
   ) where
 
-import Test.Tasty
+import           Data.String.Interpolate
 
-import Language.OCaml.Parser.Internal
-import Language.OCaml.Parser.TestUtils
+import qualified Language.OCaml.Parser.Constant.Test as Constant
+import qualified Language.OCaml.Parser.ConstrLongident.Test as ConstrLongident
+import qualified Language.OCaml.Parser.ValLongident.Test as ValLongident
 
-simpleExprTests :: [String]
-simpleExprTests =
-  [ "foo"
-  , "foo.bar"
-  , "Foo"
-  , "Foo.Bar"
-  , "Foo.bar"
-  , "(foo)"
-  , "(foo, bar)"
-  ]
-
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.SimpleExpr" $ []
-  ++ map (mkParsingTest "simpleExprP" simpleExprP) simpleExprTests
-
-test :: IO ()
-test = defaultMain unitTests
-
--- debug = debugParsing simpleExprP "(foo)"
+testStrings :: [String] -> [String]
+testStrings seqExpr = []
+  ++ ValLongident.testStrings
+  ++ Constant.testStrings
+  ++ ConstrLongident.testStrings
+  -- TODO: NameTag
+  ++ [ [i| (#{se}) |]
+       | se <- seqExpr
+       ]

@@ -1,24 +1,14 @@
-{-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.ValIdent.Test
-  ( test
-  , unitTests
+  ( testStrings
   ) where
 
-import Test.Tasty
+import Data.String.Interpolate
 
-import Language.OCaml.Parser.Internal
-import Language.OCaml.Parser.TestUtils
+import qualified Language.OCaml.Parser.Operator.Test as Operator
 
-valIdentTests :: [String]
-valIdentTests =
-  [ "foo"
-  , "(!)"
-  ]
-
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.ValIdent" $ []
-  ++ map (mkParsingTest "valIdentP" valIdentP) valIdentTests
-
-test :: IO ()
-test = defaultMain unitTests
+testStrings :: [String]
+testStrings = []
+  ++ [ "foo" ]
+  ++ [ [i|(#{op})|] | op <- Operator.testStrings ]

@@ -1,6 +1,4 @@
-{-# LANGUAGE QuasiQuotes #-}
-
-module Language.OCaml.Parser.Generator.Expr.Test
+module Language.OCaml.Parser.Generator.SimpleExpr.Test
   ( test
   , unitTests
   ) where
@@ -8,12 +6,12 @@ module Language.OCaml.Parser.Generator.Expr.Test
 import           Test.Tasty
 
 import           Language.OCaml.Parser.Generator.Parser
-import           Language.OCaml.Parser.TestUtils
 import qualified Language.OCaml.Parser.TestStrings as TestStrings
+import           Language.OCaml.Parser.TestUtils
 
 unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.Generator.Expr" $ []
-  ++ map (mkParsingTestG parseExpr) TestStrings.expr
+unitTests = testGroup "Language.OCaml.Parser.Generator.SimpleExpr" $ []
+  ++ map (mkParsingTestG parseSimpleExpr) TestStrings.simpleExpr
 
 test :: IO ()
 test = defaultMain unitTests
