@@ -23,7 +23,7 @@ typeDeclarationPP d =
     prettyParam (t, v) = fillCat [ pretty v, pretty t, space ]
     name = pretty $ ptypeName d
     manifest = case ptypeManifest d of
-      Nothing -> error "TODO"
+      Nothing -> "FIXME manifest"
       Just t -> pretty t
     body = case ptypeKind d of
       PtypeAbstract -> fillCat [ space, manifest ]

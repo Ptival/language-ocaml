@@ -21,27 +21,38 @@ import Language.OCaml.PrettyPrinter.ValueBinding ()
 structureItemDescPP ::
   (Pretty Payload) => StructureItemDesc -> Doc a
 structureItemDescPP = \case
+
+  PstrAttribute _a -> error "TODO"
+  PstrClass _ -> error "TODO"
+  PstrClassType _ -> error "TODO"
+
   PstrEval e _a -> pretty e
-  PstrValue r l -> case l of
-    []  -> error "?"
-    h:t -> vcat $ fillCat [ "let ", pretty r, pretty h ]
-                    : map ((\ d -> fillSep [ "\nand", d ]) . pretty) t
+
+  PstrException _e -> error "TODO"
+  PstrExtension _e _a -> error "TODO"
+  PstrInclude _ -> error "TODO"
+  PstrModType _ -> error "TODO"
+
+  PstrModule m -> pretty m
+
+  PstrOpen o -> pretty o
+
+  PstrPrimitive _ -> error "TODO"
+  PstrRecModule _ -> error "TODO"
+
   PstrType _r l -> case l of
     []  -> error "?"
     h:t -> vcat $ fillSep [ "type", pretty h ]
                     : map ((\ d -> fillSep [ "\nand", d]) . pretty) t
-  PstrModule m -> pretty m
-  PstrOpen o -> pretty o
-  PstrAttribute _a -> error "TODO"
-  PstrExtension _e _a -> error "TODO"
-  PstrException _e -> error "TODO"
-  PstrPrimitive _ -> error "TODO"
+
   PstrTypExt _ -> error "TODO"
-  PstrRecModule _ -> error "TODO"
-  PstrModType _ -> error "TODO"
-  PstrClass _ -> error "TODO"
-  PstrClassType _ -> error "TODO"
-  PstrInclude _ -> error "TODO"
+
+  PstrValue r l -> case l of
+    [] -> error "?"
+    h : t ->
+      vcat $ []
+      ++ [ fillCat [ "let ", pretty r, pretty h ] ]
+      ++ map ((\ d -> fillSep [ "\nand", d ]) . pretty) t
 
 instance (Pretty Payload) => Pretty StructureItemDesc where
   pretty = structureItemDescPP

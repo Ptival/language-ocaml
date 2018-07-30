@@ -12,6 +12,7 @@ module Language.OCaml.Parser.Generator.Parser
   , parseImplementation
   , parseModLongident
   , parseOpenStatement
+  , parsePattern
   , parseSeqExpr
   , parseSimpleExpr
   , parseStructure
@@ -52,6 +53,7 @@ import Language.OCaml.Parser.Generator.Lexer
 %name rawParseImplementation Implementation
 %name rawParseModLongident   ModLongident
 %name rawParseOpenStatement  OpenStatement
+%name rawParsePattern        Pattern
 %name rawParseSeqExpr        SeqExpr
 %name rawParseSimpleExpr     SimpleExpr
 %name rawParseStructureItem  StructureItem
@@ -365,7 +367,7 @@ Expr :: { Expression }
   | fun ExtAttributes "(" type LidentList ")" FunDef               { mkexpAttrs (pexpDesc $ mkNewTypes $5 $7) $2 }
   | match ExtAttributes SeqExpr with OptBar MatchCases             { mkexpAttrs (PexpMatch $3 (reverse $6)) $2 }
   | try ExtAttributes SeqExpr with OptBar MatchCases               { mkexpAttrs (PexpTry $3 (reverse $6)) $2 }
-  | try ExtAttributes SeqExpr with                                 {% alexError "try ExtAttributes SeqExpr with <ERROR>" }
+  | try ExtAttributes SeqExpr with error                           {% alexError "try ExtAttributes SeqExpr with <ERROR>" }
   | ExprCommaList %prec belowComma                                 { mkexp $ PexpTuple (reverse $1) }
   | ConstrLongident SimpleExpr %prec belowHash                     { mkexp $ PexpConstruct (mkRHS $1 1) (Just $2) }
   | NameTag SimpleExpr %prec belowHash                             { mkexp $ PexpVariant $1 (Just $2) }
@@ -632,9 +634,9 @@ ModuleBindingBody :: { ModuleExpr }
   -- | FunctorArg ModuleBindingBody  { mkmod def $ PmodFunctor (fst $1) (snd $1) $2 }
 
 ModuleExpr :: { ModuleExpr }
-  : ModLongident                    { mkmod def $ PmodIdent (mkRHS $1 1) }
-  | struct Attributes Structure end { mkmod (Just $2) $ PmodStructure (extraStr 3 $3) }
-  | struct Attributes Structure     {% alexError "struct Attributes Structure <ERROR>" }
+  : ModLongident                      { mkmod def $ PmodIdent (mkRHS $1 1) }
+  | struct Attributes Structure end   { mkmod (Just $2) $ PmodStructure (extraStr 3 $3) }
+  | struct Attributes Structure error {% alexError "struct Attributes Structure <ERROR>" }
 --   | functor Attributes FunctorArg "->" ModuleExpr { let modExp = foldl (\ acc (n, t) -> mkmod def $ PmodFunctor n t acc) $5 $3
 --                                                     in wrapModAttrs modExp $2
 --                                                   }
@@ -771,18 +773,18 @@ PackageType :: { PackageType }
   : ModuleType { packageTypeOfModuleType $1 }
 
 ParenModuleExpr :: { ModuleExpr }
-  : "(" ModuleExpr ":" ModuleType ")" { mkmod def $ PmodConstraint $2 $4 }
-  | "(" ModuleExpr ":" ModuleType     {% alexError "( ModuleExpr : ModuleType <ERROR>" }
+  : "(" ModuleExpr ":" ModuleType ")"   { mkmod def $ PmodConstraint $2 $4 }
+  | "(" ModuleExpr ":" ModuleType error {% alexError "( ModuleExpr : ModuleType <ERROR>" }
   -- TODO
 
 Pattern :: { Pattern }
   : Pattern as ValIdent                                  { mkpat $ PpatAlias $1 (mkRHS $3 3) }
-  | Pattern as                                           {% alexError "Pattern as <ERROR>" }
+  | Pattern as error                                     {% alexError "Pattern as <ERROR>" }
   | PatternCommaList %prec belowComma                    { mkpat $ PpatTuple (reverse $1) }
   | Pattern "::" Pattern                                 { mkpatCons (rhsLoc 2) (ghpat $ PpatTuple [$1, $3]) (symbolRLoc ()) }
-  | Pattern "::"                                         {% alexError "Pattern :: <ERROR>" }
+  | Pattern "::" error                                   {% alexError "Pattern :: <ERROR>" }
   | Pattern "|" Pattern                                  { mkpat $ PpatOr $1 $3 }
-  | Pattern "|"                                          {% alexError "Pattern | <ERROR>" }
+  | Pattern "|" error                                    {% alexError "Pattern | <ERROR>" }
   -- | exception ExtAttributes Pattern %prec precConstrAppl { mkpatAttrs (PpatException $3) $2 }
   -- | Pattern Attribute                                    { attrPat $1 $2 }
   | PatternGen                                           { $1 }
@@ -790,7 +792,7 @@ Pattern :: { Pattern }
 PatternCommaList :: { [Pattern] }
   : PatternCommaList "," Pattern { $3 : $1 }
   | Pattern "," Pattern          { [$3, $1] }
-  | Pattern ","                  {% alexError "Pattern , <ERROR>" }
+  | Pattern "," error            {% alexError "Pattern , <ERROR>" }
 
 PatternGen :: { Pattern }
   : SimplePattern                                { $1 }
@@ -800,19 +802,19 @@ PatternGen :: { Pattern }
 
 PatternNoExn :: { Pattern }
   : PatternNoExn as ValIdent               { mkpat $ PpatAlias $1 (mkRHS $3 3) }
-  | PatternNoExn as                        {% alexError "PatternNoExn as <ERROR>" }
+  | PatternNoExn as error                  {% alexError "PatternNoExn as <ERROR>" }
   | PatternNoExnCommaList %prec belowComma { mkpat $ PpatTuple (reverse $1) }
   | PatternNoExn "::" Pattern              { mkpatCons (rhsLoc 2) (ghpat $ PpatTuple [$1, $3]) (symbolRLoc ()) }
-  | PatternNoExn "::"                      {% alexError "PatternNoExn :: <ERROR>" }
+  | PatternNoExn "::" error                {% alexError "PatternNoExn :: <ERROR>" }
   | PatternNoExn "|" Pattern               { mkpat $ PpatOr $1 $3 }
-  | PatternNoExn "|"                       {% alexError "PatternNoExn | <ERROR>" }
+  | PatternNoExn "|" error                 {% alexError "PatternNoExn | <ERROR>" }
   | PatternNoExn Attribute                 { Pat.attr $1 $2 }
   | PatternGen                             { $1 }
 
 PatternNoExnCommaList :: { [Pattern] }
   : PatternNoExnCommaList "," Pattern { $3 : $1 }
   | PatternNoExn "," Pattern          { [$3, $1] }
-  | PatternNoExn ","                  {% alexError "PatternNoExn , <ERROR>" }
+  | PatternNoExn "," error            {% alexError "PatternNoExn , <ERROR>" }
 
 PatternSemiList :: { [Pattern] }
   : Pattern                     { [$1] }
@@ -940,13 +942,13 @@ SimpleCoreTypeOrTuple :: { CoreType }
   | SimpleCoreType "*" CoreTypeList { mktyp $ PtypTuple ($1 : reverse $3) }
 
 SimpleDelimitedPattern :: { Pattern }
-  : "{" LblPatternList "}"            { let (fields, closed) = $2 in mkpat $ PpatRecord fields closed }
-  | "{" LblPatternList                {% alexError "{ LblPatternList <ERROR>" }
-  | "[" PatternSemiList OptSemi "]"   { relocPat $ mktailpat (rhsLoc 4) (reverse $2) }
-  | "[" PatternSemiList OptSemi       {% alexError "[ PatternSemiList OptSemi <ERROR>" }
-  | "[|" PatternSemiList OptSemi "|]" { mkpat $ PpatArray (reverse $2) }
-  | "[|" "|]"                         { mkpat $ PpatArray [] }
-  | "[|" PatternSemiList OptSemi      {% alexError "[| PatternSemiList OptSemi <ERROR>" }
+  : "{" LblPatternList "}"             { let (fields, closed) = $2 in mkpat $ PpatRecord fields closed }
+  | "{" LblPatternList error           {% alexError "{ LblPatternList <ERROR>" }
+  | "[" PatternSemiList OptSemi "]"    { relocPat $ mktailpat (rhsLoc 4) (reverse $2) }
+  | "[" PatternSemiList OptSemi error  {% alexError "[ PatternSemiList OptSemi <ERROR>" }
+  | "[|" PatternSemiList OptSemi "|]"  { mkpat $ PpatArray (reverse $2) }
+  | "[|" "|]"                          { mkpat $ PpatArray [] }
+  | "[|" PatternSemiList OptSemi error {% alexError "[| PatternSemiList OptSemi <ERROR>" }
 
 SimpleExpr :: { Expression }
   : ValLongident                                    { mkexp $ PexpIdent (mkRHS $1 1) }
@@ -954,15 +956,15 @@ SimpleExpr :: { Expression }
   | ConstrLongident %prec precConstantConstructor   { mkexp $ PexpConstruct (mkRHS $1 1) Nothing }
   | NameTag %prec precConstantConstructor           { mkexp $ PexpVariant $1 Nothing }
   | "(" SeqExpr ")"                                 { relocExp $2 }
-  | "(" SeqExpr                                     {% alexError "( SeqExpr <ERROR>" }
+  | "(" SeqExpr error                               {% alexError "( SeqExpr <ERROR>" }
   | begin ExtAttributes SeqExpr end                 { wrapExpAttrs (relocExp $3) $2 }
   | begin ExtAttributes end                         { mkexpAttrs (PexpConstruct (mkLoc (Lident "()") (symbolRLoc ())) Nothing) $2 }
-  | begin ExtAttributes                             {% alexError "begin ExtAttributes <ERROR>" }
+  | begin ExtAttributes error                       {% alexError "begin ExtAttributes <ERROR>" }
   | "(" SeqExpr TypeConstraint ")"                  { mkexpConstraint $2 $3 }
   | SimpleExpr "." LabelLongident                   { mkexp $ PexpField $1 (mkRHS $3 3) }
   | ModLongident "." "(" SeqExpr ")"                { mkexp $ PexpOpen Fresh (mkRHS $1 1) $4 }
   | ModLongident "." "(" ")"                        { mkexp $ PexpOpen Fresh (mkRHS $1 1) (mkexp $ PexpConstruct (mkRHS (Lident "()") 1) Nothing) }
-  | ModLongident "." "(" SeqExpr                    {% alexError "TODO" }
+  | ModLongident "." "(" SeqExpr error              {% alexError "TODO" }
   | SimpleExpr "." "(" SeqExpr ")"                  { error "TODO 1" }
   | SimpleExpr "." "(" SeqExpr                      { error "TODO 2" }
   | SimpleExpr "." "[" SeqExpr "]"                  { error "TODO 3" }
@@ -992,7 +994,7 @@ SimpleExpr :: { Expression }
   | ModLongident "." "[|" "|]"                      { error "TODO 28" }
   | ModLongident "." "[|" ExprSemiList OptSemi      { error "TODO 29" }
   | "[" ExprSemiList OptSemi "]"                    { relocExp $ mktailexp (rhsLoc 4) (reverse $2) }
-  | "[" ExprSemiList OptSemi                        {% alexError "TODO" }
+  | "[" ExprSemiList OptSemi error                  {% alexError "TODO" }
   | ModLongident "." "[" ExprSemiList OptSemi "]"   { error "TODO 30" }
   | ModLongident "." "["  "]"                       { error "TODO 31" }
   | ModLongident "." "[" ExprSemiList OptSemi       { error "TODO 32" }
@@ -1000,7 +1002,7 @@ SimpleExpr :: { Expression }
   | "!" SimpleExpr                                  { mkexp $ PexpApply (mkOperator "!" 1) [(Nolabel, $2)] }
   | new ExtAttributes ClassLongident                { mkexpAttrs (PexpNew (mkRHS $3 3)) $2 }
   | "{<" FieldExprList ">}"                         { mkexp $ PexpOverride $2 }
-  | "{<" FieldExprList                              {% alexError "TODO" }
+  | "{<" FieldExprList error                        {% alexError "TODO" }
   | "{<" ">}"                                       { mkexp $ PexpOverride [] }
   | ModLongident "." "{<" FieldExprList ">}"        { mkexp $ PexpOpen Fresh (mkRHS $1 1) (mkexp $ PexpOverride $4) }
   -- TODO
@@ -1014,27 +1016,27 @@ SimplePattern :: { Pattern }
   | SimplePatternNotIdent     { $1 }
 
 SimplePatternNotIdent :: { Pattern }
-  : "_"                                                 { mkpat $ PpatAny }
-  | SignedConstant                                      { mkpat $ PpatConstant $1 }
-  | SignedConstant ".." SignedConstant                  { mkpat $ PpatInterval $1 $3 }
-  | ConstrLongident                                     { mkpat $ PpatConstruct (mkRHS $1 1) Nothing }
-  | NameTag                                             { mkpat $ PpatVariant $1 Nothing }
-  | "#" TypeLongident                                   { mkpat $ PpatType (mkRHS $2 2) }
-  | SimpleDelimitedPattern                              { $1 }
-  | ModLongident "." SimpleDelimitedPattern             { mkpat $ PpatOpen (mkRHS $1 1) $3 }
-  | ModLongident "." "{" "}"                            { mkpat $ PpatOpen (mkRHS $1 1) (mkpat $ PpatConstruct (mkRHS (Lident "[]") 4) Nothing) }
-  | ModLongident "." "(" ")"                            { mkpat $ PpatOpen (mkRHS $1 1) (mkpat $ PpatConstruct (mkRHS (Lident "()") 4) Nothing) }
-  | ModLongident "." "(" Pattern ")"                    { mkpat $ PpatOpen (mkRHS $1 1) $4 }
-  | ModLongident "." "("                                {% alexError "ModLongident . ( <ERROR>" }
-  | "(" Pattern ")"                                     { relocPat $2 }
-  | "(" Pattern                                         {% alexError "( Pattern <ERROR>" }
-  | "(" Pattern ":" CoreType ")"                        { mkpat $ PpatConstraint $2 $4 }
-  | "(" Pattern ":" CoreType                            {% alexError "( Pattern : CoreType <ERROR>" }
-  | "(" Pattern ":"                                     {% alexError "( Pattern : <ERROR>" }
-  | "(" module ExtAttributes UIDENT ")"                 { mkpatAttrs (PpatUnpack (mkRHS $4 4)) $3 }
-  | "(" module ExtAttributes UIDENT ":" PackageType ")" { mkpatAttrs (PpatConstraint (mkpat $ PpatUnpack (mkRHS $4 4)) (ghtyp $ PtypPackage $6)) $3 }
-  | "(" module ExtAttributes UIDENT ":" PackageType     {% alexError "( module ExtAttributes UIDENT : PackageType <ERROR>" }
-  | Extension                                           { mkpat $ PpatExtension $1 }
+  : "_"                                                   { mkpat $ PpatAny }
+  | SignedConstant                                        { mkpat $ PpatConstant $1 }
+  | SignedConstant ".." SignedConstant                    { mkpat $ PpatInterval $1 $3 }
+  | ConstrLongident                                       { mkpat $ PpatConstruct (mkRHS $1 1) Nothing }
+  | NameTag                                               { mkpat $ PpatVariant $1 Nothing }
+  | "#" TypeLongident                                     { mkpat $ PpatType (mkRHS $2 2) }
+  | SimpleDelimitedPattern                                { $1 }
+  | ModLongident "." SimpleDelimitedPattern               { mkpat $ PpatOpen (mkRHS $1 1) $3 }
+  | ModLongident "." "{" "}"                              { mkpat $ PpatOpen (mkRHS $1 1) (mkpat $ PpatConstruct (mkRHS (Lident "[]") 4) Nothing) }
+  | ModLongident "." "(" ")"                              { mkpat $ PpatOpen (mkRHS $1 1) (mkpat $ PpatConstruct (mkRHS (Lident "()") 4) Nothing) }
+  | ModLongident "." "(" Pattern ")"                      { mkpat $ PpatOpen (mkRHS $1 1) $4 }
+  | ModLongident "." "(" error                            {% alexError "ModLongident . ( <ERROR>" }
+  | "(" Pattern ")"                                       { relocPat $2 }
+  | "(" Pattern error                                     {% alexError "( Pattern <ERROR>" }
+  | "(" Pattern ":" CoreType ")"                          { mkpat $ PpatConstraint $2 $4 }
+  | "(" Pattern ":" CoreType error                        {% alexError "( Pattern : CoreType <ERROR>" }
+  | "(" Pattern ":" error                                 {% alexError "( Pattern : <ERROR>" }
+  | "(" module ExtAttributes UIDENT ")"                   { mkpatAttrs (PpatUnpack (mkRHS $4 4)) $3 }
+  | "(" module ExtAttributes UIDENT ":" PackageType ")"   { mkpatAttrs (PpatConstraint (mkpat $ PpatUnpack (mkRHS $4 4)) (ghtyp $ PtypPackage $6)) $3 }
+  | "(" module ExtAttributes UIDENT ":" PackageType error {% alexError "( module ExtAttributes UIDENT : PackageType <ERROR>" }
+  | Extension                                             { mkpat $ PpatExtension $1 }
 
 SingleAttrId :: { String }
   : LIDENT { $1 }
@@ -1103,8 +1105,8 @@ TypeConstraint :: { (Maybe CoreType, Maybe CoreType) }
   : ":" CoreType               { (Just $2, Nothing) }
   | ":" CoreType ":>" CoreType { (Just $2, Just $4) }
   | ":>" CoreType              { (Nothing, Just $2) }
-  | ":"                        {% alexError ": <ERROR>" }
-  | ":>"                       {% alexError ":> <ERROR>" }
+  | ":" error                  {% alexError ": <ERROR>" }
+  | ":>" error                 {% alexError ":> <ERROR>" }
 
 TypeDeclaration :: { (RecFlag, TypeDeclaration, Maybe (Loc String)) }
   : type ExtAttributes RecFlag OptionalTypeParameters LIDENT
@@ -1202,6 +1204,9 @@ parseModLongident = myParse rawParseModLongident
 
 parseOpenStatement :: Parser (OpenDescription, Maybe (Loc String))
 parseOpenStatement = myParse rawParseOpenStatement
+
+parsePattern :: Parser Pattern
+parsePattern = myParse rawParsePattern
 
 parseSeqExpr :: Parser Expression
 parseSeqExpr = myParse rawParseSeqExpr

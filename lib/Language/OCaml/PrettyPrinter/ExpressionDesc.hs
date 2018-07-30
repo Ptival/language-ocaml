@@ -2,6 +2,8 @@
 
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE MonoLocalBinds #-}
+{-# LANGUAGE NamedFieldPuns #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
 
@@ -20,56 +22,68 @@ import Language.OCaml.PrettyPrinter.Longident ()
 import Language.OCaml.PrettyPrinter.RecFlag ()
 import Language.OCaml.PrettyPrinter.ValueBinding ()
 
-expressionDescPP :: (Pretty Expression) => ExpressionDesc -> Doc a
+expressionDescPP :: (Pretty Case, Pretty Expression) => ExpressionDesc -> Doc a
 expressionDescPP = \case
-  PexpIdent i -> pretty i
+
+  PexpApply e l ->
+    encloseSep "" "" " " $ pretty e : map (\ (_lbl, expr) -> prettyExpr expr) l -- FIXME: lbl
+    where
+      prettyExpr expr@(Expression { pexpDesc }) = case pexpDesc of
+        PexpApply _ _ -> parens $ pretty expr
+        _ -> pretty expr
+
+  PexpArray _ -> error "TODO"
+  PexpAssert _ -> error "TODO"
   PexpCoerce _ _ _ -> error "TODO"
   PexpConstant c -> pretty c
   PexpConstraint _ _ -> error "TODO"
-  PexpFun _ _ _ _ -> error "TODO"
-  PexpLet r l e -> case l of
-    []  -> error "TODO"
-    [x] -> fillCat [ "let ", pretty r, pretty x, " in ", pretty e ]
-    _   -> error "TODO"
+
+  PexpConstruct i e -> fillCat [ pretty i, pretty e ]
+
+  PexpExtension _e -> error "TODO"
+  PexpField _e _i -> error "TODO"
+  PexpFor _ _ _ _ _ -> error "TODO"
+
+  PexpFun _argLabel _ patt expr -> fillCat [ "fun ", pretty patt, " -> ", pretty expr ]
+
   PexpFunction l -> case l of
     []  -> error "TODO"
     [x] -> fillSep [ "function", pretty x ]
     _   -> fillSep [ "function", nest 2 $ line <> (vcat $ map pretty l) ]
-  PexpApply e l ->
-    case (pexpDesc e, l) of
-    {- Pairs that appear naked (without parentheses) give rise to PexpTuple
-       whereas pairs that appear parenthesized show up as PexpApply of
-       PexpTuple to [].  We display them back accordingly. -}
-    (e'@(PexpTuple _), []) -> fillCat [ lparen, expressionDescPP e', rparen ]
-    (_, _)                  -> fillCat $ pretty e : map (\ (_lbl, expr) -> pretty expr) l -- FIXME: lbl
-  PexpMatch _e _l -> error "TODO"
-  PexpTuple l -> encloseSep "" "" comma (map pretty l)
-  PexpConstruct i e -> fillSep [ pretty i, pretty e ]
-  PexpField _e _i -> error "TODO"
+
+  PexpIdent i -> pretty i
   PexpIfThenElse _e1 _e2 _e3 -> error "TODO"
-  PexpSequence _e1 _e2 -> error "TODO"
-  PexpExtension _e -> error "TODO"
-  PexpTry _ _ -> error "TODO"
-  PexpArray _ -> error "TODO"
-  PexpWhile _ _ -> error "TODO"
-  PexpUnreachable -> error "TODO"
-  PexpRecord _ _ -> error "TODO"
-  PexpFor _ _ _ _ _ -> error "TODO"
-  PexpSetField _ _ _ -> error "TODO"
-  PexpVariant _ _ -> error "TODO"
-  PexpSend _ _ -> error "TODO"
-  PexpNew _ -> error "TODO"
-  PexpSetInstVar _ _ -> error "TODO"
-  PexpOverride _ -> error "TODO"
-  PexpLetModule _ _ _ -> error "TODO"
-  PexpLetException _ _ -> error "TODO"
-  PexpAssert _ -> error "TODO"
   PexpLazy _ -> error "TODO"
-  PexpPoly _ _ -> error "TODO"
-  PexpObject _ -> error "TODO"
+
+  PexpLet r l e -> case l of
+    []  -> error "TODO"
+    [x] -> fillCat [ "let ", pretty r, pretty x, " in ", pretty e ]
+    _   -> error "TODO"
+
+  PexpLetException _ _ -> error "TODO"
+  PexpLetModule _ _ _ -> error "TODO"
+
+  PexpMatch discriminee branches -> vcat $ pretty discriminee : map pretty branches
+
+  PexpNew _ -> error "TODO"
   PexpNewType _ _ -> error "TODO"
-  PexpPack _ -> error "TODO"
+  PexpObject _ -> error "TODO"
   PexpOpen _ _ _ -> error "TODO"
+  PexpOverride _ -> error "TODO"
+  PexpPack _ -> error "TODO"
+  PexpPoly _ _ -> error "TODO"
+  PexpRecord _ _ -> error "TODO"
+  PexpSend _ _ -> error "TODO"
+  PexpSequence _e1 _e2 -> error "TODO"
+  PexpSetField _ _ _ -> error "TODO"
+  PexpSetInstVar _ _ -> error "TODO"
+  PexpTry _ _ -> error "TODO"
+
+  PexpTuple l -> encloseSep "(" ")" ", " (map pretty l)
+
+  PexpUnreachable -> error "TODO"
+  PexpVariant _ _ -> error "TODO"
+  PexpWhile _ _ -> error "TODO"
 
 instance Pretty Expression => Pretty ExpressionDesc where
   pretty = expressionDescPP

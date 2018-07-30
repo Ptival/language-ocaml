@@ -108,6 +108,12 @@ type 'a binary_tree =
     | Tree of 'a binary_tree * 'a binary_tree
   |]
 
+  , [s|
+type 'a list =
+  | Nil
+  | Cons of ('a * 'a list)
+  |]
+
   ]
 
 unitTests :: TestTree
@@ -120,5 +126,3 @@ unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
 
 test :: IO ()
 test = defaultMain unitTests
-
--- foo = debugPrettyPrinter parseStructureItem structureItemPP "type e_f = G of A.b * C.d_f | H | I"
