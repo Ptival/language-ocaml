@@ -3,7 +3,7 @@ module Language.OCaml.Parser.LabelDeclarationSemi
   ) where
 
 import Data.Default
-import Text.Megaparsec hiding (label)
+import Text.Megaparsec                                   hiding (label)
 
 import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
 import Language.OCaml.Definitions.Parsing.ParseTree

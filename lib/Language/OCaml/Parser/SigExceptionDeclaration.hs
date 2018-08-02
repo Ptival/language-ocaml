@@ -7,7 +7,7 @@ module Language.OCaml.Parser.SigExceptionDeclaration
 
 import Data.Default
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Te as Te
+import Language.OCaml.Definitions.Parsing.ASTHelper.Te       as Te
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.ConstrIdent

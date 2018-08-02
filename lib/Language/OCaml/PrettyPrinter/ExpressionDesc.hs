@@ -14,13 +14,13 @@ module Language.OCaml.PrettyPrinter.ExpressionDesc
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.ArgLabel ()
-import Language.OCaml.PrettyPrinter.Case ()
-import Language.OCaml.PrettyPrinter.Constant ()
-import Language.OCaml.PrettyPrinter.Loc ()
-import Language.OCaml.PrettyPrinter.Longident ()
-import Language.OCaml.PrettyPrinter.RecFlag ()
-import Language.OCaml.PrettyPrinter.ValueBinding ()
+import Language.OCaml.PrettyPrinter.ArgLabel        ()
+import Language.OCaml.PrettyPrinter.Case            ()
+import Language.OCaml.PrettyPrinter.Constant        ()
+import Language.OCaml.PrettyPrinter.Loc             ()
+import Language.OCaml.PrettyPrinter.Longident       ()
+import Language.OCaml.PrettyPrinter.RecFlag         ()
+import Language.OCaml.PrettyPrinter.ValueBinding    ()
 
 expressionDescPP :: (Pretty Case, Pretty Expression) => ExpressionDesc -> Doc a
 expressionDescPP = \case

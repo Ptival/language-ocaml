@@ -8,7 +8,7 @@ module Language.OCaml.Parser.ConstructorDeclaration
 
 import Data.Default
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
+import Language.OCaml.Definitions.Parsing.ASTHelper.Type     as Type
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Attributes
 import Language.OCaml.Parser.Common

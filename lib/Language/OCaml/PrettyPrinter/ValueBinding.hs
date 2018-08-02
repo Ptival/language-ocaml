@@ -11,7 +11,7 @@ module Language.OCaml.PrettyPrinter.ValueBinding
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.Pattern ()
+import Language.OCaml.PrettyPrinter.Pattern         ()
 
 valueBindingPP :: (Pretty Expression) => ValueBinding -> Doc a
 valueBindingPP d = fillSep [ pattern', "=", expr ]

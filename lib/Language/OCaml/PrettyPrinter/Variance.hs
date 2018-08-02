@@ -13,7 +13,7 @@ import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
 import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
-import Language.OCaml.PrettyPrinter.LabelDeclaration ()
+import Language.OCaml.PrettyPrinter.LabelDeclaration       ()
 
 variancePP :: Variance -> Doc a
 variancePP = \case

@@ -12,7 +12,7 @@ module Language.OCaml.PrettyPrinter.PatternDesc
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.ModuleBinding ()
+import Language.OCaml.PrettyPrinter.ModuleBinding   ()
 import Language.OCaml.PrettyPrinter.OpenDescription ()
 import Language.OCaml.PrettyPrinter.TypeDeclaration ()
 

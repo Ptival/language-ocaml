@@ -10,7 +10,7 @@ import Language.OCaml.Parser.LabeledSimplePattern
 import Language.OCaml.Parser.Pattern
 import Language.OCaml.Parser.Tokens
 import Language.OCaml.Parser.Utils.Types
-import Language.OCaml.PrettyPrinter ()
+import Language.OCaml.PrettyPrinter                 ()
 
 funDefP :: Parser Expression -> Parser Expression
 funDefP seqExprP = choice

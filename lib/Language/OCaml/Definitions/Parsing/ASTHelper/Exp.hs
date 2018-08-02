@@ -47,11 +47,11 @@ module Language.OCaml.Definitions.Parsing.ASTHelper.Exp
   ) where
 
 import Data.Default
-import Prelude hiding (sequence)
+import Prelude                                             hiding (sequence)
 
 import Language.OCaml.Definitions.Parsing.ASTHelper.Common
 import Language.OCaml.Definitions.Parsing.ASTTypes
-import Language.OCaml.Definitions.Parsing.ParseTree as ParseTree
+import Language.OCaml.Definitions.Parsing.ParseTree        as ParseTree
 import Language.OCaml.Definitions.Parsing.Location
 
 attr :: Expression -> Attribute -> Expression

@@ -8,7 +8,7 @@ module Language.OCaml.Parser.BarConstructorDeclaration
 import Data.Default
 import Text.Megaparsec
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
+import Language.OCaml.Definitions.Parsing.ASTHelper.Type     as Type
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.Parser.Attributes
 import Language.OCaml.Parser.Common

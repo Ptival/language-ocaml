@@ -10,9 +10,9 @@ module Language.OCaml.PrettyPrinter.ArgLabel
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
-import Language.OCaml.PrettyPrinter.Case ()
-import Language.OCaml.PrettyPrinter.Loc ()
-import Language.OCaml.PrettyPrinter.Longident ()
+import Language.OCaml.PrettyPrinter.Case           ()
+import Language.OCaml.PrettyPrinter.Loc            ()
+import Language.OCaml.PrettyPrinter.Longident      ()
 
 argLabelPP :: ArgLabel -> Doc a
 argLabelPP = \case

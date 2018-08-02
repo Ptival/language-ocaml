@@ -28,11 +28,11 @@ module Language.OCaml.Definitions.Parsing.Docstrings
   ) where
 
 import           GHC.Generics
-import qualified Data.Map.Strict as M
-import           Prelude hiding (exp)
+import qualified Data.Map.Strict                              as M
+import           Prelude                                      hiding (exp)
 
 import           Language.OCaml.Definitions.StdLib.Lexing
-import           Language.OCaml.Definitions.StdLib.Parsing as Parsing
+import           Language.OCaml.Definitions.StdLib.Parsing    as Parsing
 import           Language.OCaml.Definitions.Parsing.ASTTypes
 import           Language.OCaml.Definitions.Parsing.Location
 import           Language.OCaml.Definitions.Parsing.ParseTree

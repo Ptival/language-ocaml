@@ -22,10 +22,10 @@ module Language.OCaml.Parser.Generator.Lexer
   , runAlex
   ) where
 
-import           Control.Lens hiding (none)
+import           Control.Lens                                hiding (none)
 import           Control.Lens.TH
 import           Control.Monad.State
-import qualified Data.Map.Strict as M
+import qualified Data.Map.Strict                             as M
 import           GHC.Generics
 import           Text.Printf
 

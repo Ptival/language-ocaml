@@ -9,7 +9,7 @@ import Text.Megaparsec
 
 import Language.OCaml.Definitions.Parsing.ASTHelper.Opn as Opn
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.Parser.Common (mkRHS, symbolRLoc, symbolDocs)
+import Language.OCaml.Parser.Common                     (mkRHS, symbolRLoc, symbolDocs)
 -- import Language.OCaml.Parser.ExtAttributes
 import Language.OCaml.Parser.ModLongident
 import Language.OCaml.Parser.OverrideFlag

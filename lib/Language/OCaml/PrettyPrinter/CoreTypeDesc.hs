@@ -12,8 +12,8 @@ module Language.OCaml.PrettyPrinter.CoreTypeDesc
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.Loc ()
-import Language.OCaml.PrettyPrinter.Longident ()
+import Language.OCaml.PrettyPrinter.Loc             ()
+import Language.OCaml.PrettyPrinter.Longident       ()
 
 coreTypedescPP :: (Pretty CoreType) => CoreTypeDesc -> Doc a
 coreTypedescPP = \case

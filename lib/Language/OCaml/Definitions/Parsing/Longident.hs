@@ -7,7 +7,7 @@ module Language.OCaml.Definitions.Parsing.Longident
   ) where
 
 import GHC.Generics
-import Prelude hiding (last)
+import Prelude      hiding (last)
 
 data Longident
   = Lident String

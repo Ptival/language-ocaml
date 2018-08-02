@@ -24,25 +24,25 @@ module Language.OCaml.Parser.Generator.Parser
 import Data.Default
 import Text.Printf
 
-import Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp
-import Language.OCaml.Definitions.Parsing.ASTHelper.Mb as Mb
-import Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
-import Language.OCaml.Definitions.Parsing.ASTHelper.Mtd as Mtd
-import Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
-import Language.OCaml.Definitions.Parsing.ASTHelper.Opn as Opn
-import Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
-import Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str
-import Language.OCaml.Definitions.Parsing.ASTHelper.Te as Te
-import Language.OCaml.Definitions.Parsing.ASTHelper.Typ as Typ
-import Language.OCaml.Definitions.Parsing.ASTHelper.Type as Type
-import Language.OCaml.Definitions.Parsing.ASTHelper.Val as Val
-import Language.OCaml.Definitions.Parsing.ASTHelper.Vb as Vb
+import Language.OCaml.Definitions.Parsing.ASTHelper.Exp      as Exp
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mb       as Mb
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mod      as Mod
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mtd      as Mtd
+import Language.OCaml.Definitions.Parsing.ASTHelper.Mty      as Mty
+import Language.OCaml.Definitions.Parsing.ASTHelper.Opn      as Opn
+import Language.OCaml.Definitions.Parsing.ASTHelper.Pat      as Pat
+import Language.OCaml.Definitions.Parsing.ASTHelper.Str      as Str
+import Language.OCaml.Definitions.Parsing.ASTHelper.Te       as Te
+import Language.OCaml.Definitions.Parsing.ASTHelper.Typ      as Typ
+import Language.OCaml.Definitions.Parsing.ASTHelper.Type     as Type
+import Language.OCaml.Definitions.Parsing.ASTHelper.Val      as Val
+import Language.OCaml.Definitions.Parsing.ASTHelper.Vb       as Vb
 import Language.OCaml.Definitions.Parsing.Docstrings
 import Language.OCaml.Definitions.Parsing.Location
 import Language.OCaml.Definitions.Parsing.Parser.LetBinding
 import Language.OCaml.Definitions.Parsing.Parser.LetBindings
-import Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
-import Language.OCaml.Definitions.Parsing.ParseTree as ParseTree
+import Language.OCaml.Definitions.Parsing.ASTTypes           as ASTTypes
+import Language.OCaml.Definitions.Parsing.ParseTree          as ParseTree
 import Language.OCaml.Parser.Common
 import Language.OCaml.Parser.Generator.Lexer
 

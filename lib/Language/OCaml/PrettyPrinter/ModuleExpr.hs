@@ -10,7 +10,7 @@ module Language.OCaml.PrettyPrinter.ModuleExpr
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.ModuleExprDesc ()
+import Language.OCaml.PrettyPrinter.ModuleExprDesc  ()
 
 moduleExprPP :: ModuleExpr -> Doc a
 moduleExprPP = pretty . pmodDesc

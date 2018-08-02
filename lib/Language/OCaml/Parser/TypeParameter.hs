@@ -5,7 +5,7 @@ module Language.OCaml.Parser.TypeParameter
 import           Data.Default
 import           Text.Megaparsec
 
-import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
+import qualified Language.OCaml.Definitions.Parsing.ASTTypes  as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.Common
 import           Language.OCaml.Parser.NonrecFlag

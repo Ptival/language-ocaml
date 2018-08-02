@@ -57,21 +57,21 @@ import           Control.Eff
 import           Control.Eff.Exception
 import           Data.Default
 import           Data.Maybe
-import           Prelude hiding (exp)
+import           Prelude                                               hiding (exp)
 import           Text.Megaparsec
 
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Exp as Exp hiding (newType)
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Mod as Mod
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Mty as Mty
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Pat as Pat
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str hiding (text)
-import qualified Language.OCaml.Definitions.Parsing.ASTHelper.Str as Str (text)
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Typ as Typ
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Vb as Vb
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Exp      as Exp hiding (newType)
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Mod      as Mod
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Mty      as Mty
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Pat      as Pat
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Str      as Str hiding (text)
+import qualified Language.OCaml.Definitions.Parsing.ASTHelper.Str      as Str (text)
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Typ      as Typ
+import           Language.OCaml.Definitions.Parsing.ASTHelper.Vb       as Vb
 import           Language.OCaml.Definitions.Parsing.ASTTypes
 import           Language.OCaml.Definitions.Parsing.Docstrings
 import           Language.OCaml.Definitions.Parsing.Location
-import           Language.OCaml.Definitions.Parsing.Longident as Longident
+import           Language.OCaml.Definitions.Parsing.Longident          as Longident
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Definitions.Parsing.Parser.LetBinding
 import           Language.OCaml.Definitions.Parsing.Parser.LetBindings

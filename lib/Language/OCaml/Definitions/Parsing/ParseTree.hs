@@ -60,7 +60,7 @@ module Language.OCaml.Definitions.Parsing.ParseTree
 
 import GHC.Generics
 
-import Language.OCaml.Definitions.Parsing.ASTTypes hiding (Constant)
+import Language.OCaml.Definitions.Parsing.ASTTypes  hiding (Constant)
 import Language.OCaml.Definitions.Parsing.Location
 import Language.OCaml.Definitions.Parsing.Longident
 

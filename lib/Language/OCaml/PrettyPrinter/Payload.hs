@@ -14,7 +14,7 @@ import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
-import Language.OCaml.PrettyPrinter.LabelDeclaration ()
+import Language.OCaml.PrettyPrinter.LabelDeclaration       ()
 import Language.OCaml.PrettyPrinter.Structure
 
 payloadPP ::

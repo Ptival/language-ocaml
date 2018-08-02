@@ -9,9 +9,9 @@ module Language.OCaml.PrettyPrinter.OpenDescription
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.Loc ()
-import Language.OCaml.PrettyPrinter.Longident ()
-import Language.OCaml.PrettyPrinter.OverrideFlag ()
+import Language.OCaml.PrettyPrinter.Loc             ()
+import Language.OCaml.PrettyPrinter.Longident       ()
+import Language.OCaml.PrettyPrinter.OverrideFlag    ()
 
 openDescriptionPP :: OpenDescription -> Doc a
 openDescriptionPP d = fillCat

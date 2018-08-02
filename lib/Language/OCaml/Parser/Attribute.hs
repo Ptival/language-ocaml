@@ -4,7 +4,7 @@ module Language.OCaml.Parser.Attribute
 
 import           Text.Megaparsec
 
-import qualified Language.OCaml.Definitions.Parsing.ASTTypes as ASTTypes
+import qualified Language.OCaml.Definitions.Parsing.ASTTypes  as ASTTypes
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Parser.AttrId
 import           Language.OCaml.Parser.Payload

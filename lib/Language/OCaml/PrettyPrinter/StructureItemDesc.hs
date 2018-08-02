@@ -12,11 +12,11 @@ module Language.OCaml.PrettyPrinter.StructureItemDesc
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.Expression ()
-import Language.OCaml.PrettyPrinter.ModuleBinding ()
+import Language.OCaml.PrettyPrinter.Expression      ()
+import Language.OCaml.PrettyPrinter.ModuleBinding   ()
 import Language.OCaml.PrettyPrinter.OpenDescription ()
 import Language.OCaml.PrettyPrinter.TypeDeclaration ()
-import Language.OCaml.PrettyPrinter.ValueBinding ()
+import Language.OCaml.PrettyPrinter.ValueBinding    ()
 
 structureItemDescPP ::
   (Pretty Payload) => StructureItemDesc -> Doc a

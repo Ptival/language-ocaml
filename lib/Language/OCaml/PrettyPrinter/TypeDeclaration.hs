@@ -12,8 +12,8 @@ import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
 import Language.OCaml.PrettyPrinter.ConstructorDeclaration ()
-import Language.OCaml.PrettyPrinter.LabelDeclaration ()
-import Language.OCaml.PrettyPrinter.Variance ()
+import Language.OCaml.PrettyPrinter.LabelDeclaration       ()
+import Language.OCaml.PrettyPrinter.Variance               ()
 
 typeDeclarationPP :: (Pretty Payload) => TypeDeclaration -> Doc a
 typeDeclarationPP d =

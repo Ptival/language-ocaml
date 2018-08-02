@@ -9,7 +9,7 @@ module Language.OCaml.PrettyPrinter.CoreType
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.CoreTypeDesc ()
+import Language.OCaml.PrettyPrinter.CoreTypeDesc    ()
 
 coreTypePP :: CoreType -> Doc a
 coreTypePP = pretty . ptypDesc

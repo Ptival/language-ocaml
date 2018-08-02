@@ -11,7 +11,7 @@ module Language.OCaml.PrettyPrinter.Case
 import Data.Text.Prettyprint.Doc
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.Pattern ()
+import Language.OCaml.PrettyPrinter.Pattern         ()
 
 casePP :: (Pretty Expression) => Case -> Doc a
 casePP d = fillCat [ pipe, space, lhs, guard, space, "->", space, rhs ]
