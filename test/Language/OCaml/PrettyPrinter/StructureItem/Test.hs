@@ -126,3 +126,5 @@ unitTests = testGroup "Language.OCaml.PrettyPrinter.StructureItem" $ []
 
 test :: IO ()
 test = defaultMain unitTests
+
+-- foo = debugPrettyPrinter parseStructureItem structureItemPP (structureItemTests !! 24)

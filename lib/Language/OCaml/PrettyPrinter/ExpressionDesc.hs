@@ -38,7 +38,9 @@ expressionDescPP = \case
   PexpConstant c -> pretty c
   PexpConstraint _ _ -> error "TODO"
 
-  PexpConstruct i e -> fillCat [ pretty i, pretty e ]
+  PexpConstruct i e ->
+    -- NOTE: adding space so as to print `Some x` rather than `Somex` when parentheses are omitted
+    fillCat [ pretty i, space, pretty e ]
 
   PexpExtension _e -> error "TODO"
   PexpField _e _i -> error "TODO"

@@ -29,7 +29,9 @@ patternDescPP = \case
 
   PpatConstruct i p -> case p of
     Nothing -> pretty i
-    Just p' -> fillCat [ pretty i, pretty p' ]
+    Just p' ->
+      -- NOTE: adding space here so as to print `Constructor _` rather than `Constructor_`
+      fillCat [ pretty i, space, pretty p' ]
 
   PpatException _ -> error "TODO"
   PpatExtension _ -> error "TODO"
