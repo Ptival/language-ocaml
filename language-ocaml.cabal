@@ -1,7 +1,8 @@
 Name:          language-ocaml
 Version:       0.1.31
-Synopsis:      Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
-Description:   Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
+Synopsis:      Language tools for manipulating OCaml programs in Haskell
+Description:   Language tools for manipulating OCaml programs in Haskell.
+               Curently includes a Alex/Happy parser, and a pretty-printer.
 License:       MIT
 License-file:  LICENSE
 Author:        Valentin Robert
@@ -9,7 +10,7 @@ Maintainer:    valentin.robert.42@gmail.com
 Stability:     Experimental
 Category:      Language, OCaml
 Build-type:    Simple
-Cabal-version: >=1.22
+Cabal-version: 1.22
 
 Source-repository head
   type:     git
