@@ -248,8 +248,8 @@ data SignatureItemDesc
   -- | PsigInclude includeDescription
   -- | PsigClass classDescription list
   -- | PsigClassType classTypeDeclaration list
-  -- | PsigAttribute attribute
-  -- | Psig_extension extension * attributes
+  | PsigAttribute Attribute
+  | PsigExtension Extension Attributes
   deriving (Eq, Generic, Show)
 
 data ValueDescription = ValueDescription

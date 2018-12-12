@@ -1,5 +1,5 @@
 Name:          language-ocaml
-Version:       0.2.0
+Version:       0.2.1
 Synopsis:      Language tools for manipulating OCaml programs in Haskell
 Description:   Language tools for manipulating OCaml programs in Haskell.
                Curently includes a Alex/Happy parser, and a pretty-printer.
@@ -49,6 +49,7 @@ Library
                   Language.OCaml.Definitions.Parsing.ASTHelper.Mty
                   Language.OCaml.Definitions.Parsing.ASTHelper.Opn
                   Language.OCaml.Definitions.Parsing.ASTHelper.Pat
+                  Language.OCaml.Definitions.Parsing.ASTHelper.Sig
                   Language.OCaml.Definitions.Parsing.ASTHelper.Str
                   Language.OCaml.Definitions.Parsing.ASTHelper.Te
                   Language.OCaml.Definitions.Parsing.ASTHelper.Typ

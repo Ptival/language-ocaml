@@ -7,6 +7,8 @@
 
 module Language.OCaml.Parser.Generator.Parser
   ( Parser
+  , parseConstrLongident
+  , parseCoreType
   , parseExpr
   , parseExprCommaList
   , parseImplementation
@@ -14,9 +16,12 @@ module Language.OCaml.Parser.Generator.Parser
   , parseModLongident
   , parseOpenStatement
   , parsePattern
+  , parsePatternGen
+  , parsePatternNoExn
   , parseSeqExpr
   , parseSimpleExpr
   , parseSimplePattern
+  , parseSimplePatternNotIdent
   , parseStructure
   , parseStructureItem
   , parseValIdent
@@ -50,20 +55,25 @@ import Language.OCaml.Parser.Generator.Lexer
 
 }
 
-%name rawParseExpr           Expr
-%name rawParseExprCommaList  ExprCommaList
-%name rawParseImplementation Implementation
-%name rawParseLetBinding     LetBinding
-%name rawParseModLongident   ModLongident
-%name rawParseOpenStatement  OpenStatement
-%name rawParsePattern        Pattern
-%name rawParseSeqExpr        SeqExpr
-%name rawParseSimpleExpr     SimpleExpr
-%name rawParseSimplePattern  SimplePattern
-%name rawParseStructureItem  StructureItem
-%name rawParseStructure      Structure
-%name rawParseValIdent       ValIdent
-%name rawParseValLongident   ValLongident
+%name rawParseConstrLongident       ConstrLongident
+%name rawParseCoreType              CoreType
+%name rawParseExpr                  Expr
+%name rawParseExprCommaList         ExprCommaList
+%name rawParseImplementation        Implementation
+%name rawParseLetBinding            LetBinding
+%name rawParseModLongident          ModLongident
+%name rawParseOpenStatement         OpenStatement
+%name rawParsePattern               Pattern
+%name rawParsePatternGen            PatternGen
+%name rawParsePatternNoExn          PatternNoExn
+%name rawParseSeqExpr               SeqExpr
+%name rawParseSimpleExpr            SimpleExpr
+%name rawParseSimplePattern         SimplePattern
+%name rawParseSimplePatternNotIdent SimplePatternNotIdent
+%name rawParseStructureItem         StructureItem
+%name rawParseStructure             Structure
+%name rawParseValIdent              ValIdent
+%name rawParseValLongident          ValLongident
 
 %tokentype { ResultToken }
 %lexer { lexWrap } { Located _ TokEOF }
@@ -71,122 +81,122 @@ import Language.OCaml.Parser.Generator.Lexer
 %error { parseError }
 
 %token
-  "&&"       { Located _  TokAmperAmper }
-  "&"        { Located _  TokAmpersand }
-  and        { Located _  TokAnd }
-  as         { Located _  TokAs }
-  assert     { Located _  TokAssert }
-  "`"        { Located _  TokBackQuote }
-  "!"        { Located _  TokBang }
-  "|"        { Located _  TokBar }
-  "||"       { Located _  TokBarBar }
-  "|]"       { Located _  TokBarRBracket }
-  begin      { Located _  TokBegin }
-  CHAR       { Located _ (TokChar $$) }
-  class      { Located _  TokClass }
-  ":"        { Located _  TokColon }
-  "::"       { Located _  TokColonColon }
-  ":="       { Located _  TokColonEqual }
-  ":>"       { Located _  TokColonGreater }
-  ","        { Located _  TokComma }
-  constraint { Located _  TokConstraint }
-  do         { Located _  TokDo }
-  done       { Located _  TokDone }
-  "."        { Located _  TokDot }
-  ".."       { Located _  TokDotDot }
-  DOTOP      { Located _ (TokDotOp $$) }
-  downto     { Located _  TokDownTo }
-  else       { Located _  TokElse }
-  end        { Located _  TokEnd }
-  EOF        { Located _  TokEOF }
-  "="        { Located _  TokEqual }
-  exception  { Located _  TokException }
-  external   { Located _  TokExternal }
-  false      { Located _  TokFalse }
-  FLOAT      { Located _ (TokFloat $$) }
-  for        { Located _  TokFor }
-  fun        { Located _  TokFun }
-  function   { Located _  TokFunction }
-  functor    { Located _  TokFunctor }
-  ">"        { Located _  TokGreater }
-  ">}"       { Located _  TokGreaterRBrace }
-  ">]"       { Located _  TokGreaterRBracket }
-  "#"        { Located _  TokHash }
-  HASHOP     { Located _ (TokHashOp $$) }
-  if         { Located _  TokIf }
-  in         { Located _  TokIn }
-  include    { Located _  TokInclude }
-  inherit    { Located _  TokInherit }
-  initialier { Located _  TokInitializer }
-  INFIXOP0   { Located _ (TokInfixOp0 $$) }
-  INFIXOP1   { Located _ (TokInfixOp1 $$) }
-  INFIXOP2   { Located _ (TokInfixOp2 $$) }
-  INFIXOP3   { Located _ (TokInfixOp3 $$) }
-  INFIXOP4   { Located _ (TokInfixOp4 $$) }
-  INT        { Located _ (TokInt $$) }
-  LABEL      { Located _ (TokLabel $$) }
-  lazy       { Located _  TokLazy }
-  "{"        { Located _  TokLBrace }
-  "{<"       { Located _  TokLBraceLess }
-  "["        { Located _  TokLBracket }
-  "[@"       { Located _  TokLBracketAt }
-  "[@@"      { Located _  TokLBracketAtAt }
-  "[@@@"     { Located _  TokLBracketAtAtAt }
-  "[|"       { Located _  TokLBracketBar }
-  "[>"       { Located _  TokLBracketGreater }
-  "[<"       { Located _  TokLBracketLess }
-  "[%"       { Located _  TokLBracketPercent }
-  "[%%"      { Located _  TokLBracketPercentPercent }
-  "<"        { Located _  TokLess }
-  "<-"       { Located _  TokLessMinus }
-  let        { Located _  TokLet }
-  LIDENT     { Located _ (TokLIdent $$) }
-  "("        { Located _  TokLParen }
-  match      { Located _  TokMatch }
-  method     { Located _  TokMethod }
-  "-"        { Located _  TokMinus }
-  "-."       { Located _  TokMinusDot }
-  "->"       { Located _  TokMinusGreater }
-  module     { Located _  TokModule }
-  mutable    { Located _  TokMutable }
-  new        { Located _  TokNew }
-  nonrec     { Located _  TokNonRec }
-  object     { Located _  TokObject }
-  of         { Located _  TokOf }
-  open       { Located _  TokOpen }
-  OPTLABEL  { Located _ (TokOptLabel $$) }
-  or         { Located _  TokOr }
-  "%"        { Located _  TokPercent }
-  "+"        { Located _  TokPlus }
-  "+."       { Located _  TokPlusDot }
-  "+="       { Located _  TokPlusEq }
-  PREFIXOP   { Located _ (TokPrefixOp $$) }
-  private    { Located _  TokPrivate }
-  "?"        { Located _  TokQuestion }
-  "'"        { Located _  TokQuote }
-  "}"        { Located _  TokRBrace }
-  "]"        { Located _  TokRBracket }
-  rec        { Located _  TokRec }
-  ")"        { Located _  TokRParen }
-  ";"        { Located _  TokSemi }
-  ";;"       { Located _  TokSemiSemi }
-  sig        { Located _  TokSig }
-  "*"        { Located _  TokStar }
-  STRING     { Located _ (TokString $$) }
-  struct     { Located _  TokStruct }
-  then       { Located _  TokThen }
-  "~"        { Located _  TokTilde }
-  to         { Located _  TokTo }
-  true       { Located _  TokTrue }
-  try        { Located _  TokTry }
-  type       { Located _  TokType }
-  UIDENT     { Located _ (TokUIdent $$) }
-  "_"        { Located _  TokUnderscore }
-  val        { Located _  TokVal }
-  virtual    { Located _  TokVirtual }
-  when       { Located _  TokWhen }
-  while      { Located _  TokWhile }
-  with       { Located _  TokWith }
+  "&&"        { Located _  TokAmperAmper }
+  "&"         { Located _  TokAmpersand }
+  and         { Located _  TokAnd }
+  as          { Located _  TokAs }
+  assert      { Located _  TokAssert }
+  "`"         { Located _  TokBackQuote }
+  "!"         { Located _  TokBang }
+  "|"         { Located _  TokBar }
+  "||"        { Located _  TokBarBar }
+  "|]"        { Located _  TokBarRBracket }
+  begin       { Located _  TokBegin }
+  CHAR        { Located _ (TokChar $$) }
+  class       { Located _  TokClass }
+  ":"         { Located _  TokColon }
+  "::"        { Located _  TokColonColon }
+  ":="        { Located _  TokColonEqual }
+  ":>"        { Located _  TokColonGreater }
+  ","         { Located _  TokComma }
+  constraint  { Located _  TokConstraint }
+  do          { Located _  TokDo }
+  done        { Located _  TokDone }
+  "."         { Located _  TokDot }
+  ".."        { Located _  TokDotDot }
+  DOTOP       { Located _ (TokDotOp $$) }
+  downto      { Located _  TokDownTo }
+  else        { Located _  TokElse }
+  end         { Located _  TokEnd }
+  EOF         { Located _  TokEOF }
+  "="         { Located _  TokEqual }
+  exception   { Located _  TokException }
+  external    { Located _  TokExternal }
+  false       { Located _  TokFalse }
+  FLOAT       { Located _ (TokFloat $$) }
+  for         { Located _  TokFor }
+  fun         { Located _  TokFun }
+  function    { Located _  TokFunction }
+  functor     { Located _  TokFunctor }
+  ">"         { Located _  TokGreater }
+  ">}"        { Located _  TokGreaterRBrace }
+  ">]"        { Located _  TokGreaterRBracket }
+  "#"         { Located _  TokHash }
+  HASHOP      { Located _ (TokHashOp $$) }
+  if          { Located _  TokIf }
+  in          { Located _  TokIn }
+  include     { Located _  TokInclude }
+  inherit     { Located _  TokInherit }
+  initializer { Located _  TokInitializer }
+  INFIXOP0    { Located _ (TokInfixOp0 $$) }
+  INFIXOP1    { Located _ (TokInfixOp1 $$) }
+  INFIXOP2    { Located _ (TokInfixOp2 $$) }
+  INFIXOP3    { Located _ (TokInfixOp3 $$) }
+  INFIXOP4    { Located _ (TokInfixOp4 $$) }
+  INT         { Located _ (TokInt $$) }
+  LABEL       { Located _ (TokLabel $$) }
+  lazy        { Located _  TokLazy }
+  "{"         { Located _  TokLBrace }
+  "{<"        { Located _  TokLBraceLess }
+  "["         { Located _  TokLBracket }
+  "[@"        { Located _  TokLBracketAt }
+  "[@@"       { Located _  TokLBracketAtAt }
+  "[@@@"      { Located _  TokLBracketAtAtAt }
+  "[|"        { Located _  TokLBracketBar }
+  "[>"        { Located _  TokLBracketGreater }
+  "[<"        { Located _  TokLBracketLess }
+  "[%"        { Located _  TokLBracketPercent }
+  "[%%"       { Located _  TokLBracketPercentPercent }
+  "<"         { Located _  TokLess }
+  "<-"        { Located _  TokLessMinus }
+  let         { Located _  TokLet }
+  LIDENT      { Located _ (TokLIdent $$) }
+  "("         { Located _  TokLParen }
+  match       { Located _  TokMatch }
+  method      { Located _  TokMethod }
+  "-"         { Located _  TokMinus }
+  "-."        { Located _  TokMinusDot }
+  "->"        { Located _  TokMinusGreater }
+  module      { Located _  TokModule }
+  mutable     { Located _  TokMutable }
+  new         { Located _  TokNew }
+  nonrec      { Located _  TokNonRec }
+  object      { Located _  TokObject }
+  of          { Located _  TokOf }
+  open        { Located _  TokOpen }
+  OPTLABEL    { Located _ (TokOptLabel $$) }
+  or          { Located _  TokOr }
+  "%"         { Located _  TokPercent }
+  "+"         { Located _  TokPlus }
+  "+."        { Located _  TokPlusDot }
+  "+="        { Located _  TokPlusEq }
+  PREFIXOP    { Located _ (TokPrefixOp $$) }
+  private     { Located _  TokPrivate }
+  "?"         { Located _  TokQuestion }
+  "'"         { Located _  TokQuote }
+  "}"         { Located _  TokRBrace }
+  "]"         { Located _  TokRBracket }
+  rec         { Located _  TokRec }
+  ")"         { Located _  TokRParen }
+  ";"         { Located _  TokSemi }
+  ";;"        { Located _  TokSemiSemi }
+  sig         { Located _  TokSig }
+  "*"         { Located _  TokStar }
+  STRING      { Located _ (TokString $$) }
+  struct      { Located _  TokStruct }
+  then        { Located _  TokThen }
+  "~"         { Located _  TokTilde }
+  to          { Located _  TokTo }
+  true        { Located _  TokTrue }
+  try         { Located _  TokTry }
+  type        { Located _  TokType }
+  UIDENT      { Located _ (TokUIdent $$) }
+  "_"         { Located _  TokUnderscore }
+  val         { Located _  TokVal }
+  virtual     { Located _  TokVirtual }
+  when        { Located _  TokWhen }
+  while       { Located _  TokWhile }
+  with        { Located _  TokWith }
 
 %nonassoc in
 %nonassoc belowSemi
@@ -452,7 +462,7 @@ FieldSemi :: { ObjectField }
 
 FunBinding :: { Expression }
   : StrictBinding { $1 }
-  -- | TypeConstraint "=" SeqExpr { mkexpConstraint $3 $1 }
+  | TypeConstraint "=" SeqExpr { mkexpConstraint $3 $1 }
 
 FunDef :: { Expression }
   : "->" SeqExpr                    { $2 }
@@ -842,7 +852,7 @@ PatternVar :: { Pattern }
 
 Payload :: { Payload }
   : Structure     { PStr $1 }
-  -- | ":" Signature { PSig $2 }
+  | ":" Signature { PSig $2 }
   -- TODO
 
 PolyType :: { CoreType }
@@ -922,14 +932,14 @@ SigExceptionDeclaration :: { (ExtensionConstructor, Maybe (Loc String)) }
     )
   }
 
--- Signature :: { [SignatureItem] }
---   : {- empty-}              { [] }
---   | ";;" Signature          { textSig 1 ++ $2 }
---   | SignatureItem Signature { textSig 1 ++ $1 : $2 }
---
--- SignatureItem :: { SignatureItem }
---   : ValueDescription { let (body, ext) = $1 in mksigExt (PsigValue body) ext }
---   -- TODO
+Signature :: { [SignatureItem] }
+  : {- empty-}              { [] }
+  | ";;" Signature          { textSig 1 ++ $2 }
+  | SignatureItem Signature { textSig 1 ++ $1 : $2 }
+
+SignatureItem :: { SignatureItem }
+  : ValueDescription { let (body, ext) = $1 in mksigExt (PsigValue body) ext }
+  -- TODO
 
 SignedConstant :: { ParseTree.Constant }
   : Constant { $1 }
@@ -1064,14 +1074,57 @@ SimplePatternNotIdent :: { Pattern }
   | Extension                                             { mkpat $ PpatExtension $1 }
 
 SingleAttrId :: { String }
-  : LIDENT { $1 }
-  | UIDENT { $1 }
-  -- | and    { "and" }
-  -- | as     { "as" }
-  -- | assert { "assert" }
-  -- | begin  { "begin" }
-  -- | class  { "class" }
-  -- TODO
+  : LIDENT      { $1 }
+  | UIDENT      { $1 }
+  | and         { "and" }
+  | as          { "as" }
+  | assert      { "assert" }
+  | begin       { "begin" }
+  | class       { "class" }
+  | constraint  { "constraint" }
+  | do          { "do" }
+  | done        { "done" }
+  | downto      { "downto" }
+  | else        { "else" }
+  | end         { "end" }
+  | exception   { "exception" }
+  | external    { "external" }
+  | false       { "false" }
+  | for         { "for" }
+  | fun         { "fun" }
+  | function    { "function" }
+  | functor     { "functor" }
+  | if          { "if" }
+  | in          { "in" }
+  | include     { "include" }
+  | inherit     { "inherit" }
+  | initializer { "initializer" }
+  | lazy        { "lazy" }
+  | let         { "let" }
+  | match       { "match" }
+  | method      { "method" }
+  | module      { "module" }
+  | mutable     { "mutable" }
+  | new         { "new" }
+  | nonrec      { "nonrec" }
+  | object      { "object" }
+  | of          { "of" }
+  | open        { "open" }
+  | or          { "or" }
+  | private     { "private" }
+  | rec         { "rec" }
+  | sig         { "sig" }
+  | struct      { "struct" }
+  | then        { "then" }
+  | to          { "to" }
+  | true        { "true" }
+  | try         { "try" }
+  | type        { "type" }
+  | val         { "val" }
+  | virtual     { "virtual" }
+  | when        { "when" }
+  | while       { "while" }
+  | with        { "with" }
 
 StrExceptionDeclaration :: { (ExtensionConstructor, Maybe (Loc String)) }
   : SigExceptionDeclaration                           { $1 }
@@ -1219,6 +1272,12 @@ parseError (Located (SrcSpan {..}) tok) = do
 
 type Parser a = String -> Either String a
 
+parseConstrLongident :: Parser Longident
+parseConstrLongident = myParse rawParseConstrLongident
+
+parseCoreType :: Parser CoreType
+parseCoreType = myParse rawParseCoreType
+
 parseExpr :: Parser Expression
 parseExpr = myParse rawParseExpr
 
@@ -1240,6 +1299,12 @@ parseOpenStatement = myParse rawParseOpenStatement
 parsePattern :: Parser Pattern
 parsePattern = myParse rawParsePattern
 
+parsePatternGen :: Parser Pattern
+parsePatternGen = myParse rawParsePatternGen
+
+parsePatternNoExn :: Parser Pattern
+parsePatternNoExn = myParse rawParsePatternNoExn
+
 parseSeqExpr :: Parser Expression
 parseSeqExpr = myParse rawParseSeqExpr
 
@@ -1248,6 +1313,9 @@ parseSimpleExpr = myParse rawParseSimpleExpr
 
 parseSimplePattern :: Parser Pattern
 parseSimplePattern = myParse rawParseSimplePattern
+
+parseSimplePatternNotIdent :: Parser Pattern
+parseSimplePatternNotIdent = myParse rawParseSimplePatternNotIdent
 
 parseStructure :: Parser Structure
 parseStructure = myParse rawParseStructure

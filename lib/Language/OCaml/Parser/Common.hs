@@ -33,6 +33,7 @@ module Language.OCaml.Parser.Common
   , mkpatCons
   , mkpatvar
   , mkRHS
+  , mksigExt
   , mkstr
   , mkstrExt
   , mkstrexp
@@ -46,6 +47,7 @@ module Language.OCaml.Parser.Common
   , rhsLoc
   , symbolDocs
   , symbolRLoc
+  , textSig
   , textStr
   , valOfLetBindings
   , wrapExpAttrs
@@ -56,14 +58,14 @@ import           Control.Eff
 import           Control.Eff.Exception
 import           Data.Default
 import           Data.Maybe
-import           Prelude                                               hiding (exp)
+import           Prelude                                               hiding (exp, id)
 
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Exp      as Exp hiding (newType)
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Mod      as Mod
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Mty      as Mty
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Pat      as Pat
-import           Language.OCaml.Definitions.Parsing.ASTHelper.Str      as Str hiding (text)
-import qualified Language.OCaml.Definitions.Parsing.ASTHelper.Str      as Str (text)
+import qualified Language.OCaml.Definitions.Parsing.ASTHelper.Sig      as Sig
+import qualified Language.OCaml.Definitions.Parsing.ASTHelper.Str      as Str
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Typ      as Typ
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Vb       as Vb
 import           Language.OCaml.Definitions.Parsing.ASTTypes
@@ -208,6 +210,9 @@ ghpat d = Pat.mk def d -- FIXME
 ghtyp :: CoreTypeDesc -> CoreType
 ghtyp d = Typ.mk def d -- FIXME
 
+ghsig :: SignatureItemDesc -> SignatureItem
+ghsig d = Sig.mk def d -- FIXME
+
 mkexpConstraint :: Expression -> (Maybe CoreType, Maybe CoreType) -> Expression
 mkexpConstraint e (t1, t2) = case (t1, t2) of
   (Just t,  Nothing) -> ghexp $ PexpConstraint e t
@@ -291,6 +296,9 @@ symbolDocs () = emptyDocs -- FIXME
 textStr :: Int -> [StructureItem]
 textStr pos = Str.text (rhsText pos)
 
+textSig :: Int -> [SignatureItem]
+textSig pos = Sig.text (rhsText pos)
+
 extraText :: (Text -> [a]) -> p -> [a] -> [a]
 extraText text pos []    = let post = rhsPostText pos in
                            let postExtras = rhsPostExtraText pos in
@@ -366,3 +374,15 @@ mkOperator :: String -> Int -> Expression
 mkOperator name pos =
   let loc = rhsLoc pos in
   Exp.mk (def { loc }) $ PexpIdent (mkLoc (Lident name) loc)
+
+wrapSigExt :: SignatureItem -> Maybe (Loc String) -> SignatureItem
+wrapSigExt body ext =
+  case ext of
+  Nothing -> body
+  Just id -> ghsig $ PsigExtension (id, PSig [body]) []
+
+mksig :: SignatureItemDesc -> SignatureItem
+mksig d = Sig.mk def d -- FIXME
+
+mksigExt :: SignatureItemDesc -> Maybe (Loc String) -> SignatureItem
+mksigExt d ext = wrapSigExt (mksig d) ext
