@@ -1,5 +1,3 @@
-{-# LANGUAGE QuasiQuotes #-}
-
 module Language.OCaml.Parser.StructureItem.Test
   ( testStrings
   ) where

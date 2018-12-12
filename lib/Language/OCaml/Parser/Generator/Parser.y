@@ -10,11 +10,13 @@ module Language.OCaml.Parser.Generator.Parser
   , parseExpr
   , parseExprCommaList
   , parseImplementation
+  , parseLetBinding
   , parseModLongident
   , parseOpenStatement
   , parsePattern
   , parseSeqExpr
   , parseSimpleExpr
+  , parseSimplePattern
   , parseStructure
   , parseStructureItem
   , parseValIdent
@@ -51,11 +53,13 @@ import Language.OCaml.Parser.Generator.Lexer
 %name rawParseExpr           Expr
 %name rawParseExprCommaList  ExprCommaList
 %name rawParseImplementation Implementation
+%name rawParseLetBinding     LetBinding
 %name rawParseModLongident   ModLongident
 %name rawParseOpenStatement  OpenStatement
 %name rawParsePattern        Pattern
 %name rawParseSeqExpr        SeqExpr
 %name rawParseSimpleExpr     SimpleExpr
+%name rawParseSimplePattern  SimplePattern
 %name rawParseStructureItem  StructureItem
 %name rawParseStructure      Structure
 %name rawParseValIdent       ValIdent
@@ -227,6 +231,10 @@ import Language.OCaml.Parser.Generator.Lexer
 
 %%
 
+Additive :: { String }
+  : "+"  { "+" }
+  | "+." { "+." }
+
 AmperTypeList :: { [CoreType] }
   : CoreTypeNoAttr                   { [$1] }
   | AmperTypeList "&" CoreTypeNoAttr { $3 : $1 }
@@ -378,6 +386,11 @@ Expr :: { Expression }
     "=" SeqExpr DirectionFlag SeqExpr
     do SeqExpr done                                                { mkexpAttrs (PexpFor $3 $5 $7 $6 $9) $2 }
   | Expr "::" Expr                                                 { mkexpCons (rhsLoc 2) (ghexp $ PexpTuple [$1, $3]) (symbolRLoc ()) }
+  | Expr INFIXOP0 Expr                                             { mkinfix $1 $2 $3 }
+  | Expr INFIXOP1 Expr                                             { mkinfix $1 $2 $3 }
+  | Expr INFIXOP2 Expr                                             { mkinfix $1 $2 $3 }
+  | Expr INFIXOP3 Expr                                             { mkinfix $1 $2 $3 }
+  | Expr INFIXOP4 Expr                                             { mkinfix $1 $2 $3 }
   -- TODO: infixops
   | Expr "+"  Expr                                                 { mkinfix $1 "+"  $3 }
   | Expr "+." Expr                                                 { mkinfix $1 "+." $3 }
@@ -394,8 +407,11 @@ Expr :: { Expression }
   | Expr "&"  Expr                                                 { mkinfix $1 "&"  $3 }
   | Expr "&&" Expr                                                 { mkinfix $1 "&&" $3 }
   | Expr ":=" Expr                                                 { mkinfix $1 ":=" $3 }
-  -- TODO
+  | Subtractive Expr %prec precUnaryMinus                          { mkuminus $1 $2 }
+  | Additive    Expr %prec precUnaryPlus                           { mkuplus  $1 $2 }
   | SimpleExpr "." LabelLongident "<-" Expr                        { mkexp $ PexpSetField $1 (mkRHS $3 3) $5 }
+  -- TODO: label LESSMINUS expr
+  | assert ExtAttributes SimpleExpr %prec belowHash                { mkexpAttrs (PexpAssert $3) $2 }
   -- TODO
   -- | Expr Attribute                                                 { attrExp $1 $2 }
   | "_"                                                            {% alexError "Wildcard not expected" }
@@ -874,6 +890,14 @@ RecordExpr :: { (Maybe Expression, [(Loc Longident, Expression)]) }
   : SimpleExpr with LblExprList { (Just $1, $3) }
   | LblExprList                 { (Nothing, $1) }
 
+RowField :: { a }
+  : TagField       { $1 }
+  | SimpleCoreType { Rinherit $1 }
+
+RowFieldList :: { [a] }
+  : RowField                  { [$1] }
+  | RowFieldList "|" RowField { $3 : $1 }
+
 SeqExpr :: { Expression }
   : Expr %prec belowSemi        { $1 }
   | Expr ";"                    { $1 }
@@ -935,6 +959,7 @@ SimpleCoreType2 :: { CoreType }
   | "(" CoreTypeCommaList ")" "#" ClassLongident { mktyp $ PtypClass (mkRHS $5 5) (reverse $2) }
   | "[" TagField "]"                             { mktyp $ PtypVariant [$2] Closed Nothing }
   -- TODO
+  | "[" "|" RowFieldList "]"                     { mktyp $ PtypVariant (reverse $3) Closed Nothing }
   | "[>" "]"                                     { mktyp $ PtypVariant [] Open Nothing }
 
 SimpleCoreTypeOrTuple :: { CoreType }
@@ -1094,8 +1119,12 @@ StructureItem :: { StructureItem }
 
 StructureTail :: { Structure }
   : {- empty -}                 { [] }
-  | "::" Structure              { (textStr 1) ++ $2 }
+  | ";;" Structure              { (textStr 1) ++ $2 }
   | StructureItem StructureTail { (textStr 1) ++ $1 : $2 }
+
+Subtractive :: { String }
+  : "-"  { "-" }
+  | "-." { "-." }
 
 TagField :: { RowField }
   : NameTag of OptAmpersand AmperTypeList Attributes { Rtag (mkRHS $1 1) (addInfoAttrs (symbolInfo ()) $5) $3 (reverse $4) }
@@ -1162,7 +1191,7 @@ TypeVarList :: { [Loc String] }
 
 ValIdent :: { String }
   : LIDENT           { $1 }
-  | "(" Operator ")" { error "TODO ValIdent" }
+  | "(" Operator ")" { $2 }
   -- TODO
 
 ValLongident :: { Longident }
@@ -1199,6 +1228,9 @@ parseExprCommaList = myParse rawParseExprCommaList
 parseImplementation :: Parser [StructureItem]
 parseImplementation = myParse rawParseImplementation
 
+parseLetBinding :: Parser LetBindings
+parseLetBinding = myParse rawParseLetBinding
+
 parseModLongident :: Parser Longident
 parseModLongident = myParse rawParseModLongident
 
@@ -1214,6 +1246,9 @@ parseSeqExpr = myParse rawParseSeqExpr
 parseSimpleExpr :: Parser Expression
 parseSimpleExpr = myParse rawParseSimpleExpr
 
+parseSimplePattern :: Parser Pattern
+parseSimplePattern = myParse rawParseSimplePattern
+
 parseStructure :: Parser Structure
 parseStructure = myParse rawParseStructure
 
@@ -1228,5 +1263,28 @@ parseValLongident = myParse rawParseValLongident
 
 myParse :: Alex a -> String -> Either String a
 myParse = flip runAlex
+
+negString :: String -> String
+negString f =
+  if length f > 0 && f !! 0 == '-'
+  then tail f
+  else '-' : f
+
+mkuminus :: String -> Expression -> Expression
+mkuminus name arg =
+  case (name, pexpDesc arg) of
+    ("-",  PexpConstant (PconstInteger n m)) -> mkexp $ PexpConstant $ PconstInteger (negString n) m
+    ("-",  PexpConstant (PconstFloat   f m)) -> mkexp $ PexpConstant $ PconstFloat   (negString f) m
+    ("-.", PexpConstant (PconstFloat   f m)) -> mkexp $ PexpConstant $ PconstFloat   (negString f) m
+    _                                        -> mkexp $ PexpApply (mkOperator ("~" ++ name) 1) [(Nolabel, arg)]
+
+mkuplus :: String -> Expression -> Expression
+mkuplus name arg =
+  let desc = pexpDesc arg in
+  case (name, desc) of
+    ("+",  PexpConstant (PconstInteger _ _)) -> mkexp desc
+    ("+",  PexpConstant (PconstFloat   _ _)) -> mkexp desc
+    ("+.", PexpConstant (PconstFloat   _ _)) -> mkexp desc
+    _                                        -> mkexp $ PexpApply (mkOperator ("~" ++ name) 1) [(Nolabel, arg)]
 
 }

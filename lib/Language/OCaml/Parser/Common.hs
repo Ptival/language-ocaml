@@ -14,7 +14,6 @@ module Language.OCaml.Parser.Common
   , ghexp
   , ghtyp
   , ghpat
-  , identP
   , mkexp
   , mkexpAttrs
   , mkexpCons
@@ -58,7 +57,6 @@ import           Control.Eff.Exception
 import           Data.Default
 import           Data.Maybe
 import           Prelude                                               hiding (exp)
-import           Text.Megaparsec
 
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Exp      as Exp hiding (newType)
 import           Language.OCaml.Definitions.Parsing.ASTHelper.Mod      as Mod
@@ -75,12 +73,6 @@ import           Language.OCaml.Definitions.Parsing.Longident          as Longid
 import           Language.OCaml.Definitions.Parsing.ParseTree
 import           Language.OCaml.Definitions.Parsing.Parser.LetBinding
 import           Language.OCaml.Definitions.Parsing.Parser.LetBindings
-import           Language.OCaml.Parser.Tokens
-import           Language.OCaml.Parser.Utils.Utils
-import           Language.OCaml.Parser.Utils.Types
-
-identP :: Parser String
-identP = lexeme $ choice [ uIdentT, lIdentT ]
 
 mkstr :: StructureItemDesc -> StructureItem
 mkstr d = Str.mk def d -- FIXME: symbolRLoc

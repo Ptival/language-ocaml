@@ -17,7 +17,7 @@ import Test.Tasty.HUnit
 
 import Language.OCaml.Parser
 
-mkPrettyPrinterTest :: (Eq a) => TestName -> ParserG a -> (a -> Doc b) -> String -> TestTree
+mkPrettyPrinterTest :: (Eq a) => TestName -> Parser a -> (a -> Doc b) -> String -> TestTree
 mkPrettyPrinterTest name parser printer input =
   testCase name $ condition @? message
   where
@@ -55,7 +55,7 @@ instance (Pretty a, Show a) => Show (DebugPrettyPrinter a b) where
     ++ show (pretty a) ++ "\n"
 
 debugPrettyPrinter ::
-  (Eq a) => ParserG a -> (a -> Doc b) -> String -> DebugPrettyPrinter a b
+  (Eq a) => Parser a -> (a -> Doc b) -> String -> DebugPrettyPrinter a b
 debugPrettyPrinter parser printer input =
   case parser input of
   Left _ -> NoParse1
@@ -64,8 +64,8 @@ debugPrettyPrinter parser printer input =
     Left _ -> NoParse2 r (printer r)
     Right r' -> if r == r' then ParseEq r' else ParseDiff r r'
 
-parseAndPrettyPrint :: ParserG a -> (a -> Doc b) -> String -> Either String (Doc b)
+parseAndPrettyPrint :: Parser a -> (a -> Doc b) -> String -> Either String (Doc b)
 parseAndPrettyPrint parser printer input = printer <$> parser input
 
-roundtrip :: ParserG a -> (a -> Doc b) -> String -> Either String String
+roundtrip :: Parser a -> (a -> Doc b) -> String -> Either String String
 roundtrip p pp s = (show . pp) <$> p s

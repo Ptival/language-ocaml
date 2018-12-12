@@ -1,6 +1,8 @@
 module Language.OCaml.Parser.TestStrings
   ( attributes
   , expr
+  , implementation
+  , letBinding
   , payload
   , seqExpr
   , simpleExpr
@@ -11,6 +13,8 @@ module Language.OCaml.Parser.TestStrings
 
 import qualified Language.OCaml.Parser.Attributes.Test as Attributes
 import qualified Language.OCaml.Parser.Expr.Test as Expr
+import qualified Language.OCaml.Parser.Implementation.Test as Implementation
+import qualified Language.OCaml.Parser.LetBinding.Test as LetBinding
 import qualified Language.OCaml.Parser.Payload.Test as Payload
 import qualified Language.OCaml.Parser.SeqExpr.Test as SeqExpr
 import qualified Language.OCaml.Parser.SimpleExpr.Test as SimpleExpr
@@ -23,6 +27,12 @@ attributes = Attributes.testStrings payload
 
 expr :: [String]
 expr = Expr.testStrings seqExpr
+
+implementation :: [String]
+implementation = Implementation.testStrings
+
+letBinding :: [String]
+letBinding = LetBinding.testStrings structure
 
 payload :: [String]
 payload = Payload.testStrings structure

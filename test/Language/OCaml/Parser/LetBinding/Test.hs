@@ -17,9 +17,9 @@ limit = 10
 
 testStrings :: [String] -> [String]
 testStrings structure = []
-  ++ [ [i| let #{ea} #{rf} #{lbb} #{pia} |]
-       | ea <- extAttributes
-       , rf <- recFlag
+  ++ [ [i|let #{ea} #{rf} #{lbb} #{pia}|]
+       | ea  <- extAttributes
+       , rf  <- recFlag
        , lbb <- letBindingBody
        , pia <- postItemAttributes
        ]

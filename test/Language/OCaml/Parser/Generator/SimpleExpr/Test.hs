@@ -11,7 +11,7 @@ import           Language.OCaml.Parser.TestUtils
 
 unitTests :: TestTree
 unitTests = testGroup "Language.OCaml.Parser.Generator.SimpleExpr" $ []
-  ++ map (mkParsingTestG parseSimpleExpr) TestStrings.simpleExpr
+  ++ map (mkParsingTest parseSimpleExpr) TestStrings.simpleExpr
 
 test :: IO ()
 test = defaultMain unitTests

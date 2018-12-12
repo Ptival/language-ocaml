@@ -1,15 +1,6 @@
-{-# LANGUAGE OverloadedStrings #-}
-
 module Language.OCaml.Parser.Int.Test
-  ( test
-  , testStrings
-  , unitTests
+  ( testStrings
   ) where
-
-import           Test.Tasty
-
-import           Language.OCaml.Parser.Internal
-import           Language.OCaml.Parser.TestUtils
 
 testStrings :: [String]
 testStrings =
@@ -27,10 +18,3 @@ testStrings =
   , "0b01"
   , "0B01"
   ]
-
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.Int" $ []
-  ++ map (mkParsingTest "valLongIdentP" valLongidentP) testStrings
-
-test :: IO ()
-test = defaultMain unitTests

@@ -40,7 +40,7 @@ import           Language.OCaml.Utils
 $blank      = [\  \t \f]
 $identChar  = [A-Z a-z _ '\'' 0-9]
 $lowerCase  = [a-z _]
-$symbolChar = [!]--  '$' '%']--  '&' '*' '+' '-' '.' ] -- '/' ':' '<' '=' '>' '?' '@' '^' '|' '~']
+$symbolChar = [\! \$ \% \& \* \+ \- \. \/ \: \< \= \> \? \@ \^ \| \~]
 $upperCase  = [A-Z]
 
 -- Regular expression macros
@@ -143,8 +143,16 @@ tokens :-
   <0> "-"                                                 { tok TokMinus }
   <0> "-."                                                { tok TokMinusDot }
   <0> "!" $symbolChar+                                    { tokS TokPrefixOp }
+  <0> [\~ \?] $symbolChar+                                { tokS TokPrefixOp }
+  <0> [\= \< \> \| \& \$] $symbolChar+                    { tokS TokInfixOp0 }
+  <0> [\@ \^] $symbolChar*                                { tokS TokInfixOp1 }
+  <0> [\+ \-] $symbolChar*                                { tokS TokInfixOp2 }
+  <0> "**" $symbolChar*                                   { tokS TokInfixOp4 }
+  <0> "%"                                                 { tok  TokPercent }
+  <0> [\* \/ \%] $symbolChar*                          { tokS TokInfixOp3 }
+  -- <0> '#' (symbolchar | '#') +   { HASHOP op }
   -- TODO
-  <0> [= \< > \| & \$] $symbolChar*                       { tokS TokInfixOp0 }
+  <0> [\= \< \> \| \& \$] $symbolChar*                       { tokS TokInfixOp0 }
 
   -- while inside a string
   <s> \"                                                  { endString }
@@ -540,6 +548,7 @@ endComment alexInput lexemeLength = do
       commentString <- getStringBuffer
       let (endLine, endCol) = getMyPosition alexInput
       let ss = SrcSpan startLine startCol endLine endCol
+      alexSetStartCode codeStartCode
       return $ Just $ Located ss $ TokComment commentString
     _ -> do
       popCommentStartLoc

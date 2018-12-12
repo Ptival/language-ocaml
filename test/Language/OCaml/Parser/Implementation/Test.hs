@@ -1,45 +1,31 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.Implementation.Test
-  ( test
-  , testFiles
+  ( debugLexer
+  , listMLFiles
+  , testMLFile
   , testStrings
-  , unitTests
   ) where
 
--- import Data.String.QQ
-import Test.Tasty
+import           Test.Tasty
+import           Test.Tasty.Golden
 
-import Language.OCaml.Parser.Internal
-import qualified Language.OCaml.Parser.Structure.Test as Structure
--- import Language.OCaml.Parser.Tokens
-import Language.OCaml.Parser.TestUtils
+import           Language.OCaml.Parser.Generator.Lexer
+import           Language.OCaml.Parser.Generator.Parser
+import qualified Language.OCaml.Parser.Structure.Test         as Structure
+import           Language.OCaml.Parser.TestUtils
 
-prefix :: FilePath
-prefix = "test/Language/OCaml/Parser/Implementation/"
+directory :: FilePath
+directory = "test/Language/OCaml/Parser/Implementation"
 
 testStrings :: [String]
 testStrings = Structure.testStrings
 
-testFiles :: [FilePath]
-testFiles = map (prefix ++)
-  [ "test_00.ml"
-  , "test_01.ml"
-  , "test_02.ml"
-  , "test_03.ml"
-  , "test_04.ml"
-  , "test_05.ml"
-  , "test_06.ml"
-  , "test_07.ml"
-  , "test_08.ml"
-  -- , "FaCT/tast.ml"
-  -- , "FaCT/tast-00.ml"
-  -- , "FaCT/tast-01.ml"
-  ]
+listMLFiles :: IO [FilePath]
+listMLFiles = findByExtension [".ml"] directory
 
-unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.Generator.Implementation" $ []
-  ++ map (mkParsingTestFromFile implementationP) testFiles
+testMLFile :: FilePath -> TestTree
+testMLFile fileName = mkParsingTestFromFile parseImplementation fileName
 
-test :: IO ()
-test = defaultMain unitTests
+debugLexer :: String -> Either String [ResultToken]
+debugLexer = alexScanTokens
