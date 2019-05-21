@@ -1,0 +1,170 @@
+author:
+  - Valentin Robert <valentin.robert.42@gmail.com>
+
+build-tools:
+  - alex
+  - happy
+
+default-extensions:
+  - DeriveGeneric
+  - DuplicateRecordFields
+  - GADTs
+  - LambdaCase
+  - NamedFieldPuns
+  - RankNTypes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - TypeApplications
+
+dependencies:
+  - array
+  - base
+  - containers
+  - data-default
+  - directory
+  - extensible-effects
+  - extra
+  - filepath
+  - interpolate
+  - lens
+  - megaparsec
+  - mtl
+  - prettyprinter
+  - string-qq
+
+library:
+  source-dirs: lib
+  exposed-modules:
+    - Language.OCaml.Parser.Common
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Exception
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Exp
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Mb
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Mod
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Mtd
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Mty
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Opn
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Pat
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Sig
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Str
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Te
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Typ
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Type
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Val
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Vb
+    - Language.OCaml.Definitions.Parsing.Docstrings
+    - Language.OCaml.Definitions.Parsing.Location
+    - Language.OCaml.Definitions.Parsing.Longident
+    - Language.OCaml.Definitions.Parsing.Parser.LetBinding
+    - Language.OCaml.Definitions.Parsing.Parser.LetBindings
+    - Language.OCaml.Definitions.Parsing.ASTTypes
+    - Language.OCaml.Definitions.Parsing.ParseTree
+    - Language.OCaml.Parser
+    - Language.OCaml.Parser.Generator.Lexer
+    - Language.OCaml.Parser.Generator.Parser
+    - Language.OCaml.PrettyPrinter
+    - Language.OCaml.PrettyPrinter.Internal
+  other-modules:
+    - Language.OCaml.Definitions.Parsing.ASTHelper.Common
+    - Language.OCaml.Definitions.StdLib.Lexing
+    - Language.OCaml.Definitions.StdLib.Parsing
+    - Language.OCaml.Utils
+    - Language.OCaml.PrettyPrinter.ArgLabel
+    - Language.OCaml.PrettyPrinter.Case
+    - Language.OCaml.PrettyPrinter.Constant
+    - Language.OCaml.PrettyPrinter.ConstructorArguments
+    - Language.OCaml.PrettyPrinter.ConstructorDeclaration
+    - Language.OCaml.PrettyPrinter.CoreType
+    - Language.OCaml.PrettyPrinter.CoreTypeDesc
+    - Language.OCaml.PrettyPrinter.Expression
+    - Language.OCaml.PrettyPrinter.ExpressionDesc
+    - Language.OCaml.PrettyPrinter.LabelDeclaration
+    - Language.OCaml.PrettyPrinter.Loc
+    - Language.OCaml.PrettyPrinter.Longident
+    - Language.OCaml.PrettyPrinter.ModuleBinding
+    - Language.OCaml.PrettyPrinter.ModuleExpr
+    - Language.OCaml.PrettyPrinter.ModuleExprDesc
+    - Language.OCaml.PrettyPrinter.MutableFlag
+    - Language.OCaml.PrettyPrinter.OpenDescription
+    - Language.OCaml.PrettyPrinter.OverrideFlag
+    - Language.OCaml.PrettyPrinter.Pattern
+    - Language.OCaml.PrettyPrinter.PatternDesc
+    - Language.OCaml.PrettyPrinter.Payload
+    - Language.OCaml.PrettyPrinter.RecFlag
+    - Language.OCaml.PrettyPrinter.Structure
+    - Language.OCaml.PrettyPrinter.StructureItem
+    - Language.OCaml.PrettyPrinter.StructureItemDesc
+    - Language.OCaml.PrettyPrinter.TypeDeclaration
+    - Language.OCaml.PrettyPrinter.ValueBinding
+    - Language.OCaml.PrettyPrinter.Variance
+
+license: BSD3
+
+name: language-ocaml
+
+pkg-config-dependencies:
+  - zlib
+
+tests:
+  parser:
+    main: Main.hs
+    source-dirs: test
+    dependencies:
+      - language-ocaml
+      - tasty
+      - tasty-golden
+      - tasty-hunit
+    other-modules:
+      - Language.OCaml.Parser.AndLetBinding.Test
+      - Language.OCaml.Parser.Attribute.Test
+      - Language.OCaml.Parser.Attributes.Test
+      - Language.OCaml.Parser.AttrId.Test
+      - Language.OCaml.Parser.Constant.Test
+      - Language.OCaml.Parser.ConstrLongident.Test
+      - Language.OCaml.Parser.CoreType.Test
+      - Language.OCaml.Parser.CoreType2.Test
+      - Language.OCaml.Parser.CoreTypeNoAttr.Test
+      - Language.OCaml.Parser.Expr.Test
+      - Language.OCaml.Parser.ExtAttributes.Test
+      - Language.OCaml.Parser.Generator.Expr.Test
+      - Language.OCaml.Parser.Generator.Implementation.Test
+      - Language.OCaml.Parser.Generator.LetBinding.Test
+      - Language.OCaml.Parser.Generator.SeqExpr.Test
+      - Language.OCaml.Parser.Generator.SimpleExpr.Test
+      - Language.OCaml.Parser.Generator.Structure.Test
+      - Language.OCaml.Parser.Generator.ValLongident.Test
+      - Language.OCaml.Parser.Ident.Test
+      - Language.OCaml.Parser.Implementation.Test
+      - Language.OCaml.Parser.Int.Test
+      - Language.OCaml.Parser.LetBinding.Test
+      - Language.OCaml.Parser.LetBindingBody.Test
+      - Language.OCaml.Parser.LetBindings.Test
+      - Language.OCaml.Parser.MatchCase.Test
+      - Language.OCaml.Parser.ModLongident.Test
+      - Language.OCaml.Parser.OpenStatement.Test
+      - Language.OCaml.Parser.Operator.Test
+      - Language.OCaml.Parser.Pattern.Test
+      - Language.OCaml.Parser.Payload.Test
+      - Language.OCaml.Parser.PostItemAttribute.Test
+      - Language.OCaml.Parser.PostItemAttributes.Test
+      - Language.OCaml.Parser.RecFlag.Test
+      - Language.OCaml.Parser.SeqExpr.Test
+      - Language.OCaml.Parser.SimpleCoreType.Test
+      - Language.OCaml.Parser.SimpleCoreType2.Test
+      - Language.OCaml.Parser.SimpleCoreTypeOrTuple.Test
+      - Language.OCaml.Parser.SimpleExpr.Test
+      - Language.OCaml.Parser.SimplePattern.Test
+      - Language.OCaml.Parser.SimplePatternNotIdent.Test
+      - Language.OCaml.Parser.SingleAttrId.Test
+      - Language.OCaml.Parser.StrictBinding.Test
+      - Language.OCaml.Parser.Structure.Test
+      - Language.OCaml.Parser.StructureItem.Test
+      - Language.OCaml.Parser.StructureTail.Test
+      - Language.OCaml.Parser.TestStrings
+      - Language.OCaml.Parser.TestUtils
+      - Language.OCaml.Parser.ValIdent.Test
+      - Language.OCaml.Parser.ValLongident.Test
+      - Language.OCaml.PrettyPrinter.Structure.Test
+      - Language.OCaml.PrettyPrinter.StructureItem.Test
+      - Language.OCaml.PrettyPrinter.TestUtils
+
+version: 0.2.2
