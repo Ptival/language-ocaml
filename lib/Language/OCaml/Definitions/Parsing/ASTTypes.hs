@@ -22,9 +22,9 @@ data Constant
    | ConstChar Char
    | ConstString String (Maybe String)
    | ConstFloat String
-   -- | ConstInt32 Int32
-   -- | ConstInt64 Int64
-   -- | Const_nativeint Nativeint
+   --  | ConstInt32 Int32
+   --  | ConstInt64 Int64
+   --  | Const_nativeint Nativeint
   deriving (Eq, Generic, Show)
 
 data Loc a = Loc

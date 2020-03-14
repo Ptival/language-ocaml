@@ -101,9 +101,6 @@ license: BSD3
 
 name: language-ocaml
 
-pkg-config-dependencies:
-  - zlib
-
 tests:
   parser:
     main: Main.hs

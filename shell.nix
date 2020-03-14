@@ -7,7 +7,6 @@ in
 mkShell {
   buildInputs = [
     cabal-install
-    zlib
   ];
   inputsFrom = [
     language-ocaml.env

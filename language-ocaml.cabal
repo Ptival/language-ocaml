@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.31.2.
+-- This file has been generated from package.yaml by hpack version 0.33.0.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 76eae32e57e86dda43c9229cb25fc9c1fae9d6725007061ad896d711205418e1
+-- hash: 9bc40e10b37764588329a55852e4eeb41e83a6aa365cdd1a1704ebc4bae49f6e
 
 name:          language-ocaml
 version:       0.2.2
@@ -80,8 +80,6 @@ library
   hs-source-dirs:
     lib
   default-extensions: DeriveGeneric DuplicateRecordFields GADTs LambdaCase NamedFieldPuns RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
-  pkgconfig-depends:
-    zlib
   build-tools:
     alex,
     happy
@@ -161,8 +159,6 @@ test-suite parser
   hs-source-dirs:
     test
   default-extensions: DeriveGeneric DuplicateRecordFields GADTs LambdaCase NamedFieldPuns RankNTypes RecordWildCards ScopedTypeVariables TypeApplications
-  pkgconfig-depends:
-    zlib
   build-tools:
     alex,
     happy
