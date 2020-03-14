@@ -1,2 +1,5 @@
+/.envrc
 /.stack-work
+/dist/
+/dist-newstyle/
 /shell-stack.nix

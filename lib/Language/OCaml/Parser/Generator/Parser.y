@@ -900,11 +900,11 @@ RecordExpr :: { (Maybe Expression, [(Loc Longident, Expression)]) }
   : SimpleExpr with LblExprList { (Just $1, $3) }
   | LblExprList                 { (Nothing, $1) }
 
-RowField :: { a }
+RowField :: { RowField }
   : TagField       { $1 }
   | SimpleCoreType { Rinherit $1 }
 
-RowFieldList :: { [a] }
+RowFieldList :: { [RowField] }
   : RowField                  { [$1] }
   | RowFieldList "|" RowField { $3 : $1 }
 
