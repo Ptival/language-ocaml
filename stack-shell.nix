@@ -3,7 +3,7 @@
 let
   config = import ./config.nix;
 in
-nur.lib.haskellDevShell {
+nur.lib.stackShell {
 
   inherit (config) nixpkgsRev pkg;
 
