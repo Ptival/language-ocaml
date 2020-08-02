@@ -53,7 +53,7 @@ set.hsPkgs.${name}.components.library // {
 
     tools = {
       # alex = "3.2.5";
-      # cabal = "3.2.0.0";
+      cabal = "3.2.0.0";
       # happy = "1.19.12";
       # hlint = "2.2.11";
       # hpack = "0.34.2";
