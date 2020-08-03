@@ -4,12 +4,11 @@ let
   compiler-nix-name = "ghc884";
 
   sources = import ./nix/sources.nix {};
-  haskellNix = import (fetchTarball { inherit (sources."haskell.nix") url sha256; }) {};
- #  haskellNix = import (fetchTarball { inherit (sources."haskell.nix") url sha256; }) {
- #      sourcesOverride = {
- #        hackageSrc = fetchTarball { inherit (sources."hackage.nix") url sha256; };
- #      };
- #  };
+  haskellNix = import (fetchTarball { inherit (sources."haskell.nix") url sha256; }) {
+    sourcesOverride = {
+      hackageSrc = fetchTarball { inherit (sources."hackage.nix") url sha256; };
+    };
+  };
 
   # Ideally you'd want to use haskellNix.sources.nixpkgs down here (to hit their
   # cache).  However, at the moment, haskell-language-server depends on a
@@ -18,10 +17,10 @@ let
   #
   # Good news: fixed by using a more recent nixpkgs
   # Bad news: no caching
-  # pkgs = import sources.nixpkgs haskellNix.nixpkgsArgs;
-  pkgs = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
+  pkgs = import sources.nixpkgs haskellNix.nixpkgsArgs;
+  # pkgs = import haskellNix.sources.nixpkgs-2003 haskellNix.nixpkgsArgs;
 
-  set = pkgs.haskell-nix.cabalProject' {
+  project = pkgs.haskell-nix.cabalProject {
 
     inherit compiler-nix-name;
 
@@ -34,30 +33,26 @@ let
 
 in
 
-set.hsPkgs.${name}.components.library // {
+project.${name}.components.library // {
 
-  shell = set.hsPkgs.shellFor {
+  shell = project.shellFor {
 
     buildInputs =
       let
         hsPkgs = pkgs.haskell.packages.${compiler-nix-name};
       in [
-        # hsPkgs.haskell-language-server
+        hsPkgs.haskell-language-server
       ];
-
-    exactDeps = true;
 
     packages = p: [
       p.language-ocaml
     ];
 
     tools = {
-      # alex = "3.2.5";
       cabal = "3.2.0.0";
-      # happy = "1.19.12";
-      # hlint = "2.2.11";
-      # hpack = "0.34.2";
-      # ormolu = "0.1.2.0";
+      hlint = "2.2.11";
+      hpack = "0.34.2";
+      ormolu = "0.1.2.0";
     };
 
   };
