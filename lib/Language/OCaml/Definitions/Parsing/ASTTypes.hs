@@ -1,35 +1,35 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Language.OCaml.Definitions.Parsing.ASTTypes
-  ( ArgLabel(..)
-  , ClosedFlag(..)
-  , Constant(..)
-  , DirectionFlag(..)
-  , Label
-  , Loc(..)
-  , OverrideFlag(..)
-  , RecFlag(..)
-  , Variance(..)
-  , VirtualFlag(..)
-  ) where
+  ( ArgLabel (..),
+    ClosedFlag (..),
+    Constant (..),
+    DirectionFlag (..),
+    Label,
+    Loc (..),
+    OverrideFlag (..),
+    RecFlag (..),
+    Variance (..),
+    VirtualFlag (..),
+  )
+where
 
-import GHC.Generics
-
-import Language.OCaml.Definitions.Parsing.Location
+import GHC.Generics (Generic)
+import Language.OCaml.Definitions.Parsing.Location (Location)
 
 data Constant
-   = ConstInt Int
-   | ConstChar Char
-   | ConstString String (Maybe String)
-   | ConstFloat String
-   --  | ConstInt32 Int32
-   --  | ConstInt64 Int64
-   --  | Const_nativeint Nativeint
+  = ConstInt Int
+  | ConstChar Char
+  | ConstString String (Maybe String)
+  | ConstFloat String
+  --  | ConstInt32 Int32
+  --  | ConstInt64 Int64
+  --  | Const_nativeint Nativeint
   deriving (Eq, Generic, Show)
 
 data Loc a = Loc
-  { txt :: a
-  , loc :: Location
+  { txt :: a,
+    loc :: Location
   }
   deriving (Generic, Show)
 

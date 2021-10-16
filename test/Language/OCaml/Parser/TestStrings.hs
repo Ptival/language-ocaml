@@ -1,15 +1,16 @@
 module Language.OCaml.Parser.TestStrings
-  ( attributes
-  , expr
-  , implementation
-  , letBinding
-  , payload
-  , seqExpr
-  , simpleExpr
-  , structure
-  , valIdent
-  , valLongident
-  ) where
+  ( attributes,
+    expr,
+    implementation,
+    letBinding,
+    payload,
+    seqExpr,
+    simpleExpr,
+    structure,
+    valIdent,
+    valLongident,
+  )
+where
 
 import qualified Language.OCaml.Parser.Attributes.Test as Attributes
 import qualified Language.OCaml.Parser.Expr.Test as Expr

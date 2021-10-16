@@ -1,19 +1,19 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.Implementation.Test
-  ( debugLexer
-  , listMLFiles
-  , testMLFile
-  , testStrings
-  ) where
+  ( debugLexer,
+    listMLFiles,
+    testMLFile,
+    testStrings,
+  )
+where
 
-import           Test.Tasty
-import           Test.Tasty.Golden
-
-import           Language.OCaml.Parser.Generator.Lexer
-import           Language.OCaml.Parser.Generator.Parser
-import qualified Language.OCaml.Parser.Structure.Test         as Structure
-import           Language.OCaml.Parser.TestUtils
+import Language.OCaml.Parser.Generator.Lexer
+import Language.OCaml.Parser.Generator.Parser
+import qualified Language.OCaml.Parser.Structure.Test as Structure
+import Language.OCaml.Parser.TestUtils
+import Test.Tasty
+import Test.Tasty.Golden
 
 directory :: FilePath
 directory = "test/Language/OCaml/Parser/Implementation"

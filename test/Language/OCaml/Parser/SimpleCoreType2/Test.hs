@@ -1,20 +1,22 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.SimpleCoreType2.Test
-  ( testStrings
-  ) where
+  ( testStrings,
+  )
+where
 
-import           Data.String.Interpolate
-import           Prelude                          hiding (id)
-
+import Data.String.Interpolate
 import qualified Language.OCaml.Parser.Ident.Test as Ident
+import Prelude hiding (id)
 
 testStrings :: [String]
-testStrings = []
-  ++ [ [i| #{id} |]
-       | id <- ident
+testStrings =
+  []
+    ++ [ [i| #{id} |]
+         | id <- ident
        ]
-  ++ ["_"]
-  -- TODO
+    ++ ["_"]
   where
+    -- TODO
+
     ident = Ident.testStrings

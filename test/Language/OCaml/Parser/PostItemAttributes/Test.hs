@@ -2,24 +2,25 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.PostItemAttributes.Test
-  --( test
-  ( testStrings
+--( test
+  ( testStrings,
   --, unitTests
-  ) where
+  )
+where
 
 import Data.String.Interpolate
-
 import qualified Language.OCaml.Parser.PostItemAttribute.Test as PostItemAttribute
 
 recursionLimit :: Int
 recursionLimit = 10
 
 testStrings :: [String] -> [String]
-testStrings payload = []
-  ++ [ "" ]
-  ++ [ [i|#{pia} #{pias}|]
-       | pia <- PostItemAttribute.testStrings payload
-       , pias <- take recursionLimit this
+testStrings payload =
+  []
+    ++ [""]
+    ++ [ [i|#{pia} #{pias}|]
+         | pia <- PostItemAttribute.testStrings payload,
+           pias <- take recursionLimit this
        ]
   where
     this = testStrings payload

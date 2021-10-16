@@ -1,6 +1,7 @@
 module Language.OCaml.Parser.RecFlag.Test
-  ( testStrings
-  ) where
+  ( testStrings,
+  )
+where
 
 testStrings :: [String]
-testStrings = [ "", "rec" ]
+testStrings = ["", "rec"]

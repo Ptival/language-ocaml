@@ -1,11 +1,11 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.Structure.Test
-  ( testStrings
-  ) where
+  ( testStrings,
+  )
+where
 
-import           Data.String.Interpolate
-
+import Data.String.Interpolate
 import qualified Language.OCaml.Parser.Payload.Test as Payload
 import qualified Language.OCaml.Parser.PostItemAttributes.Test as PostItemAttributes
 import qualified Language.OCaml.Parser.SeqExpr.Test as SeqExpr
@@ -15,15 +15,16 @@ limit :: Int
 limit = 4
 
 testStrings :: [String]
-testStrings = []
-  ++ [ [i|#{se} #{pia} #{st}|]
-       | se  <- seqExpr
-       , pia <- postItemAttributes
-       , st  <- structureTail
+testStrings =
+  []
+    ++ [ [i|#{se} #{pia} #{st}|]
+         | se <- seqExpr,
+           pia <- postItemAttributes,
+           st <- structureTail
        ]
   where
-    payload            = take limit $ Payload.testStrings structure
+    payload = take limit $ Payload.testStrings structure
     postItemAttributes = take limit $ PostItemAttributes.testStrings payload
-    seqExpr            = take limit $ SeqExpr.testStrings
-    structure          = take limit $ testStrings
-    structureTail      = take limit $ StructureTail.testStrings structure
+    seqExpr = take limit $ SeqExpr.testStrings
+    structure = take limit $ testStrings
+    structureTail = take limit $ StructureTail.testStrings structure

@@ -1,20 +1,21 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.OCaml.PrettyPrinter.OverrideFlag
-  ( overrideFlagPP
-  ) where
-
-import Data.Text.Prettyprint.Doc
+  ( overrideFlagPP,
+  )
+where
 
 import Language.OCaml.Definitions.Parsing.ASTTypes
+  ( OverrideFlag (..),
+  )
+import Prettyprinter (Doc, Pretty (pretty))
 
 overrideFlagPP :: OverrideFlag -> Doc a
 overrideFlagPP = \case
   Override -> "!"
-  Fresh    -> ""
+  Fresh -> ""
 
 instance Pretty OverrideFlag where
   pretty = overrideFlagPP

@@ -1,15 +1,16 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.OCaml.PrettyPrinter.Longident
-  ( longidentPP
-  ) where
+  ( longidentPP,
+  )
+where
 
-import Data.Text.Prettyprint.Doc
-
-import Language.OCaml.Definitions.Parsing.ParseTree
+import Language.OCaml.Definitions.Parsing.Longident
+  ( Longident (..),
+  )
+import Prettyprinter (Doc, Pretty (pretty), group)
 
 longidentPP :: Longident -> Doc b
 longidentPP = \case

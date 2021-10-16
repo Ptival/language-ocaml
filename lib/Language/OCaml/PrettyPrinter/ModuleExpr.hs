@@ -1,16 +1,17 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.OCaml.PrettyPrinter.ModuleExpr
-  ( moduleExprPP
-  ) where
-
-import Data.Text.Prettyprint.Doc
+  ( moduleExprPP,
+  )
+where
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.ModuleExprDesc  ()
+  ( ModuleExpr (pmodDesc),
+  )
+import Language.OCaml.PrettyPrinter.ModuleExprDesc ()
+import Prettyprinter (Doc, Pretty (pretty))
 
 moduleExprPP :: ModuleExpr -> Doc a
 moduleExprPP = pretty . pmodDesc

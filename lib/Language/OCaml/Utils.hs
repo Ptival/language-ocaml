@@ -1,6 +1,7 @@
 module Language.OCaml.Utils
-  ( (<*^>)
-  ) where
+  ( (<*^>),
+  )
+where
 
 infixl 4 <*^>
 

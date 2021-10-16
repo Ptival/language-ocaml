@@ -1,68 +1,83 @@
 {-# LANGUAGE DeriveGeneric #-}
 
 module Language.OCaml.Definitions.Parsing.ParseTree
-  ( Attribute
-  , Attributes
-  , Case(..)
-  , ClassDeclaration
-  , ClassExpr(..)
-  , ClassField(..)
-  , ClassInfos(..)
-  , ClassSignature(..)
-  , ClassStructure(..)
-  , ClassType(..)
-  , ClassTypeDeclaration
-  , ClassTypeField(..)
-  , Constant(..)
-  , ConstructorArguments(..)
-  , ConstructorDeclaration(..)
-  , CoreType(..)
-  , CoreTypeDesc(..)
-  , Expression(..)
-  , ExpressionDesc(..)
-  , Extension
-  , ExtensionConstructor(..)
-  , ExtensionConstructorKind(..)
-  , IncludeDeclaration
-  , IncludeInfos(..)
-  , LabelDeclaration(..)
-  , Longident(..)
-  , ModuleBinding(..)
-  , ModuleExpr(..)
-  , ModuleExprDesc(..)
-  , ModuleType(..)
-  , ModuleTypeDeclaration(..)
-  , ModuleTypeDesc(..)
-  , MutableFlag(..)
-  , ObjectField(..)
-  , OpenDescription(..)
-  , PackageType
-  , Pattern(..)
-  , PatternDesc(..)
-  , Payload(..)
-  , PrivateFlag(..)
-  , RowField(..)
-  , Signature
-  , SignatureItem(..)
-  , SignatureItemDesc(..)
-  , Structure
-  , StructureItem(..)
-  , StructureItemDesc(..)
-  , TypeDeclaration(..)
-  , TypeException(..)
-  , TypeExtension(..)
-  , TypeKind(..)
-  , ValueBinding(..)
-  , ValueDescription(..)
-  , WithConstraint(..)
-  , none
-  ) where
+  ( Attribute,
+    Attributes,
+    Case (..),
+    ClassDeclaration,
+    ClassExpr (..),
+    ClassField (..),
+    ClassInfos (..),
+    ClassSignature (..),
+    ClassStructure (..),
+    ClassType (..),
+    ClassTypeDeclaration,
+    ClassTypeField (..),
+    Constant (..),
+    ConstructorArguments (..),
+    ConstructorDeclaration (..),
+    CoreType (..),
+    CoreTypeDesc (..),
+    Expression (..),
+    ExpressionDesc (..),
+    Extension,
+    ExtensionConstructor (..),
+    ExtensionConstructorKind (..),
+    IncludeDeclaration,
+    IncludeInfos (..),
+    LabelDeclaration (..),
+    Longident (..),
+    ModuleBinding (..),
+    ModuleExpr (..),
+    ModuleExprDesc (..),
+    ModuleType (..),
+    ModuleTypeDeclaration (..),
+    ModuleTypeDesc (..),
+    MutableFlag (..),
+    ObjectField (..),
+    OpenDescription (..),
+    PackageType,
+    Pattern (..),
+    PatternDesc (..),
+    Payload (..),
+    PrivateFlag (..),
+    RowField (..),
+    Signature,
+    SignatureItem (..),
+    SignatureItemDesc (..),
+    Structure,
+    StructureItem (..),
+    StructureItemDesc (..),
+    TypeDeclaration (..),
+    TypeException (..),
+    TypeExtension (..),
+    TypeKind (..),
+    ValueBinding (..),
+    ValueDescription (..),
+    WithConstraint (..),
+    none,
+  )
+where
 
-import GHC.Generics
-
-import Language.OCaml.Definitions.Parsing.ASTTypes  hiding (Constant)
+import GHC.Generics (Generic)
+import Language.OCaml.Definitions.Parsing.ASTTypes
+  ( ArgLabel,
+    ClosedFlag,
+    DirectionFlag,
+    Label,
+    Loc,
+    OverrideFlag,
+    RecFlag,
+    Variance,
+    VirtualFlag,
+  )
 import Language.OCaml.Definitions.Parsing.Location
+  ( Location,
+    none,
+  )
 import Language.OCaml.Definitions.Parsing.Longident
+  ( Longident (..),
+  )
 
 data Constant
   = PconstInteger String (Maybe Char)
@@ -72,7 +87,9 @@ data Constant
   deriving (Eq, Generic, Show)
 
 type Attribute = (Loc String, Payload)
+
 type Extension = (Loc String, Payload)
+
 type Attributes = [Attribute]
 
 data Payload
@@ -83,9 +100,9 @@ data Payload
   deriving (Eq, Generic, Show)
 
 data CoreType = CoreType
-  { ptypDesc       :: CoreTypeDesc
-  , ptypLoc        :: Location
-  , ptypAttributes :: Attributes
+  { ptypDesc :: CoreTypeDesc,
+    ptypLoc :: Location,
+    ptypAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -115,14 +132,14 @@ data PrivateFlag
   deriving (Eq, Generic, Show)
 
 data TypeDeclaration = TypeDeclaration
-  { ptypeName :: Loc String
-  , ptypeParams :: [(CoreType, Variance)]
-  , ptypeCstrs :: [(CoreType, CoreType, Location)]
-  , ptypeKind :: TypeKind
-  , ptypePrivate :: PrivateFlag
-  , ptypeManifest :: Maybe CoreType
-  , ptypeAttributes :: Attributes
-  , ptypeLoc :: Location
+  { ptypeName :: Loc String,
+    ptypeParams :: [(CoreType, Variance)],
+    ptypeCstrs :: [(CoreType, CoreType, Location)],
+    ptypeKind :: TypeKind,
+    ptypePrivate :: PrivateFlag,
+    ptypeManifest :: Maybe CoreType,
+    ptypeAttributes :: Attributes,
+    ptypeLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
@@ -134,20 +151,20 @@ data TypeKind
   deriving (Eq, Generic, Show)
 
 data LabelDeclaration = LabelDeclaration
-  { pldName       :: Loc String
-  , pldMutable    :: MutableFlag
-  , pldType       :: CoreType
-  , pldLoc        :: Location
-  , pldAttributes :: Attributes
+  { pldName :: Loc String,
+    pldMutable :: MutableFlag,
+    pldType :: CoreType,
+    pldLoc :: Location,
+    pldAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
 data ConstructorDeclaration = ConstructorDeclaration
-  { pcdName       :: Loc String
-  , pcdArgs       :: ConstructorArguments
-  , pcdRes        :: Maybe CoreType
-  , pcdLoc        :: Location
-  , pcdAttributes :: Attributes
+  { pcdName :: Loc String,
+    pcdArgs :: ConstructorArguments,
+    pcdRes :: Maybe CoreType,
+    pcdLoc :: Location,
+    pcdAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -159,8 +176,8 @@ data MutableFlag
 type Structure = [StructureItem]
 
 data StructureItem = StructureItem
-  { pstrDesc :: StructureItemDesc
-  , pstrLoc  :: Location
+  { pstrDesc :: StructureItemDesc,
+    pstrLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
@@ -183,9 +200,9 @@ data StructureItemDesc
   deriving (Eq, Generic, Show)
 
 data Expression = Expression
-  { pexpDesc       :: ExpressionDesc
-  , pexpLoc        :: Location
-  , pexpAttributes :: Attributes
+  { pexpDesc :: ExpressionDesc,
+    pexpLoc :: Location,
+    pexpAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -231,40 +248,40 @@ data ExpressionDesc
 type Signature = [SignatureItem]
 
 data SignatureItem = SignatureItem
-  { psigDesc :: SignatureItemDesc
-  , psigLoc  :: Location
+  { psigDesc :: SignatureItemDesc,
+    psigLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
 data SignatureItemDesc
   = PsigValue ValueDescription
-  -- | PsigType Asttypes.recFlag * typeDeclaration list
-  -- | PsigTypext type_extension
-  -- | Psig_exception extensionConstructor
-  -- | PsigModule moduleDeclaration
-  -- | PsigRecmodule moduleDeclaration list
-  -- | PsigModtype moduleTypeDeclaration
-  -- | Psig_open openDescription
-  -- | PsigInclude includeDescription
-  -- | PsigClass classDescription list
-  -- | PsigClassType classTypeDeclaration list
-  | PsigAttribute Attribute
+  | -- | PsigType Asttypes.recFlag * typeDeclaration list
+    -- | PsigTypext type_extension
+    -- | Psig_exception extensionConstructor
+    -- | PsigModule moduleDeclaration
+    -- | PsigRecmodule moduleDeclaration list
+    -- | PsigModtype moduleTypeDeclaration
+    -- | Psig_open openDescription
+    -- | PsigInclude includeDescription
+    -- | PsigClass classDescription list
+    -- | PsigClassType classTypeDeclaration list
+    PsigAttribute Attribute
   | PsigExtension Extension Attributes
   deriving (Eq, Generic, Show)
 
 data ValueDescription = ValueDescription
-  { pvalName       :: Loc String
-  , pvalType       :: CoreType
-  , pvalPrim       :: [String]
-  , pvalAttributes :: Attributes
-  , pvalLoc        :: Location
+  { pvalName :: Loc String,
+    pvalType :: CoreType,
+    pvalPrim :: [String],
+    pvalAttributes :: Attributes,
+    pvalLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
 data Pattern = Pattern
-  { ppatDesc       :: PatternDesc
-  , ppatLoc        :: Location
-  , ppatAttributes :: Attributes
+  { ppatDesc :: PatternDesc,
+    ppatLoc :: Location,
+    ppatAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -290,17 +307,17 @@ data PatternDesc
   deriving (Eq, Generic, Show)
 
 data OpenDescription = OpenDescription
-  { popenLid        :: Loc Longident
-  , popenOverride   :: OverrideFlag
-  , popenLoc        :: Location
-  , popenAttributes :: Attributes
+  { popenLid :: Loc Longident,
+    popenOverride :: OverrideFlag,
+    popenLoc :: Location,
+    popenAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
 data ModuleExpr = ModuleExpr
-  { pmodDesc       :: ModuleExprDesc
-  , pmodLoc        :: Location
-  , pmodAttributes :: Attributes
+  { pmodDesc :: ModuleExprDesc,
+    pmodLoc :: Location,
+    pmodAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -315,33 +332,33 @@ data ModuleExprDesc
   deriving (Eq, Generic, Show)
 
 data ModuleBinding = ModuleBinding
-  { pmbName       :: Loc String
-  , pmbExpr       :: ModuleExpr
-  , pmbAttributes :: Attributes
-  , pmbLoc        :: Location
+  { pmbName :: Loc String,
+    pmbExpr :: ModuleExpr,
+    pmbAttributes :: Attributes,
+    pmbLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
 data ValueBinding = ValueBinding
-  { pvbPat        :: Pattern
-  , pvbExpr       :: Expression
-  , pvbAttributes :: Attributes
-  , pvbLoc        :: Location
+  { pvbPat :: Pattern,
+    pvbExpr :: Expression,
+    pvbAttributes :: Attributes,
+    pvbLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
 data Case = Case
-  { pcLHS   :: Pattern
-  , pcGuard :: Maybe Expression
-  , pcRHS   :: Expression
+  { pcLHS :: Pattern,
+    pcGuard :: Maybe Expression,
+    pcRHS :: Expression
   }
   deriving (Eq, Generic, Show)
 
 data ExtensionConstructor = ExtensionConstructor
-  { pextName        :: Loc String
-  , pextKind        :: ExtensionConstructorKind
-  , pextLoc         :: Location
-  , pextAttributes  :: Attributes -- C of ... [@id1] [@id2]
+  { pextName :: Loc String,
+    pextKind :: ExtensionConstructorKind,
+    pextLoc :: Location,
+    pextAttributes :: Attributes -- C of ... [@id1] [@id2]
   }
   deriving (Eq, Generic, Show)
 
@@ -351,17 +368,17 @@ data ExtensionConstructorKind
   deriving (Eq, Generic, Show)
 
 data TypeExtension = TypeExtension
-  { ptyextPath         :: Loc Longident
-  , ptyextParams       :: [(CoreType, Variance)]
-  , ptyextConstructors :: [ExtensionConstructor]
-  , ptyextPrivate      :: PrivateFlag
-  , ptyextAttributes   :: Attributes
+  { ptyextPath :: Loc Longident,
+    ptyextParams :: [(CoreType, Variance)],
+    ptyextConstructors :: [ExtensionConstructor],
+    ptyextPrivate :: PrivateFlag,
+    ptyextAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
 data TypeException = TypeException
-  { ptyexnConstructor :: ExtensionConstructor
-  , ptyexnAttributes  :: Attributes
+  { ptyexnConstructor :: ExtensionConstructor,
+    ptyexnAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -371,15 +388,15 @@ data RowField
   deriving (Eq, Generic, Show)
 
 data ClassStructure = ClassStructure
-  { pcstrSelf   :: Pattern
-  , pcstrFields :: [ClassField]
+  { pcstrSelf :: Pattern,
+    pcstrFields :: [ClassField]
   }
   deriving (Eq, Generic, Show)
 
 data ClassField = ClassField
-  { pcfDesc       :: ClassFieldDesc
-  , pcfLoc        :: Location
-  , pcfAttributes :: Attributes
+  { pcfDesc :: ClassFieldDesc,
+    pcfLoc :: Location,
+    pcfAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -394,9 +411,9 @@ data ClassFieldDesc
   deriving (Eq, Generic, Show)
 
 data ClassExpr = ClassExpr
-  { pclDesc       :: ClassExprDesc
-  , pclLoc        :: Location
-  , pclAttributes :: Attributes
+  { pclDesc :: ClassExprDesc,
+    pclLoc :: Location,
+    pclAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -412,9 +429,9 @@ data ClassExprDesc
   deriving (Eq, Generic, Show)
 
 data ClassType = ClassType
-  { pctyDesc       :: ClassTypeDesc
-  , pctyLoc        :: Location
-  , pctyAttributes :: Attributes
+  { pctyDesc :: ClassTypeDesc,
+    pctyLoc :: Location,
+    pctyAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -427,15 +444,15 @@ data ClassTypeDesc
   deriving (Eq, Generic, Show)
 
 data ClassSignature = ClassSignature
-  { pcsigSelf :: CoreType
-  , pcsigFields :: [ClassTypeField]
+  { pcsigSelf :: CoreType,
+    pcsigFields :: [ClassTypeField]
   }
   deriving (Eq, Generic, Show)
 
 data ClassTypeField = ClassTypeField
-  { pctfDesc       :: ClassTypeFieldDesc
-  , pctfLoc        :: Location
-  , pctfAttributes :: Attributes
+  { pctfDesc :: ClassTypeFieldDesc,
+    pctfLoc :: Location,
+    pctfAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -459,9 +476,9 @@ data ObjectField
   deriving (Eq, Generic, Show)
 
 data ModuleType = ModuleType
-  { pmtyDesc       :: ModuleTypeDesc
-  , pmtyLoc        :: Location
-  , pmtyAttributes :: Attributes
+  { pmtyDesc :: ModuleTypeDesc,
+    pmtyLoc :: Location,
+    pmtyAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 
@@ -476,10 +493,10 @@ data ModuleTypeDesc
   deriving (Eq, Generic, Show)
 
 data ModuleTypeDeclaration = ModuleTypeDeclaration
-  { pmtdName       :: Loc String
-  , pmtdType       :: Maybe ModuleType
-  , pmtdAttributes :: Attributes
-  , pmtdLoc        :: Location
+  { pmtdName :: Loc String,
+    pmtdType :: Maybe ModuleType,
+    pmtdAttributes :: Attributes,
+    pmtdLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
@@ -493,11 +510,11 @@ data WithConstraint
 type PackageType = (Loc Longident, [(Loc Longident, CoreType)])
 
 data ClassInfos a = ClassInfos
-  { pciVirt   :: VirtualFlag
-  , pciParams :: [(CoreType, Variance)]
-  , pciName   :: Loc String
-  , pciExpr   :: a
-  , pciLoc    :: Location
+  { pciVirt :: VirtualFlag,
+    pciParams :: [(CoreType, Variance)],
+    pciName :: Loc String,
+    pciExpr :: a,
+    pciLoc :: Location
   }
   deriving (Eq, Generic, Show)
 
@@ -506,9 +523,9 @@ type ClassDeclaration = ClassInfos ClassExpr
 type ClassTypeDeclaration = ClassInfos ClassType
 
 data IncludeInfos a = IncludeInfos
-  { pinclMod        :: a
-  , pinclLoc        :: Location
-  , pinclAttributes :: Attributes
+  { pinclMod :: a,
+    pinclLoc :: Location,
+    pinclAttributes :: Attributes
   }
   deriving (Eq, Generic, Show)
 

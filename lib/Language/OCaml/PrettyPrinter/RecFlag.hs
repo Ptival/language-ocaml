@@ -1,21 +1,20 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE UndecidableInstances #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.OCaml.PrettyPrinter.RecFlag
-  ( recFlagPP
-  ) where
+  ( recFlagPP,
+  )
+where
 
-import Data.Text.Prettyprint.Doc
-
-import Language.OCaml.Definitions.Parsing.ASTTypes
+import Language.OCaml.Definitions.Parsing.ASTTypes (RecFlag (..))
+import Prettyprinter (Doc, Pretty (pretty))
 
 recFlagPP :: RecFlag -> Doc a
 recFlagPP = \case
-  Recursive    -> "rec "
+  Recursive -> "rec "
   NonRecursive -> ""
 
 instance Pretty RecFlag where

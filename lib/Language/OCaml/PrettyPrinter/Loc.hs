@@ -1,15 +1,14 @@
-{-# OPTIONS_GHC -fno-warn-orphans #-}
-
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Language.OCaml.PrettyPrinter.Loc
-  ( locPP
-  ) where
+  ( locPP,
+  )
+where
 
-import Data.Text.Prettyprint.Doc
-
-import Language.OCaml.Definitions.Parsing.ASTTypes
+import Language.OCaml.Definitions.Parsing.ASTTypes (Loc (txt))
+import Prettyprinter (Doc, Pretty (pretty))
 
 locPP :: (Pretty a) => Loc a -> Doc b
 locPP = pretty . txt

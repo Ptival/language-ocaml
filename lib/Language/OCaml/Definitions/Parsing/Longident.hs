@@ -2,12 +2,13 @@
 {-# LANGUAGE LambdaCase #-}
 
 module Language.OCaml.Definitions.Parsing.Longident
-  ( Longident(..)
-  , last
-  ) where
+  ( Longident (..),
+    last,
+  )
+where
 
-import GHC.Generics
-import Prelude      hiding (last)
+import GHC.Generics (Generic)
+import Prelude hiding (last)
 
 data Longident
   = Lident String
@@ -17,6 +18,6 @@ data Longident
 
 last :: Longident -> String
 last = \case
-  Lident s   -> s
-  Ldot   _ s -> s
+  Lident s -> s
+  Ldot _ s -> s
   Lapply _ _ -> error "Longident.last"

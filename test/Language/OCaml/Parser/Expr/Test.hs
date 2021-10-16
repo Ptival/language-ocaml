@@ -1,9 +1,11 @@
 module Language.OCaml.Parser.Expr.Test
-  ( testStrings
-  ) where
+  ( testStrings,
+  )
+where
 
 import qualified Language.OCaml.Parser.SimpleExpr.Test as SimpleExpr
 
 testStrings :: [String] -> [String]
-testStrings seqExpr = []
-  ++ SimpleExpr.testStrings seqExpr
+testStrings seqExpr =
+  []
+    ++ SimpleExpr.testStrings seqExpr

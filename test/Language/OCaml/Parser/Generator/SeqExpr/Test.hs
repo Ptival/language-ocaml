@@ -1,19 +1,21 @@
 {-# LANGUAGE QuasiQuotes #-}
 
 module Language.OCaml.Parser.Generator.SeqExpr.Test
-  ( test
-  , unitTests
-  ) where
+  ( test,
+    unitTests,
+  )
+where
 
-import           Test.Tasty
-
-import           Language.OCaml.Parser.Generator.Parser
-import           Language.OCaml.Parser.TestUtils
-import qualified Language.OCaml.Parser.TestStrings      as TestStrings
+import Language.OCaml.Parser.Generator.Parser
+import qualified Language.OCaml.Parser.TestStrings as TestStrings
+import Language.OCaml.Parser.TestUtils
+import Test.Tasty
 
 unitTests :: TestTree
-unitTests = testGroup "Language.OCaml.Parser.Generator.SeqExpr" $ []
-  ++ map (mkParsingTest parseSeqExpr) TestStrings.seqExpr
+unitTests =
+  testGroup "Language.OCaml.Parser.Generator.SeqExpr" $
+    []
+      ++ map (mkParsingTest parseSeqExpr) TestStrings.seqExpr
 
 test :: IO ()
 test = defaultMain unitTests

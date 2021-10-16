@@ -1,15 +1,16 @@
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
-{-# LANGUAGE OverloadedStrings #-}
-
 module Language.OCaml.PrettyPrinter.CoreType
-  ( coreTypePP
-  ) where
-
-import Data.Text.Prettyprint.Doc
+  ( coreTypePP,
+  )
+where
 
 import Language.OCaml.Definitions.Parsing.ParseTree
-import Language.OCaml.PrettyPrinter.CoreTypeDesc    ()
+  ( CoreType (ptypDesc),
+  )
+import Language.OCaml.PrettyPrinter.CoreTypeDesc ()
+import Prettyprinter (Doc, Pretty (pretty))
 
 coreTypePP :: CoreType -> Doc a
 coreTypePP = pretty . ptypDesc
