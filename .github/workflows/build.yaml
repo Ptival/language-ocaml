@@ -14,6 +14,14 @@ jobs:
             cabal: 2.4.1.0
     name: ${{ matrix.os }} cabal-${{ matrix.cabal }} ghc-${{ matrix.ghc }}
     steps:
+      - name: Cache ~/.cabal/packages, ~/.cabal/store and dist-newstyle
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cabal/packages
+            ~/.cabal/store
+            dist-newstyle
+          key: ${{ runner.os }}-${{ matrix.ghc }}
       - uses: actions/checkout@v2
       - name: Setup Haskell
         uses: haskell/actions/setup@v1
@@ -22,4 +30,4 @@ jobs:
           cabal-version: ${{ matrix.cabal }}
       - run: cabal update
       - run: cabal build language-ocaml
-      - run: cabal test language-ocaml
+      - run: cabal test parser
