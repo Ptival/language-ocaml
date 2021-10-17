@@ -6,13 +6,13 @@ jobs:
     strategy:
       matrix:
         ghc: ["8.10.7", "9.0.1"]
-        cabal: ["3.0.0.0", "3.6.0.0"]
+        cabal: ["latest"]
         os: [ubuntu-latest, macOS-latest, windows-latest]
         exclude:
           # GHC 8.8+ only works with cabal v3+
           - ghc: 8.8.3
             cabal: 2.4.1.0
-    name: Haskell GHC ${{ matrix.ghc }} sample
+    name: ${{ matrix.os }} cabal-${{ matrix.cabal }} ghc-${{ matrix.ghc }}
     steps:
       - uses: actions/checkout@v2
       - name: Setup Haskell
@@ -20,4 +20,5 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
-      - run: runhaskell Hello.hs
+      - run: cabal build language-ocaml
+      - run: cabal test language-ocaml
