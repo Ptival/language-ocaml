@@ -1,5 +1,3 @@
-[![CircleCI](https://circleci.com/gh/Ptival/language-ocaml.svg?style=svg)](https://circleci.com/gh/Ptival/language-ocaml)
-
 # language-ocaml: Language tools for manipulating OCaml programs in Haskell (parser, pretty-printer, ...)
 
 Current target version: OCaml 4.07.0rc2
