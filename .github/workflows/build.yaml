@@ -5,9 +5,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        ghc: ["8.10.7", "9.0.1"]
+        ghc: ["8.10.7"] # , "9.0.1"]
         cabal: ["latest"]
-        os: [ubuntu-latest, macOS-latest, windows-latest]
+        os: [ubuntu-latest] # , macOS-latest, windows-latest]
         exclude:
           # GHC 8.8+ only works with cabal v3+
           - ghc: 8.8.3
@@ -20,5 +20,6 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
+      - run: cabal update
       - run: cabal build language-ocaml
       - run: cabal test language-ocaml
