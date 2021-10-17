@@ -28,6 +28,5 @@ jobs:
         with:
           ghc-version: ${{ matrix.ghc }}
           cabal-version: ${{ matrix.cabal }}
-      - run: cabal update
       - run: cabal build language-ocaml
       - run: cabal test parser
